@@ -1,0 +1,268 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-519
+		// # Test Case Name: VerifyNewEquipmentNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'New Equipment' negative functionality in 'Resources' page and then
+		// # successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "New Equipment" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 07-15-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");	
+		String strMaxLength1 = Script.dicTestData.get("strMaxLength1");	
+		String strMaxLength2 = Script.dicTestData.get("strMaxLength2");	
+		String strEquipmentNumber = Script.dicTestData.get("strEquipmentNumber");	
+		String strEquipmentType = Script.dicTestData.get("strEquipmentType");	
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");
+		String strExpectedText3 = Script.dicTestData.get("strExpectedText3");
+		String strExpectedText4 = Script.dicTestData.get("strExpectedText4");
+		String strExpectedText5 = Script.dicTestData.get("strExpectedText5");
+		String strExpectedText6 = Script.dicTestData.get("strExpectedText6");
+	
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '" + strURL + "' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Resources link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkEquipment");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Equipment' link and verify 'Equipment' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Equipment' link and verify 'Equipment' page is displayed.";
+		strExpResult = "'Equipment' page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines","lnkEquipment", "Equipment");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Equipment' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+		// ########################################################################################################
+		// Step 5 - Click on 'New Equipment' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Equipment' button and verify navigated page.";
+		strExpResult = "'Add Equipment' page should be displayed.";
+		blnFlag = clickAndVerify("pgeEquipment","btnNewEquipment", "Add Equipment");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Equipment' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on Save button without entering anything and verify error message displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Save button without entering anything and verify error message displayed.";
+		strExpResult = "Error Message '" + strExpectedText + "' message should be displayed.";
+		
+		blnFlag = verifyErrorMessage("pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter a valid 'Equipment Number' and verify message displayed on clicking 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "Enter a valid 'Equipment Number' and verify message displayed on clicking 'Save' button.";
+		strExpResult = "Error Message '" + strExpectedText1 + "' message should be displayed.";
+		
+		blnFlag = verifyErrorMessage("pgeEquipment","txtEquipmentNumber",strEquipmentNumber,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText1);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '" + strExpectedText1 + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Select an 'Equipment Type'.
+		// ########################################################################################################
+		strStepDesc = "Select an 'Equipment Type'.";
+		strExpResult = "Equipment Type '"+strEquipmentType+"' should be selected.";
+		
+		blnFlag = Page("pgeEquipment").Element("drpEquipmentType").Select(strEquipmentType);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Equipment Type '"+strEquipmentType+"' is selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter more than maximum allowed characters in 'Description' field and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed characters in 'Description' field and verify displayed message.";
+		strExpResult = "Error Message '" + strExpectedText2 + "' message should be displayed.";
+		
+		blnFlag = verifyMaxCharacErrorMessage("pgeEquipment","txtDescription",strSearchText,strMaxLength1,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText2);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '" + strExpectedText2 + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter more than maximum allowed characters in 'Serial Number' field and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed characters in 'Serial Number' field and verify displayed message.";
+		strExpResult = "Error Message '" + strExpectedText3 + "' message should be displayed.";
+
+		blnFlag = verifyMaxCharacErrorMessage("pgeEquipment","txtDescription","","txtSerialNumber",strSearchText,strMaxLength2,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText3);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '" + strExpectedText3 + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter more than maximum allowed characters in 'Mfg/Model' field and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed characters in 'Mfg/Model' field and verify displayed message.";
+		strExpResult = "Error Message '" + strExpectedText4 + "' message should be displayed.";
+		
+		blnFlag = verifyMaxCharacErrorMessage("pgeEquipment","txtSerialNumber","","txtMfgModel",strSearchText,strMaxLength1,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText4);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '" + strExpectedText4 + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter more than maximum allowed characters in 'Comments' field and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed characters in 'Comments' field and verify displayed message.";
+		strExpResult = "Error Message '" + strExpectedText5 + "' message should be displayed.";
+		
+		blnFlag = verifyMaxCharacErrorMessage("pgeEquipment","txtMfgModel","","txtComments",strSearchText,strMaxLength1,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText5);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '" + strExpectedText5 + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Enter more than maximum allowed characters in 'label code' field and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed characters in 'label code' field and verify displayed message.";
+		strExpResult = "Error Message '" + strExpectedText6 + "' message should be displayed.";
+		
+		blnFlag = verifyMaxCharacErrorMessage("pgeEquipment","txtComments","","txtLabelcode",strSearchText,strMaxLength2,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText6);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '" + strExpectedText6 + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 14 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

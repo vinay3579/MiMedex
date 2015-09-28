@@ -1,0 +1,124 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-296
+		// # Test Case Name: VerifyAgentRefreshFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that on entring agent name in agent name text box page refreshes or not
+		// # and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: • User is logged in into the MiMedx SBWeb application.
+		// #				 • User is on "Field Tracking" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 09-24-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strAgentName = Script.dicTestData.get("strAgentName");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Remote Access link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Remote Access' link given on left navigation area.";
+		strExpResult = "'Remote Access' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRemoteAccess", "pgeAssembly_Lines", "lnkFieldTracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Remote Access' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Field Tracking' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Field Tracking' link and verify navigated page.";
+		strExpResult = "'Field Tracking' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkFieldTracking", "Field Tracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Field Tracking' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Enter agent name in 'Agent' input box.
+		// ########################################################################################################
+		strStepDesc = "Enter agent name in 'Agent' input box.";
+		strExpResult = "Agent name '"+strAgentName+"' should be entered and page should be refreshed.";
+		blnFlag=enterAgentName(strAgentName);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Agent name '"+strAgentName+"' entered and page refreshes successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

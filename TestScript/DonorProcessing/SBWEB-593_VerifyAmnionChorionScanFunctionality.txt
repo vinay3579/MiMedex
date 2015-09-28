@@ -1,0 +1,324 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-593
+		// # Test Case Name: VerifyAmnionChorionScanFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies  'Amnion/Chorion' scan functionality on "Donor List" page.
+		// # functionality.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Donor List" page.
+		// #				 
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 03-11-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strRefrigerator = Script.dicTestData.get("strRefrigerator");
+		
+		// Get Tissue Recovery ID from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_DonorProcessing");
+		String strDonorKey = Script.dicCommonValue.get("strDonorKey_DonorProcessing");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 3 - Click on Process link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkDonor_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Donor Processing link and verify 'Donor List' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Donor Processing link and verify 'Donor List' page is displayed.";
+		strExpResult = "'Donor List' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonor_Processing", "Donor List");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor List' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on 'Amnion/Chorion Scan' button and verify 'Amnion/Chorion Scan' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Amnion/Chorion Scan' button and verify 'Amnion/Chorion Scan' page is displayed.";
+		strExpResult = "'Amnion/Chorion Scan' page should be displayed.";
+		blnFlag=clickAndVerify("pgeDonor_List", "btnAmnionChorionScan", "Amnion/Chorion Scan");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Amnion/Chorion Scan' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Enter a Refrigerator in 'Amnion/Chorion Scan' page and click on 'Enter'.
+		// ########################################################################################################
+		strStepDesc = "Enter a Refrigerator in 'Amnion/Chorion Scan' page and click on 'Enter'.";
+		strExpResult = "Refrigerator ("+strRefrigerator+") in 'Amnion/Chorion Scan' page should be entered and 'Enter' Key should be pressed.";
+		blnFlag=enterValueandPressEnter("pgeAmnionChorionScan","txtRefrigerator",strRefrigerator);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Refrigerator ("+strRefrigerator+") in 'Amnion/Chorion Scan' page is entered and 'Enter' Key is  pressed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter the Donor detail in scan area on 'Amnion/Chorion Scan' page.
+		// ########################################################################################################
+		strStepDesc = "Enter the Donor detail in scan area on 'Amnion/Chorion Scan' page.";
+		strExpResult = "The Donor detail in scan area on 'Amnion/Chorion Scan' page should be entered.";
+		blnFlag=enterDonorDetailAmnionChorion(strDonorKey);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Donor detail in scan area on 'Amnion/Chorion Scan' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'Process Scans' button and verify 'Commit' button is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process Scans' button and verify 'Commit' button is displayed.";
+		strExpResult = "'Process Scans' button should be clicked and 'Commit' button presence should be verified.";
+		blnFlag=clickAndVerify("pgeAmnionChorionScan", "btnProcessScans", "pgeCommon", "btnCommit");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process Scans' button is clicked and 'Commit' button presence is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Verify the scanning successful message on the 'Amnion/Chorion Scan' page.
+		// ########################################################################################################
+		strStepDesc = "Verify the scanning successful message on the 'Amnion/Chorion Scan' page.";
+		strExpResult = "'Donor "+strDonorKey+" ("+strRecoveryId+") Amnion scanned successfully.' message should be verified successfully.";
+		blnFlag=verifyTextContains("pgeAmnionChorionScan", "objMessageSummry", "Donor "+strDonorKey+" ("+strRecoveryId+") Amnion scanned successfully.");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor "+strDonorKey+" ("+strRecoveryId+") Amnion scanned successfully.' message is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Verify the scanning successful message on the 'Amnion/Chorion Scan' page.
+		// ########################################################################################################
+		strStepDesc = "Verify the scanning successful message on the 'Amnion/Chorion Scan' page.";
+		strExpResult = "'Donor "+strDonorKey+" ("+strRecoveryId+") Chorion scanned successfully.' message should be verified successfully.";
+		blnFlag=verifyTextContains("pgeAmnionChorionScan", "objMessageSummry", "Donor "+strDonorKey+" ("+strRecoveryId+") Chorion scanned successfully.");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor "+strDonorKey+" ("+strRecoveryId+") Chorion scanned successfully.' message is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Verify the Recovery ID row for Amnion is presented on the 'Amnion/Chorion Scan' page.
+		// ########################################################################################################
+		strStepDesc = "Verify the Recovery ID row for Amnion is presented on the 'Amnion/Chorion Scan' page.";
+		strExpResult = "The Recovery ID ("+strRecoveryId+") row for Amnion should be presented on the 'Amnion/Chorion Scan' page.";
+		blnFlag = verifyExactText("pgeAmnionChorionScan","objRecoveryID_FirstRow",strRecoveryId);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Recovery ID ("+strRecoveryId+") row for Amnion is presented on the 'Amnion/Chorion Scan' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Verify the Tissue Type - Amnion is presented on the 'Amnion/Chorion Scan' page.
+		// ########################################################################################################
+		strStepDesc = "Verify the  Tissue Type - Amnion is presented on the 'Amnion/Chorion Scan' page.";
+		strExpResult = "The  Tissue Type - Amnion should be presented on the 'Amnion/Chorion Scan' page.";
+		blnFlag = verifyExactText("pgeAmnionChorionScan","objTissueType_FirstRow","Amnion");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Tissue Type - Amnion is presented on the 'Amnion/Chorion Scan' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Verify the Recovery ID row for Chorion is presented on the 'Amnion/Chorion Scan' page.
+		// ########################################################################################################
+		strStepDesc = "Verify the Recovery ID row for Chorion is presented on the 'Amnion/Chorion Scan' page.";
+		strExpResult = "The Recovery ID ("+strRecoveryId+") row for Chorion should be presented on the 'Amnion/Chorion Scan' page.";
+		blnFlag = verifyExactText("pgeAmnionChorionScan","objRecoveryID_SecondRow",strRecoveryId);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Recovery ID ("+strRecoveryId+") row for Chorion is presented on the 'Amnion/Chorion Scan' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Verify the Tissue Type - Chorion is presented on the 'Amnion/Chorion Scan' page.
+		// ########################################################################################################
+		strStepDesc = "Verify the  Tissue Type - Chorion is presented on the 'Amnion/Chorion Scan' page.";
+		strExpResult = "The  Tissue Type - Chorion should be presented on the 'Amnion/Chorion Scan' page.";
+		blnFlag = verifyExactText("pgeAmnionChorionScan","objTissueType_SecondRow","Chorion");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Tissue Type - Chorion is presented on the 'Amnion/Chorion Scan' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Click on 'Commit' button and verify 'Commit' button non-existance.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button and 'Commit' button non-existance.";
+		strExpResult = "'Commit' button should be clicked and 'Commit' button should not be present anymore.";
+		blnFlag=clickAndVerifyNotExist("pgeCommon", "btnCommit", "pgeCommon", "btnCommit");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and 'Commit' button is not present anymore.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Verify the Processing successful message on the 'Amnion/Chorion Scan' page.
+		// ########################################################################################################
+		strStepDesc = "Verify the Processing successful message on the 'Amnion/Chorion Scan' page.";
+		strExpResult = "'Recovery Key "+strRecoveryId+" Amnion processed successfully.' message should be verified successfully.";
+		blnFlag=verifyTextContains("pgeAmnionChorionScan", "objMessageSummry", "Recovery Key "+strRecoveryId+" Amnion processed successfully.");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery Key "+strRecoveryId+" Amnion processed successfully.' message is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Verify the Processing successful message on the 'Amnion/Chorion Scan' page.
+		// ########################################################################################################
+		strStepDesc = "Verify the Processing successful message on the 'Amnion/Chorion Scan' page.";
+		strExpResult = "'Recovery Key "+strRecoveryId+" Chorion processed successfully.' message should be verified successfully.";
+		blnFlag=verifyTextContains("pgeAmnionChorionScan", "objMessageSummry", "Recovery Key "+strRecoveryId+" Chorion processed successfully.");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery Key "+strRecoveryId+" Chorion processed successfully.' message is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Verify 'No records found.' message in table on 'Amnion/Chorion Scan' page.
+		// ########################################################################################################
+		strStepDesc = "Verify 'No records found.' message in table on 'Amnion/Chorion Scan' page.";
+		strExpResult = "'No records found.' message should be verified in the table on 'Amnion/Chorion Scan' page.";
+		blnFlag = verifyExactText("pgeAmnionChorionScan","objRecoveryID_FirstRow","No records found.");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'No records found.' message is verified in the table on 'Amnion/Chorion Scan' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+					
+		// ########################################################################################################
+		// Step 18 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

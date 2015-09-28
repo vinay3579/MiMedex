@@ -1,0 +1,141 @@
+// ########################################################################################################
+		// # Test Case ID: SBWEB-453
+		// # Test Case Name: VerifyBulkLabelsNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifes negative functionality of bulk labels link on 'Packaging' page.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// #                 MiMedx SBWeb URL is accessible to the user			
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 06-25-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strLabel = Script.dicTestData.get("strLabel");
+		String strErrorMsg = Script.dicTestData.get("strErrorMsg");
+		
+			
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+					
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkBulkLabels");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Bulk Labels' link and verify 'Bulk Labels' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Bulk Labels' link and verify 'Donors to Package' page is displayed.";
+		strExpResult = "'Bulk Labels' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkBulkLabels", "Bulk Labels");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Bulk Labels' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click Generate Labels button without selecting anything.
+		// ########################################################################################################
+		strStepDesc = "Click Generate Labels button without selecting anything";
+		strExpResult = "A label must be selected to generate.";
+		blnFlag=verifyErrorMessage("pgeBulkLabels", "btnGenerateLabels", "pgeCommon", "objUIMessageErrorSummary", strExpectedText);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+		// ########################################################################################################
+		// Step 6 - Select a Label (don't select Printer) and click Print Labels button.
+		// ########################################################################################################
+		strStepDesc = "Select a Label (don't select Printer) and click Print Labels button.";
+		strExpResult = "A printer must be selected to print.";
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeBulkLabels", "lstLabel_BulkLabels", strLabel, "pgeBulkLabels", "btnPrintLabels", "pgeCommon", "objUIMessageErrorSummary", strErrorMsg,"","");	
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strErrorMsg+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+		
+		// ########################################################################################################
+		// Step 7 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		

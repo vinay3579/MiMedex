@@ -1,0 +1,429 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-412
+		// # Test Case Name: VerifyNegativeFunctionalityInTissueUtilizationPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies 'Tissue Utilization' negative functionality in 'Tissue Utilization' 
+		// # page and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: 
+		// # Created on: 03-30-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL = Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Tissue Utilization' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue Utilization' link given on left navigation area.";
+		strExpResult = "'Tissue Utilization' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkTissueUtilization", "pgeAssembly_Lines", "lnkTissueUtilizationSubLink");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Utilization' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Tissue Utilization' sub-link and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue Utilization' sub-link and verify 'Returned Goods' landing page is displayed.";
+		strExpResult = "'Tissue Utilization' landing page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkTissueUtilizationSubLink", "Tissue Utilization");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Utilization' sub-link is clicked and 'Tissue Utilization' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Enter invalid/junk characters in the 'Tissue' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Tissue' search box and verify '" + strExpectedText + "' message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Tissue' search box and '" + strExpectedText + "' message should be successfully displayed.";
+		blnFlag = verifySearchResults("pgeTissueUtilization", "Tissue", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Tissue' search box and '" + strExpectedText + "' message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear the 'Tissue' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Tissue' search box and verify page refresh.";
+		strExpResult = "'Tissue' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeTissueUtilization", "Tissue");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter invalid/junk characters in the 'Distributor' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Distributor' search box and verify '" + strExpectedText + "' message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Distributor' search box and '" + strExpectedText + "' message should be successfully displayed.";
+		blnFlag = verifySearchResults("pgeTissueUtilization", "Distributor", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Distributor' search box and '" + strExpectedText + "' message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Clear the 'Distributor' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Distributor' search box and verify page refresh.";
+		strExpResult = "'Distributor' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeTissueUtilization", "Distributor");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Distributor' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter invalid/junk characters in the 'Facility' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Facility' search box and verify '" + strExpectedText + "' message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Facility' search box and '" + strExpectedText + "' message should be successfully displayed.";
+		blnFlag = verifySearchResults("pgeTissueUtilization", "Facility", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Facility' search box and '" + strExpectedText + "' message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Clear the 'Facility' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Facility' search box and verify page refresh.";
+		strExpResult = "'Facility' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeTissueUtilization", "Facility");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Facility' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter invalid/junk characters in the 'Surgeon Last Name' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Surgeon Last Name' search box and verify '" + strExpectedText + "' message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Surgeon Last Name' search box and '" + strExpectedText + "' message should be successfully displayed.";
+		blnFlag = verifySearchResults("pgeTissueUtilization", "Surgeon Last Name", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Surgeon Last Name' search box and '" + strExpectedText + "' message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Clear the 'Surgeon Last Name' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Surgeon Last Name' search box and verify page refresh.";
+		strExpResult = "'Surgeon Last Name' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeTissueUtilization", "Surgeon Last Name");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Surgeon Last Name' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Enter invalid/junk characters in the 'Patient Last' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Patient Last' search box and verify '" + strExpectedText + "' message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Patient Last' search box and '" + strExpectedText + "' message should be successfully displayed.";
+		blnFlag = verifySearchResults("pgeTissueUtilization", "Patient Last", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Patient Last' search box and '" + strExpectedText + "' message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Clear the 'Patient Last' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Patient Last' search box and verify page refresh.";
+		strExpResult = "'Patient Last' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeTissueUtilization", "Patient Last");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Patient Last' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Enter invalid/junk characters in the 'Procedure Date' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Procedure Date' search box and verify '" + strExpectedText + "' message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Procedure Date' search box and '" + strExpectedText + "' message should be successfully displayed.";
+		blnFlag = verifySearchResults("pgeTissueUtilization", "Procedure Date", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Procedure Date' search box and '" + strExpectedText + "' message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Clear the 'Procedure Date' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Procedure Date' search box and verify page refresh.";
+		strExpResult = "'Procedure Date' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeTissueUtilization", "Procedure Date");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Procedure Date' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Enter invalid/junk characters in the 'Procedure Type' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Procedure Type' search box and verify '" + strExpectedText + "' message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Procedure Type' search box and '" + strExpectedText + "' message should be successfully displayed.";
+		blnFlag = verifySearchResults("pgeTissueUtilization", "Procedure Type", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Procedure Type' search box and '" + strExpectedText + "' message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Clear the 'Procedure Type' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Procedure Type' search box and verify page refresh.";
+		strExpResult = "'Procedure Type' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeTissueUtilization", "Procedure Type");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Procedure Type' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Enter invalid/junk characters in the 'Posting Date' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Posting Date' search box and verify '" + strExpectedText + "' message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Posting Date' search box and '" + strExpectedText + "' message should be successfully displayed.";
+		blnFlag = verifySearchResults("pgeTissueUtilization", "Posting Date", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Posting Date' search box and '" + strExpectedText + "' message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Clear the 'Posting Date' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Posting Date' search box and verify page refresh.";
+		strExpResult = "'Posting Date' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeTissueUtilization", "Posting Date");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Posting Date' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 - Enter invalid/junk characters in the 'Updated By' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Updated By' search box and verify '" + strExpectedText + "' message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Updated By' search box and '" + strExpectedText + "' message should be successfully displayed.";
+		blnFlag = verifySearchResults("pgeTissueUtilization", "Updated By", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Updated By' search box and '" + strExpectedText + "' message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Clear the 'Updated By' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Updated By' search box and verify page refresh.";
+		strExpResult = "'Updated By' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeTissueUtilization", "Updated By");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Updated By' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Enter invalid/junk characters in the 'Pending' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Pending' search box and verify '" + strExpectedText + "' message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Pending' search box and '" + strExpectedText + "' message should be successfully displayed.";
+		blnFlag = verifySearchResults("pgeTissueUtilization", "Pending", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Pending' search box and '" + strExpectedText + "' message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 24 - Clear the 'Pending' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Pending' search box and verify page refresh.";
+		strExpResult = "'Pending' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeTissueUtilization", "Pending");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Pending' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 25 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

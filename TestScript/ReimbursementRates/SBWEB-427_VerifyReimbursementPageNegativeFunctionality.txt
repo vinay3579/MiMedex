@@ -1,0 +1,274 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-427
+		// # Test Case Name: 427_VerifyReimbursementPageNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: Verify 'Reimbursement Rates' negative functionality in 'Recovery' page		
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-22-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc,strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Recovery link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkReimbursementRates");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Reimbursement Rates' link and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Reimbursement Rates' link and verify 'Reimbursement Rates' landing page is displayed.";
+		strExpResult = "'Reimbursement Rates' landing page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkReimbursementRates", "Reimbursement Rates");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, " 'Reimbursement Rates' link is clicked and 'Reimbursement Rates' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Enter invalid/junk characters in the 'Facility Name' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Facility Name' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Facility Name' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeReimbursementRates", "Facility Name", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Facility Name' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear the 'Facility Name' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Facility Name' search box and verify page refresh.";
+		strExpResult = "'Facility Name' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeReimbursementRates", "Facility Name");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Facility Name' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter invalid/junk characters in the 'Group Name' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Group Name' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Group Name' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeReimbursementRates", "Group Name", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Group Name' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Clear the 'Group Name' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Group Name' search box and verify page refresh.";
+		strExpResult = "'Group Name' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeReimbursementRates", "Group Name");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Group Name' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter invalid/junk characters in the 'Physician Name' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Physician Name' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Physician Name' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeReimbursementRates", "Physician Name", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Physician Name' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Clear the 'Physician Name' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Physician Name' search box and verify page refresh.";
+		strExpResult = "'Physician Name' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeReimbursementRates", "Physician Name");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Physician Name' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter invalid/junk characters in the 'Hospital QAD Link' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Hospital QAD Link' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Hospital QAD Link' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeReimbursementRates", "Hospital QAD Link", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Hospital QAD Link' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Clear the 'Hospital QAD Link' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Hospital QAD Link' search box and verify page refresh.";
+		strExpResult = "'Hospital QAD Link' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeReimbursementRates", "Hospital QAD Link");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Hospital QAD Link' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Enter invalid/junk characters in the 'Group QAD Link' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Group QAD Link' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Group QAD Link' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeReimbursementRates", "Group QAD Link", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Group QAD Link' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Clear the 'Group QAD Link' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Group QAD Link' search box and verify page refresh.";
+		strExpResult = "'Group QAD Link' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeReimbursementRates", "Group QAD Link");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Group QAD Link' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 15 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

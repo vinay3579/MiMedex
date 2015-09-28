@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<project name="SeAP" basedir="." default="dist">
+    
+    <property file="build.properties" />
+    
+    
+	<path id="compile.classpath">
+		<fileset dir="${app.lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+    
+    <target name="dist" depends="jar-with-dependency,copy-files">
+    </target>
+    
+    <target name="create-structure" depends="clean">
+        <mkdir dir="${dist.dir}" />
+    	
+    	
+        <mkdir dir="${build.classes.dir}"/>
+        
+    </target>
+    
+    <target name="clean" >
+        <delete dir="${dist.dir}" />
+        <delete dir="${build.classes.dir}"/>
+    	<delete dir="${build.dir}"/>
+    </target>
+    
+   
+   <target name="jar-with-dependency" depends="app-jar">
+	   	<jar destfile="${dist.dir}/${project.name}.jar" filesetmanifest="skip">
+		    <zipgroupfileset dir="${app.lib.dir}" includes="*.jar" excludes=""/>
+		    <zipgroupfileset dir="${build.dir}" includes="*.jar" excludes=""/>
+		    <manifest>
+		        <attribute name="Main-Class" value="${app.main.class}"/>
+		    </manifest>
+		</jar>
+   	
+   </target>
+   
+   <target name="app-jar" depends="compile">
+        <jar destfile="${build.dir}/${project.name}.jar">
+            <fileset dir="${build.classes.dir}"/>
+        	<fileset dir="config"/>
+        </jar>
+    </target>
+   
+   <target name="copy-files">
+   		<copy todir="${dist.dir}/Templates">
+    		<fileset dir="config" includes="*.tmpl"/>
+  		</copy>
+   	<copy todir="${dist.dir}">
+   	    		<fileset dir="config" includes="*.properties"/>
+   	  		</copy>
+   	
+	<copy todir="${dist.dir}">
+   	    		<fileset dir="." includes="*.vbs"/>
+   	  		</copy>
+   	<copy todir="${dist.dir}/TestScript">
+   	    		<fileset dir="TestScript" />
+   	  		</copy>
+	<copy todir="${dist.dir}/TestSuite">
+   	    		<fileset dir="TestSuite" />
+   	  		</copy>
+	<copy todir="${dist.dir}/lib">
+   	    		<fileset dir="lib" includes="func_application.txt"/>
+   	  		</copy>
+	<copy todir="${dist.dir}/logs">
+   	    		<fileset dir="logs" />
+   	  		</copy>
+	<copy todir="${dist.dir}/Reports">
+   	    		<fileset dir="Reports" />
+   	  		</copy>
+	<copy todir="${dist.dir}/Datasheets">
+   	    		<fileset dir="Datasheets" />
+   	  		</copy>
+   	<copy todir="${dist.dir}/java-Testscripts">
+   	    		<fileset dir="java-Testscripts" />
+   	  		</copy>
+   	<copy todir="${dist.dir}/jar">
+   		<fileset dir="jar" excludes="*.jar"/>
+   	   	  		</copy>
+  <!--
+  		<copy todir="${dist.dir}/templates">
+    		<fileset dir="${build.resources.dir}/templates"/>
+  		</copy>
+   		<copy todir="${dist.dir}/OR">
+   	    	<fileset dir="${build.resources.dir}/OR"/>
+   	  	</copy>
+  -->
+   	<copy todir="${dist.dir}/OR">
+   	   	    	<fileset dir="./OR"/>
+   	   	  	</copy>
+   	<copy todir="${dist.dir}">
+   	   	    	<fileset dir="." includes="*.bat" />
+   	   	  	</copy>
+   </target>
+    <target name="compile" depends="create-structure">
+		<javac destdir="${build.classes.dir}" debug="false" srcdir="${src.dir}" includeantruntime="false">
+			<classpath refid="compile.classpath"/>
+		</javac>
+    </target>
+  <!-- 
+    <target name="jar" depends="compile">
+        <jar destfile="test.jar">
+            <fileset dir="bin"/>
+        </jar>
+    </target>
+ 
+ 
+    <target name="clean">
+        <delete dir="${output}"/>
+    </target>
+ 
+    <target name="create" depends="clean">
+        <mkdir dir="${output}"/>
+    </target>
+ 
+    <path id="java">
+        <fileset dir="D:JarsHibernate">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+    
+     -->
+</project>

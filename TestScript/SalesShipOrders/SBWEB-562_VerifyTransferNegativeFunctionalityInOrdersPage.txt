@@ -1,0 +1,190 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-562
+		// # Test Case Name: VerifyTransferNegativeFunctionalityInOrdersPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Sales/Ship Orders 
+		// # landing page and verify negative functionality on transfer order page then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Sales/Ship Orders" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 04-02-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+ 		String strInvalidDate = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strErrorText = Script.dicTestData.get("strErrorText");
+				
+ 		//Test Data to be fetched for the current 'Sales/Ship Orders' script from DB.
+		String strSalesOrder = Script.dicTestData.get("SalesOrderId");
+		String strSalesOrderLine = Script.dicTestData.get("SalesOrderLine");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Orders link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkSalesShipOrders");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Sales/Ship Orders' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Sales/Ship Orders' link and verify navigated page.";
+		strExpResult = "'Sales/Ship Orders' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkSalesShipOrders", "Sales/Ship Orders");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sales/Ship Orders' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly on Sales/Ship Orders page.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'Sales/Ship Orders' page.";
+		strExpResult = "Searched result ("+strSalesOrder+") should be displayed in the 'Sales/Ship Orders' grid.";
+		blnFlag=verifySearch("pgeSalesOrder","txtSalesOrder","lnkSalesOrder",strSalesOrder);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in 'Sales/Ship Orders' grid and verified for the value ("+strSalesOrder+").", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click on specified sales order link on Sales/Ship Orders page. 
+		//########################################################################################################
+		strStepDesc = "Click on specified sales orders link on 'Sales/Ship Orders' page.";
+		strExpResult = "Sales Order ("+strSalesOrder+") link should be clicked and 'Edit Sales Order' page should be displayed.";
+		blnFlag=clickLink(strSalesOrder, "Edit Sales Order");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Sales Order ("+strSalesOrder+") link is clicked and 'Edit Sales Order' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Click on 'Transfer' link on 'Edit Sales Order' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Transfer' link on 'Edit Sales Order' page.";
+		strExpResult = "'Transfer' page should be displayed.";
+		blnFlag=clickTransferLink(strSalesOrderLine, "Transfer");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Transfer' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click save button without entering anything.
+		// ########################################################################################################
+		strStepDesc = "Click save button without entering anything.";
+		strExpResult = "Error message '"+strErrorText+"' should be displayed on 'Edit Hospital' page.";
+		blnFlag = verifyErrorMessage("pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error message '"+strErrorText+"' is displayed on 'Edit Hospital' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Clear date and enter some invalid/junk characters in date and click save button.
+		// ########################################################################################################
+		strStepDesc = "Clear date and enter some invalid/junk characters in date and click save button.";
+		strExpResult = "Error message '"+strExpectedText+"' should be displayed on 'Edit Hospital' page.";
+		blnFlag = verifyErrorMessage("pgeSalesOrder","txtTransferDate",strInvalidDate,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error message '"+strExpectedText+"' is displayed on 'Edit Hospital' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

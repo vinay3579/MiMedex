@@ -1,0 +1,161 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-254
+		// # Test Case Name: VerifySaveButtonFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies save button functionality on 'Recovered Tissue' page under 'Eligibility Review'
+		// # and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Eligibility Review" landing page.
+		// #				 User is on "Recovered Tissue [Recovery ID]" page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 07-25-2014
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strQAComment = Script.dicTestData.get("strQAComment");
+		
+		// Get Tissue Recovery Id from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_EligibilityReview");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkEligibility_Review");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Eligibility Review' link and verify 'Release Processing' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Eligibility Review' link and verify 'Release Processing' page.";
+		strExpResult = "'Release Processing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkEligibility_Review", "pgeRelease_Processing", "txtRecoveryId");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Release Processing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly on Release Processing page.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'Release Processing' page.";
+		strExpResult = "Searched result should be displayed in 'Release Processing' grid.";
+		blnFlag=verifySearch("pgeRelease_Processing","txtRecoveryId","lnkRecoveryId",strRecoveryId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in 'Release Processing' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click on specified Recovery Id link on Release Processing page. 
+		//########################################################################################################
+		strStepDesc = "Click on specified 'Recovery Id' link on 'Release Processing' page.";
+		strExpResult = "Recovery Id link '"+strRecoveryId+"' should be clicked on 'Release Processing' page.";
+		blnFlag=clickLink(strRecoveryId, "Recovered Tissue");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery Id' link '"+strRecoveryId+"' clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 7 - 	Verify save button functionality on Recovered Tissue page. 
+		//########################################################################################################
+		strStepDesc = "Verify 'Save' button functionality on 'Recovered Tissue' page.";
+		strExpResult = "QA notes should be saved on 'Recovered Tissue' page.";
+		blnFlag=verifySaveFunctionality(strQAComment);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "QA notes saved successfully on 'Recovered Tissue' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

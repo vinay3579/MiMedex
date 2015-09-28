@@ -1,0 +1,280 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-590
+		// # Test Case Name: VerifyPackagePrefixesFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Review Dashboard landing 
+		// #  page and add a Package Prefix then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Review Dashboard" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 03-13-2015
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strInstrument = Script.dicTestData.get("strInstrument");
+		String strPrefix = Script.dicTestData.get("strPrefix");
+		String strEpRemoved = Script.dicTestData.get("strEpRemoved");
+		String strEmboss = Script.dicTestData.get("strEmboss");
+	
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Manufacturing link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Manufacturing' link given on left navigation area.";
+		strExpResult = "'Manufacturing' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkManufacturing", "pgeAssembly_Lines", "lnkReviewDashboard");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Manufacturing' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Review Dashboard' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Review Dashboard' link and verify navigated page.";
+		strExpResult = "'Review Dashboard' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkReviewDashboard", "Review Dashboard");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Review Dashboard' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 5 - 	Click on 'Package Prefixes' tab.
+		//########################################################################################################
+		strStepDesc = "Click on 'Package Prefixes' tab.";
+		strExpResult = "'Package Prefixes' tab should be clicked successfully.";
+		blnFlag=clickAndVerify("pgeReviewDashboard","lnkPackagePrefixes", "pgeReviewDashboard","txtPrefix");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Package Prefixes' tab is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}		
+		
+		//########################################################################################################
+		//Step 6 - 	In the 'Instrument Calibrations' section, select a pre-defined 'Instruments'.
+		//########################################################################################################
+		strStepDesc = "In the 'Instrument Calibrations' section, select a pre-defined 'Instruments'.";
+		strExpResult = "A pre-defined Instrument ("+strInstrument+") should be selected in the 'Instrument Calibrations' section.";
+		blnFlag=selectDataItemValueTextBox("pgeReviewDashboard","txtInstruments",strInstrument);      
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "A pre-defined Instrument ("+strInstrument+") is selected in the 'Instrument Calibrations' section successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		} 
+		
+		//########################################################################################################
+		//Step 7 - 	Verify if 'Calibration Date' field is not empty.
+		//########################################################################################################
+		strStepDesc = "Verify if 'Calibration Date' field is not empty.";
+		strExpResult = "'Calibration Date' field should not be empty.";
+		blnFlag=verifyFieldnotEmpty("pgeReviewDashboard", "objCalibrationDate");;
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Calibration Date' field is not empty.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		//########################################################################################################
+		//Step 8 - 	Enter Prefix in Prefix field in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter Prefix in Prefix field in 'Review Dashboard' page.";
+		strExpResult = "Prefix ("+strPrefix+") in Prefix field in 'Review Dashboard' page should be entered.";
+		blnFlag=Page("pgeReviewDashboard").Element("txtPrefix").Type(strPrefix);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Prefix ("+strPrefix+") in Prefix field in 'Review Dashboard' page is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 9 - 	Enter Ep. Removed in 'Ep. Removed' field in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter Ep. Removed in 'Ep. Removed' field in 'Review Dashboard' page.";
+		strExpResult = "Ep. Removed ("+strEpRemoved+") in 'Ep. Removed' field in 'Review Dashboard' page should be entered.";
+		blnFlag=Page("pgeReviewDashboard").Element("txtEpRemoved").Type(strEpRemoved);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Ep. Removed ("+strEpRemoved+") in 'Ep. Removed' field in 'Review Dashboard' page is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 10 - 	Enter Emboss in 'Emboss' field in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter Emboss in 'Emboss' field in 'Review Dashboard' page.";
+		strExpResult = "Emboss ("+strEmboss+") in 'Emboss' field in 'Review Dashboard' page should be entered.";
+		blnFlag=Page("pgeReviewDashboard").Element("txtEmboss").Type(strEmboss);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Emboss ("+strEmboss+") in 'Emboss' field in 'Review Dashboard' page is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}		
+
+		//########################################################################################################
+		//Step 11 - 	Click on 'Add' button in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add' button in 'Review Dashboard' page.";
+		strExpResult = "'Add' button in 'Review Dashboard' page should be clicked.";
+		blnFlag=Page("pgeReviewDashboard").Element("btnAdd").Click(20);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add' button in 'Review Dashboard' page is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 12 - 	Verify the Prefix updated in the Package Prefixes section table in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the Prefix updated in the Package Prefixes section table in 'Review Dashboard' page.";
+		strExpResult = "The Prefix ("+strPrefix+") should be updated in the Package Prefixes section table in 'Review Dashboard' page.";
+		blnFlag=verifyExactText("pgeReviewDashboard", "objPrefix", strPrefix);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Prefix ("+strPrefix+") should be updated in the Package Prefixes section table in 'Review Dashboard' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 13 - 	Verify the Ep. Removed updated in the Package Prefixes section table in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the Ep. Removed updated in the Package Prefixes section table in 'Review Dashboard' page.";
+		strExpResult = "The Ep. Removed ("+strEpRemoved+") should be updated in the Package Prefixes section table in 'Review Dashboard' page.";
+		blnFlag=verifyExactText("pgeReviewDashboard", "objEpRemoved", strEpRemoved);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Ep. Removed ("+strEpRemoved+") should be updated in the Package Prefixes section table in 'Review Dashboard' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+
+		//########################################################################################################
+		//Step 14 - 	Verify the Emboss updated in the Package Prefixes section table in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the Emboss updated in the Package Prefixes section table in 'Review Dashboard' page.";
+		strExpResult = "The Emboss ("+strEmboss+") should be updated in the Package Prefixes section table in 'Review Dashboard' page.";
+		blnFlag=verifyExactText("pgeReviewDashboard", "objEmboss", strEmboss);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Emboss ("+strEmboss+") should be updated in the Package Prefixes section table in 'Review Dashboard' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+		
+		//########################################################################################################
+		//Step 15 - 	Verify the 'Last Updated'/'Last updated By' yellow section for Package Prefixes updated in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the 'Last Updated'/'Last updated By' yellow section for Package Prefixes updated in 'Review Dashboard' page.";
+		strExpResult = "The 'Last Updated'/'Last updated By' yellow section for Package Prefixes should be updated correctly in 'Review Dashboard' page.";
+		blnFlag=verifyTableReviewDashboard("pgeReviewDashboard","objPackagePrefixesLastUpdated","objPackagePrefixesLastUpdatedBy","yellow");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Last Updated'/'Last updated By' section for Package Prefixes is updated correctly in 'Review Dashboard' page. The background color is yellow.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}			
+		
+		// ########################################################################################################
+		// Step 16 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

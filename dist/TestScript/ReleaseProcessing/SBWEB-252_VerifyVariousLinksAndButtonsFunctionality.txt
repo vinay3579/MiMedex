@@ -1,0 +1,222 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-252
+		// # Test Case Name: VerifyVariousLinksAndButtonsFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies the start button functionality on Release Processing page 
+		// # and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Release Processing" landing page.
+		// #				 User is on "Recovered Tissue [Recovery ID]" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 07-22-2014
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSerologyResult = Script.dicTestData.get("strSerologyResult");
+		String strRecoveryId = Script.dicTestData.get("strRecoveryId");
+		String strfilePath = Script.dicTestData.get("strfilePath");
+		String strFollowUpComment = Script.dicTestData.get("strFollowUpComment");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		blnFlag = LaunchApplicationUrl();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, "Launch application failed.", "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkRelease_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Recovered Tissue link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovered Tissue' link.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRelease_Processing", "pgeRelease_Processing", "txtSerologyResult_ReleaseProcessing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"'Release Processing' link clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - 	Search 'Yes' in serology results filter . 
+		//########################################################################################################
+		strStepDesc = "Search for tissue whose 'Serology Results' is 'YES'.";
+		blnFlag=searchSerologyResult(strSerologyResult);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, "Searched tissue whose serology results are available displayed in grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+			
+		//########################################################################################################
+		//Step 6 - 	Click on specified Recovery Id link on Release Processing page. 
+		//########################################################################################################
+		strStepDesc = "Click on specified 'Recovery Id' link on 'Release Processing' page";
+		blnFlag=clickLink(strRecoveryId,"Recovered Tissue");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, "'Recovery Id' link clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}		
+
+		//########################################################################################################
+		//Step 7 - 	Click on Start Process button on Recovered Tissue page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Start Process' button on 'Recovered Tissue' page";
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "btnStartProcess", "pgeRecovered_Tissue", "btnSave");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, "'Start Process' button clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}			
+
+		//########################################################################################################
+		//Step 8 - 	Click on Load/Review Form link on Recovered Tissue page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Load/Review Form' link on 'Recovered Tissue' page";
+		blnFlag=clickLoadReviewForm(strfilePath);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, Script.dicCommonValue.get("Success"), "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}		
+
+		//########################################################################################################
+		//Step 9 - Click on 'Verify Scan' link on 'Forms Package' page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Verify Scan' link on 'Forms Package' page";
+		blnFlag=verifyScan(strFollowUpComment);
+
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, "User clicked 'Pass' button successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - Release pass form to next state. 
+		//########################################################################################################
+		strStepDesc = "Release pass form to next state";
+		//blnFlag=releasePassForm(strUserName, strPassword);
+
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, "User release the form successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - Click on 'Mark for Review' button on 'Recovered Tissue' page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Mark for Review' button on 'Recovered Tissue' page. ";
+	//	blnFlag=markForReview();
+
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, "User clicked 'Mark for Review' button successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 12 - Verify 'Eligibility Review' link displayed on 'Recovered Tissue' page. 
+		//########################################################################################################
+		strStepDesc = "Verify 'Eligibility Review' link displayed on 'Recovered Tissue' page";
+	//	blnFlag=verifyEligibilityLink();
+
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, "Verify 'Eligibility Review' link displayed on 'Recovered Tissue' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+			
+		// ########################################################################################################
+		// Step 13 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}

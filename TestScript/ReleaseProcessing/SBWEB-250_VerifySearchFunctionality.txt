@@ -1,0 +1,138 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-250
+		// # Test Case Name: VerifySearchFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies the search functionality on Release Processing landing page
+		// # and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Release Processing" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 07-17-2014
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSerologyResult = Script.dicTestData.get("strSerologyResult");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Quality Assurance' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkRelease_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Release Processing' link and verify 'Release Processing' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Release Processing' link and verify 'Release Processing' page is displayed.";
+		strExpResult = "'Release Processing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRelease_Processing", "pgeRelease_Processing", "txtSerologyResult");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Release Processing' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Select specified back months from 'Month Back' drop down on 'Release Processing' page.
+		// ########################################################################################################
+		strStepDesc = "Select specified back months from 'Month Back' drop down on 'Release Processing' page.";
+		strExpResult = "Specified back month should be selected in 'Month Back' drop down.";
+		blnFlag=backMonthSelection("6");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Specified back month is selected in 'Month Back' drop down.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 6 - 	Search 'Yes' in serology results filter . 
+		//########################################################################################################
+		strStepDesc = "Search for tissue whose 'Serology Results' is 'YES'.";
+		strExpResult = "Result with serology results 'Yes' should be displayed in grid.";
+		blnFlag=searchSerologyResult(strSerologyResult);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched tissue whose serology results available are displayed in grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+			
+		// ########################################################################################################
+		// Step 7 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

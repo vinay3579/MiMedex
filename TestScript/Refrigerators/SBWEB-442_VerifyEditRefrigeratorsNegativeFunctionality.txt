@@ -1,0 +1,164 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-442
+		// # Test Case Name: VerifyEditRefrigeratorsNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies 'Refrigerators' negative functionality in 'Recovery' page
+		// # and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-04-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strRefrigerator = Script.dicTestData.get("strRefrigerator");
+		String strLocation = Script.dicTestData.get("strLocation");
+        String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strLocationError = Script.dicTestData.get("strLocationError");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc,strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Recovery link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkRecovered_Tissue");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Refrigerators' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Refrigerators' link and verify navigated page.";
+		strExpResult = "'Refrigerators' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkRefrigerators", "Refrigerators");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Refrigerators' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Click on any one of the listings under the 'Refrigerator' headings. 
+		//########################################################################################################
+		strStepDesc = "Click on any one of the listings under the 'Refrigerator' headings.";
+		strExpResult = "'Edit Refrigerator' landing page should be displayed.";
+		blnFlag=clickLink(strRefrigerator, "Edit Refrigerator");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Edit Refrigerator' landing page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Enter some invalid/junk characters in the 'Location' text box and click on the 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in location on 'Edit Refrigerator' page.";
+		strExpResult = "Exception message '"+strExpectedText+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeRefrigerators","txtLocation", strLocation ,"pgeRefrigerators","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Keep Location blank and click on 'Save' button. 
+		// ########################################################################################################
+		strStepDesc = "Keep Location blank and click on 'Save' button.";
+		strExpResult = "Error message '"+strLocationError+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeRefrigerators","txtLocation", "" ,"pgeRefrigerators","btnSave","pgeCommon","objUIMessageErrorSummary",strLocationError);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strLocationError+"' is displayed successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+        // ########################################################################################################
+		// Step 8 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		

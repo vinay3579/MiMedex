@@ -1,0 +1,290 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-550
+		// # Test Case Name: VerifyEditPhysiciansPageNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'Edit Physicians Page' negative functionality in 'Recovery' page
+		// # and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Physicians" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: 
+		// # Created on: 04-27-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL = Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+		String strFirstName = Script.dicTestData.get("strFirstName");
+		String strLastName = Script.dicTestData.get("strLastName");
+		String strHospital = Script.dicTestData.get("strHospital");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strRandomInputText = Script.dicTestData.get("strRandomInputText");
+		String strFirstNameMaxCharError = Script.dicTestData.get("strFirstNameMaxCharError");
+		String strLastNameMaxCharError = Script.dicTestData.get("strLastNameMaxCharError");
+		String strEmailMaxCharError = Script.dicTestData.get("strEmailMaxCharError");
+		
+
+		//Test Data to be fetched for the current 'Physicians' script from DB.
+		String strDBLastName = Script.dicTestData.get("LastName");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Recovery' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkHospitals");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Physicians' link and verify 'Physicians' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Physicians link and verify 'Physicians' page is displayed.";
+		strExpResult = "'Physicians' page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines", "lnkPhysicians", "pgePhysicians", "btnNewPhysician");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Physicians' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Search for any existing Physician Last Name.
+		// ########################################################################################################
+		strStepDesc = "Search for any existing Physician Last Name.";
+		strExpResult = "Physician Last Name should be successfully searched.";
+		blnFlag = verifySearchResults("pgePhysicians", "Last Name", strDBLastName, "pgePhysicians", "lnkLastName", strDBLastName);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Physician Last Name is successfully searched.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on the searched physician last name and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on searched Physicians last name link and verify 'Edit Physician' page is displayed.";
+		strExpResult = "'Edit Physician' page should be displayed.";
+		blnFlag = clickAndVerify("pgePhysicians", "lnkLastName", "Edit Physician");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Edit Physician' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter more than 100 characters in 'E-Mail' field, click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 100 characters in 'E-Mail' field, click on 'Save' button and verify error message '" + strEmailMaxCharError + "' is displayed.";
+		strExpResult = "'" + strEmailMaxCharError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgePhysicians", "txtEmail", strRandomInputText, "101", "pgePhysicians", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strEmailMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strEmailMaxCharError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter more than 25 characters in 'First Name' field, click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 25 characters in 'First Name' field, click on 'Save' button and verify error message '" + strFirstNameMaxCharError + "' is displayed.";
+		strExpResult = "'" + strFirstNameMaxCharError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgePhysicians", "txtFirstName", strRandomInputText, "26", "pgePhysicians", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strFirstNameMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strFirstNameMaxCharError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter more than 25 characters in 'Last Name' field, click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 25 characters in 'Last Name' field, click on 'Save' button and verify error message '" + strLastNameMaxCharError + "' is displayed.";
+		strExpResult = "'" + strLastNameMaxCharError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgePhysicians", "txtLastName", strRandomInputText, "26", "pgePhysicians", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strLastNameMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strLastNameMaxCharError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Select a hospital, click 'Add' button and verify the hospital is displayed in the selected hospitals list.
+		// ########################################################################################################
+		strStepDesc = "Select a hospital, click 'Add' button and verify the hospital is displayed in the selected hospitals list.";
+		strExpResult = "The selected hospital should be displayed in the selected hospitals list.";
+		blnFlag = addOrRemoveListItem("pgePhysicians", "lstHospitals", "lstSelectedHospitals", "btnRightArrow", strHospital);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The selected hospital is successfully displayed in the selected hospitals list.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter some invalid/junk characters in 'Hospitals' search box and verify no hospital is 
+		// 			 displayed in the Hospitals list box.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in 'Hospitals' search box and verify no hospital is displayed in the Hospitals list box.";
+		strExpResult = "No hospital should be displayed in the Hospitals list box.";
+		blnFlag = verifySearchedListItemNotExists("pgePhysicians", "txtHospitalsSearchBox", "lstHospitals", strSearchText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "No hospital is displayed in the Hospitals list box.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Clear the Hospitals search box.
+		// ########################################################################################################
+		strStepDesc = "Clear the Hospitals search box.";
+		strExpResult = "Hospitals search box should be cleared.";
+		blnFlag = Page("pgePhysicians").Element("txtHospitalsSearchBox").Type("");
+		waitForSync(5);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Hospitals search box successfully cleared.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Enter some invalid/junk characters in 'Selected Hospitals' search box and verify no hospital is 
+		// 			 displayed in the Hospitals list box.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in 'Selected Hospitals' search box and verify no hospital is displayed in the Selected Hospitals list box.";
+		strExpResult = "No hospital should be displayed in the Selected Hospitals list box.";
+		blnFlag = verifySearchedListItemNotExists("pgePhysicians", "txtSelectedHospitalsSearchBox", "lstSelectedHospitals", strSearchText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "No hospital is displayed in the Selected Hospitals list box.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Clear the Selected Hospitals search box.
+		// ########################################################################################################
+		strStepDesc = "Clear the Selected Hospitals search box.";
+		strExpResult = "Selected Hospitals search box should be cleared.";
+		blnFlag = Page("pgePhysicians").Element("txtSelectedHospitalsSearchBox").Type("");
+		waitForSync(5);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Selected Hospitals search box successfully cleared.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		
+		// ########################################################################################################
+		// Step 15 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

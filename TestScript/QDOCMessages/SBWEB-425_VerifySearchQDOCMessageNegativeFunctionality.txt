@@ -1,0 +1,334 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-425
+		// # Test Case Name: VerifySearchQDOCMessageNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the QDOC Messages 
+		// # landing page and validate no records found message for each search field on the page then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "View QDOC Messages" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 04-30-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on IT Support link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'IT Support' link given on left navigation area.";
+		strExpResult = "'IT Support' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkITSupport", "pgeAssembly_Lines", "lnkQDOCMessages");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'IT Support' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'QDOC Messages' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'QDOC Messages' link and verify navigated page.";
+		strExpResult = "'View QDOC Messages' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkQDOCMessages", "View QDOC Messages");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'View QDOC Messages' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Enter invalid/junk characters in the 'Message Id' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Message Id' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Message Id' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeQDOC_Message", "Message Id", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Message Id' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear the 'Message Id' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Message Id' search box and verify page refresh.";
+		strExpResult = "'Message Id' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeQDOC_Message", "Message Id");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Message Id' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Enter invalid/junk characters in the 'Message Type' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Message Type' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Message Type' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeQDOC_Message", "Message Type", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Message Type' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear the 'Message Type' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Message Type' search box and verify page refresh.";
+		strExpResult = "'Message Type' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeQDOC_Message", "Message Type");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Message Type' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 5 - Enter invalid/junk characters in the 'Message Details' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Message Details' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Message Details' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeQDOC_Message", "Message Details", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Message Details' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear the 'Message Details' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Message Details' search box and verify page refresh.";
+		strExpResult = "'Message Details' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeQDOC_Message", "Message Details");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Message Details' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 5 - Enter invalid/junk characters in the 'Message Status' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Message Status' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Message Status' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeQDOC_Message", "Message Status", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Message Status' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear the 'Message Status' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Message Status' search box and verify page refresh.";
+		strExpResult = "'Message Status' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeQDOC_Message", "Message Status");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Message Status' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 5 - Enter invalid/junk characters in the 'Comments' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Comments' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Comments' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeQDOC_Message", "Comments", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Comments' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear the 'Comments' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Comments' search box and verify page refresh.";
+		strExpResult = "'Comments' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeQDOC_Message", "Comments");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Comments' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 5 - Enter invalid/junk characters in the 'Processing Started' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Processing Started' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Processing Started' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeQDOC_Message", "Processing Started", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Processing Started' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear the 'Processing Started' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Processing Started' search box and verify page refresh.";
+		strExpResult = "'Processing Started' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeQDOC_Message", "Processing Started");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Processing Started' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 5 - Enter invalid/junk characters in the 'Processing Ended' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter invalid/junk characters in the 'Processing Ended' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Processing Ended' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeQDOC_Message", "Processing Ended", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Processing Ended' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear the 'Processing Ended' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Processing Ended' search box and verify page refresh.";
+		strExpResult = "'Processing Ended' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeQDOC_Message", "Processing Ended");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Processing Ended' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+					
+		// ########################################################################################################
+		// Step 12 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

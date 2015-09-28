@@ -1,0 +1,441 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-354
+		// # Test Case Name: VerifyAddEditEquipmentFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Equipment' 
+		// # page, add a new Equipment and edit the same and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Lab Test Compliance" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 12-8-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strEquipmentNumber = Script.dicTestData.get("strEquipmentNumber");
+		String strEquipmentType = Script.dicTestData.get("strEquipmentType");
+		String strDescription = Script.dicTestData.get("strDescription");
+		String strFacility = Script.dicTestData.get("strFacility");
+		String strLocation = Script.dicTestData.get("strLocation");
+		String strSerialNumber = Script.dicTestData.get("strSerialNumber");
+		String strMfgModel = Script.dicTestData.get("strMfgModel");
+		String strComments = Script.dicTestData.get("strComments");
+		String strLabelCode = Script.dicTestData.get("strLabelCode");
+		String strEditedDesciption = Script.dicTestData.get("strEditedDesciption");
+		String strReason = Script.dicTestData.get("strReason");
+						
+		// Get data from the DB
+		String strEquipmentNumberDb = Script.dicTestData.get("EquipmentKey");			
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 3 - Click on Resources link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkEquipment");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Equipment' link and verify 'Equipment' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Equipment' link and verify 'Equipment' page is displayed.";
+		strExpResult = "'Equipment' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkEquipment", "Equipment");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Equipment' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Calculate an Equipment that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate an Equipment that does not exist in the application for further use.";
+		strExpResult = "A Equipment that does not exist in the application should be calculated and pushed to the Common Sheet under 'strEquipment' for further use.";
+		blnFlag=calculateNewItem(strEquipmentNumber, strEquipmentNumberDb, "strEquipment"); 
+		if (blnFlag == true)
+		{
+			strEquipmentNumber = Script.dicCommonValue.get("strEquipment");
+			reporter.ReportStep(strStepDesc, strExpResult, "Equipment '"+strEquipmentNumber+"' is pushed to the Common Sheet under 'strEquipment'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}			
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'New Equipment' button and verify 'Add Equipment' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Equipment' button and verify 'Add Equipment' page is displayed.";
+		strExpResult = "'Add Equipment' page should be displayed.";
+		blnFlag=clickAndVerify("pgeEquipment", "btnNewEquipment", "Add Equipment");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Equipment' button is clicked and 'Add Equipment' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter Equipment Number in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Equipment Number in 'Add Equipment' page.";
+		strExpResult = "The Equipment Number ("+strEquipmentNumber+") in 'Add Equipment' page should be entered.";
+		blnFlag= Page("pgeEquipment").Element("txtNewEquipmentNumber").Type(strEquipmentNumber); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Equipment Number ("+strEquipmentNumber+") in 'Add Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Select Equipment Type in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Select Equipment Type in 'Add Equipment' page.";
+		strExpResult = "The Equipment Type  ("+strEquipmentType+") in 'Add Equipment' page should be selected.";
+		blnFlag= Page("pgeEquipment").Element("drpEquipmentType").Select(strEquipmentType); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Equipment Type ("+strEquipmentType+") in 'Add Equipment' page is selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter Description in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Description in 'Add Equipment' page.";
+		strExpResult = "The Description ("+strDescription+") in 'Add Equipment' page should be entered.";
+		blnFlag= Page("pgeEquipment").Element("txtDescription").Type(strDescription); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Equipment Description ("+strDescription+") in 'Add Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter Current Date in Caliberation Due Date field in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Current Date in Caliberation Due Date field in 'Add Equipment' page.";
+		strExpResult = "The Current date in 'Caliberation Due Date' field  in 'Add Equipment' page should be entered.";
+		blnFlag=enterCurrentDate("pgeEquipment","txtCalibrationDueDate","MM/dd/YYYY");   
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Current Date in Caliberation Due Date field in 'Add Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter Current Date in Maintenance Due Date field in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Current Date in Maintenance Due Date field in 'Add Equipment' page.";
+		strExpResult = "The Current date in 'Maintenance Due Date' field  in 'Add Equipment' page should be entered.";
+		blnFlag=enterCurrentDate("pgeEquipment","txtMaintenanceDueDate","MM/dd/YYYY");   
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Current Date in Maintenance Due Date field in 'Add Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		// ########################################################################################################
+		// Step 13 - Enter Facility in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Facility in 'Add Equipment' page.";
+		strExpResult = "The Facility ("+strFacility+") in 'Add Equipment' page should be entered.";
+		blnFlag= Page("pgeEquipment").Element("txtFacility").Type(strFacility); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Facility ("+strFacility+") in 'Add Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Select Location in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Select Location in 'Add Equipment' page.";
+		strExpResult = "The Location  ("+strLocation+") in 'Add Equipment' page should be selected.";
+		blnFlag= Page("pgeEquipment").Element("drpLocation").Select(strLocation); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Location ("+strLocation+") in 'Add Equipment' page is selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Enter Serial Number in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Serial Number in 'Add Equipment' page.";
+		strExpResult = "The Serial Number ("+strSerialNumber+") in 'Add Equipment' page should be entered.";
+		blnFlag= Page("pgeEquipment").Element("txtSerialNumber").Type(strSerialNumber); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Serial Number ("+strSerialNumber+") in 'Add Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Enter Mfg/Model in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Mfg/Model in 'Add Equipment' page.";
+		strExpResult = "The Mfg/Model ("+strMfgModel+") in 'Add Equipment' page should be entered.";
+		blnFlag= Page("pgeEquipment").Element("txtMfgModel").Type(strMfgModel); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Mfg/Model ("+strMfgModel+") in 'Add Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Enter LabelCode in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter LabelCode in 'Add Equipment' page.";
+		strExpResult = "The LabelCode ("+strLabelCode+") in 'Add Equipment' page should be entered.";
+		blnFlag= Page("pgeEquipment").Element("txtLabelcode").Type(strLabelCode); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Label Code ("+strLabelCode+") in 'Add Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Enter Comments in 'Add Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Comments in 'Add Equipment' page.";
+		strExpResult = "The Comments ("+strComments+") in 'Add Equipment' page should be entered.";
+		blnFlag= Page("pgeEquipment").Element("txtComments").Type(strComments); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Comments ("+strComments+") in 'Add Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		// ########################################################################################################
+		// Step 19 - Click on 'Save' button and verify 'Equipment' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Equipment' page is displayed.";
+		strExpResult = "'Equipment' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "Equipment");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Equipment' page should be verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 20 - 	Verify that if the added Equipment Number is searched in Equipment grid.
+		//########################################################################################################
+		strStepDesc = "Verify that if the added Equipment Number is searched in Equipment grid.";
+		strExpResult = "Added Equipment Number '"+strEquipmentNumber+"' should be displayed in the 'Equipment' grid.";
+		blnFlag=verifySearch("pgeEquipment","txtEquipmentNumber","lnkEquipmentNumber", strEquipmentNumber);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Equipment '"+strEquipmentNumber+"' is searched successfully in the Equipment grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 - Click on the added Equipment Number and verify 'Edit Equipment' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the added Equipment Number and verify 'Edit Equipment' page is displayed.";
+		strExpResult = "The added Equipment Number '"+strEquipmentNumber+"' link should be clicked and 'Edit Equipment' page should be displayed.";
+		blnFlag=clickAndVerify("pgeEquipment", "lnkEquipmentNumber","Edit Equipment");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'The added Equipment Number '"+strEquipmentNumber+"' link is clicked and 'Edit Equipment' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Enter new Description in 'Edit Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter new Description in 'Edit Equipment' page.";
+		strExpResult = "The new Description ("+strEditedDesciption+") in 'Edit Equipment' page should be entered.";
+		blnFlag= Page("pgeEquipment").Element("txtDescription").Type(strEditedDesciption); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The new Equipment Description ("+strEditedDesciption+") in 'Edit Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Enter Reason in 'Edit Equipment' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Reason in 'Edit Equipment' page.";
+		strExpResult = "The Reason ("+strReason+") in 'Edit Equipment' page should be entered.";
+		blnFlag= Page("pgeEquipment").Element("txtReason").Type(strReason); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Reason ("+strReason+") in 'Edit Equipment' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 24 - Click on 'Save' button and verify if 'Equipment' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button.";
+		strExpResult = "'Save' button should be clicked and 'Equipment' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave","Equipment");					
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Equipment' page should be displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 25 - 	Search for the added Equipment number in Equipment grid.
+		//########################################################################################################
+		strStepDesc = "Search for the added Equipment number in Equipment grid.";
+		strExpResult = "Added Equipment number '"+strEquipmentNumber+"' should be displayed in the 'Equipment' grid.";
+		blnFlag=verifySearch("pgeEquipment","txtEquipmentNumber","lnkEquipmentNumber", strEquipmentNumber);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Equipment number '"+strEquipmentNumber+"' is searched successfully in the 'Equipment' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 26 - Verify if the edited Equipment Description is displayed in the Equipment grid.
+		// ########################################################################################################
+		strStepDesc = "Verify if the edited Equipment Description is displayed in the Equipment grid.";
+		strExpResult = "The edited Equipment Description ("+strEditedDesciption+") should be displayed in 'Test Results' grid.";
+		blnFlag=verifyExactText("pgeEquipment", "objEquipmentDescription", strEditedDesciption);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Equipment Description ("+strEditedDesciption+")is displayed in 'Test Results' grid.", "Pass");
+		}
+		else 	
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+
+		// ########################################################################################################
+		// Step 27 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

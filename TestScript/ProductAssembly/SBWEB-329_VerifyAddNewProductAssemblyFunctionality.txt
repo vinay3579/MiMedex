@@ -1,0 +1,517 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-329
+		// # Test Case Name: VerifyAddNewProductAssemblyFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Product Assembly' landing
+		// # page and add a Product Assembly on the page then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Product Assembly" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 11-17-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strProductAssembly = Script.dicTestData.get("strProductAssembly");		
+		String strSecondUserName = Script.dicTestData.get("strApproverUserName");
+		String strPatientLabel = Script.dicTestData.get("strPatientLabel");		
+		String strProductLabel = Script.dicTestData.get("strProductLabel");		
+		String strCustomLabel = Script.dicTestData.get("strCustomLabel");		
+		String strProductCarton = Script.dicTestData.get("strProductCarton");		
+		String strBackLabel = Script.dicTestData.get("strBackLabel");		
+		String strPouch = Script.dicTestData.get("strPouch");		
+		String strInstructionsforUse = Script.dicTestData.get("strInstructionsforUse");		
+		String strTURCard = Script.dicTestData.get("strTURCard");		
+		String strStickers = Script.dicTestData.get("strStickers");		
+		String strCMVCard = Script.dicTestData.get("strCMVCard");		
+		String strNotes = Script.dicTestData.get("strNotes");	
+		
+		//Getting data from Db
+		String strAssemblyNameDb = Script.dicTestData.get("AssemblyName");		
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkPackagedDonors");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 4 - Click on 'Product Assembly' link and verify 'Product Assembly' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Product Assembly' link and verify 'Product Assembly' page is displayed.";
+		strExpResult = "'Product Assembly' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkProductAssembly", "Product Assembly");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Product Assembly' link is clicked and 'Product Assembly' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Calculate a Product Assembly that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Product Assembly that does not exist in the application for further use.";
+		strExpResult = "A Product Assembly that does not exist in the application should be calculated and pushed to the Common Sheet under 'strProductAssembly' for further use.";
+		blnFlag=calculateNewItem(strProductAssembly, strAssemblyNameDb, "strProductAssembly"); 
+		if (blnFlag == true)
+		{
+			strAssemblyNameDb = Script.dicCommonValue.get("strProductAssembly");
+			reporter.ReportStep(strStepDesc, strExpResult, "Product Assembly '"+strAssemblyNameDb+"' is pushed to the Common Sheet under 'strProductAssembly'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'New Assembly' button and verify 'Add Assembly' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Assembly' button and verify 'Add Assembly' page is displayed.";
+		strExpResult = "'Add Assembly' page should be displayed.";
+		blnFlag=clickAndVerify("pgeProductAssembly", "btnNewAssembly", "Add Assembly");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Assembly' button is clicked and 'Add Assembly' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Enter the new Product Assembly Line Name in the Assembly Name text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the new Product Assembly Line Name in the Assembly Name text box in 'New Assembly' Page.";
+		strExpResult = "The new Product Assembly Line Name ("+strAssemblyNameDb+") should be entered in the Assembly Name text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtProductAssemblyName").Type(strAssemblyNameDb);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Product Assembly Line Name ("+strAssemblyNameDb+") is entered successfully in the Assembly Name text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Enter the Patient Label in the Patient Label text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the Patient Label in the Patient Label text box in 'New Assembly' Page.";
+		strExpResult = "The Patient Label ("+strPatientLabel+") should be entered in the Patient Label text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtPatientLabel").Type(strPatientLabel);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Patient Label ("+strPatientLabel+") is entered successfully in the Patient Label text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 9 - 	Enter the Product Label in the Product Label text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the Product Label in the Product Label text box in 'New Assembly' Page.";
+		strExpResult = "The Product Label ("+strProductLabel+") should be entered in the Product Label text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtProductLabel").Type(strProductLabel);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Product Label ("+strProductLabel+") is entered successfully in the Product Label text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 10 - 	Enter the Custom Label in the Custom Label text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the Custom Label in the Custom Label text box in 'New Assembly' Page.";
+		strExpResult = "The Custom Label ("+strCustomLabel+") should be entered in the Custom Label text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtCustomLabel").Type(strCustomLabel);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Custom Label ("+strCustomLabel+") is entered successfully in the Custom Label text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 11 - 	Enter the Product Carton in the Product Carton text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the Product Carton in the Product Carton text box in 'New Assembly' Page.";
+		strExpResult = "The Product Carton ("+strProductCarton+") should be entered in the Product Carton text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtProductCarton").Type(strProductCarton);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Product Carton ("+strProductCarton+") is entered successfully in the Product Carton text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 12 - 	Enter the Back Label in the Back Label text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the Back Label in the Back Label text box in 'New Assembly' Page.";
+		strExpResult = "The Back Label ("+strBackLabel+") should be entered in the Back Label text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtBackLabel").Type(strBackLabel);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Back Label ("+strBackLabel+") is entered successfully in the Back Label text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 13 - 	Enter the Pouch in the Pouch text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the Pouch in the Pouch text box in 'New Assembly' Page.";
+		strExpResult = "The Pouch ("+strPouch+") should be entered in the Pouch text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtPouch").Type(strPouch);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Pouch ("+strPouch+") is entered successfully in the Pouch text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 14 - 	Enter the Instructions for Use in the Instructions for Use text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the Instructions for Use in the Instructions for Use text box in 'New Assembly' Page.";
+		strExpResult = "The Instructions for Use ("+strInstructionsforUse+") should be entered in the Instructions for Use text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtInstructionsforUse").Type(strInstructionsforUse);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Instructions for Use ("+strInstructionsforUse+") is entered successfully in the Instructions for Use text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 15 - 	Enter the TUR Card in the TUR Card text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the TUR Card in the TUR Card text box in 'New Assembly' Page.";
+		strExpResult = "The TUR Card ("+strTURCard+") should be entered in the TUR Card text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtTURCard").Type(strTURCard);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The TUR Card ("+strTURCard+") is entered successfully in the TUR Card text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 16 - 	Enter the Stickers in the Stickers text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the Stickers in the Stickers text box in 'New Assembly' Page.";
+		strExpResult = "The Stickers ("+strStickers+") should be entered in the Stickers text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtStickers").Type(strStickers);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Stickers ("+strStickers+") is entered successfully in the Stickers text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 17 - 	Enter the CMV Card in the CMV Card text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the CMV Card in the Stickers text box in 'New Assembly' Page.";
+		strExpResult = "The CMV Card ("+strCMVCard+") should be entered in the CMV Card text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtCMVCard").Type(strCMVCard);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The CMV Card ("+strCMVCard+") is entered successfully in the CMV Card text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 18 - 	Enter the Notes in the Notes text box in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Enter the Notes in the Notes text box in 'New Assembly' Page.";
+		strExpResult = "The Notes ("+strNotes+") should be entered in the Notes text box in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("txtNotes").Type(strNotes);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Notes ("+strNotes+") is entered successfully in the Notes text box.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+		
+		//########################################################################################################
+		//Step 19 - 	Click on 'Save' button in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Save' button in 'New Assembly' Page.";
+		strExpResult = "The 'Save' button should be clicked in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("btnSave").Click(20);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Save' button is clicked in 'New Assembly' Page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 20 - Sign canvas pad with the first UserName in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Sign canvas pad with the first UserName in 'New Assembly' Page.";
+		strExpResult = "The canvas pad should be signed with UserName '"+strUserName+"' in 'New Assembly' Page.";
+		blnFlag = canvasSignature(driver);   
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The canvas pad is signed successfully with UserName '"+strUserName+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 21 - 	Click on 'Save' button in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Save' button in 'New Assembly' Page.";
+		strExpResult = "The 'Save' button should be clicked in 'New Assembly' Page.";
+		blnFlag=Page("pgeProductAssembly").Element("btnSave").Click(20);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Save' button is clicked in 'New Assembly' Page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 23 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strSecondUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strSecondUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 24 - Click on 'Product Assembly' link and verify 'Product Assembly' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Product Assembly' link and verify 'Product Assembly' page is displayed.";
+		strExpResult = "'Product Assembly' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkProductAssembly", "Product Assembly");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Product Assembly' link is clicked and 'Product Assembly' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 25 - 	Search for a Product Assembly in Product Assembly grid.
+		//########################################################################################################
+		strStepDesc = "Search for a Product Assembly in Product Assembly grid.";
+		strExpResult = "Searched result ("+strProductAssembly+") should be displayed in the 'Product Assembly' grid.";
+		blnFlag=verifySearch("pgeProductAssembly","txtAssemblyName","lnkAssemblyName", strAssemblyNameDb);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Product Assembly grid in the Product Assembly Name field with value '"+strAssemblyNameDb+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 26 - Click on the searched Product Assembly and verify 'Edit Assembly' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the searched Product Assembly and verify 'Edit Assembly' page is displayed.";
+		strExpResult = "The searched Product Assembly ("+strProductAssembly+") should be clicked and 'Edit Assembly' page should be displayed.";
+		blnFlag=clickAndVerify("pgeProductAssembly", "lnkAssemblyName", "Edit Assembly");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The searched Product Assembly ("+strProductAssembly+") is clicked and 'Product Assembly' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+			
+		//########################################################################################################
+		//Step 27 - Sign canvas pad with the second UserName in 'New Assembly' Page.
+		//########################################################################################################
+		strStepDesc = "Sign canvas pad with the second UserName in 'New Assembly' Page.";
+		strExpResult = "The canvas pad should be signed with second UserName '"+strSecondUserName+"' in 'New Assembly' Page.";
+		blnFlag = canvasSignature(driver);   
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The canvas pad is signed successfully with second UserName '"+strSecondUserName+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		// ########################################################################################################
+		// Step 28 - Click on 'Save' button and verify 'Unlock' button is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Unlock' button is displayed.";
+		strExpResult = "'Unlock' button should be displayed.";
+		blnFlag=clickAndVerify("pgeProductAssembly", "btnSave", "pgeProductAssembly", "btnUnlock");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked on 'Add Assembly' page and 'Unlock' button is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		// ########################################################################################################
+		// Step 29 - Click on 'Return' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify navigated page.";
+		strExpResult = "Navigated page 'Product Assembly' should be displayed.";
+		blnFlag=clickAndVerify("pgeProductAssembly", "btnReturn", "Product Assembly");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked on 'Add Assembly' page and navigated page 'Product Assembly' is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 30 - 	Verify that the newly added Product Assembly can be accessed in the Product Assembly grid.
+		//########################################################################################################
+		strStepDesc = "Verify that the newly added Product Assembly can be accessed in the Product Assembly grid.";
+		strExpResult = "The newly added Product Assembly should be filtered in the Product Assembly grid.";
+		blnFlag=verifySearch("pgeProductAssembly","txtAssemblyName","lnkAssemblyName", strAssemblyNameDb);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The newly added Product Assembly ("+strAssemblyNameDb+") should be filtered in the Product Assembly grid successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 31 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strSecondUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strSecondUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

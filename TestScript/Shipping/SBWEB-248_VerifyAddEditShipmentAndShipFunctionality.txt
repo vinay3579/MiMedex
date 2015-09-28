@@ -1,0 +1,243 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-248
+		// # Test Case Name: VerifyAddEditShipmentAndShipFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the View Open Order 
+		// # page and click sales order on the page then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Open Sales/Ship Orders" landing page.
+		// # 				 User is on "View Open Order" page.
+		// # 				 User is on "View Open Order Line" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 09-02-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strShipmentQty = Script.dicTestData.get("strShipmentQty");
+				
+		//Test Data to be fetched for the current 'Shipping' script from DB.
+		String strSalesOrder = Script.dicTestData.get("SalesOrderId");
+		String strRemainingQty = Script.dicTestData.get("RemainingQuantity");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Orders link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkShipping");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Shipping' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Shipping' link and verify navigated page.";
+		strExpResult = "'Open Sales/Ship Orders' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkShipping", "Open Sales/Ship Orders");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Open Sales/Ship Orders' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly on Open Sales/Ship Orders page.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'Open Sales/Ship Orders' page.";
+		strExpResult = "Searched result should be displayed in the 'Open Sales/Ship Orders' grid.";
+		blnFlag=verifySearch("pgeSterilization","txtSalesOrder","lnkSalesOrder",strSalesOrder);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in 'Open Sales/Ship Orders' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click on specified sales order link on Open Sales/Ship Orders page. 
+		//########################################################################################################
+		strStepDesc = "Click on specified sales orders link on 'Open Sales/Ship Orders' page.";
+		strExpResult = "Sales Order:'"+strSalesOrder+"' link should be clicked and 'View Open Order' page should be displayed.";
+		blnFlag=clickLink(strSalesOrder, "View Open Order");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sales Order:"+strSalesOrder+"' link clicked and 'View Open Order' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7- Verify that if search functionality working properly on View Open Order page.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'View Open Order' page.";
+		strExpResult = "Searched result should be displayed in the 'View Open Order' grid.";
+		blnFlag=verifySearch("pgeSalesShipOrders","txtRemainingQty","objReminingQty",strRemainingQty);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in 'View Open Order' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Click on specified sales order link on View Open Order page. 
+		//########################################################################################################
+		strStepDesc = "Click on sales ship orders link on 'View Open Order' page.";
+		strExpResult = "Sales Ship Order link should be clicked and 'View Open Order Line' page should be displayed.";
+		blnFlag=clickAndVerify("pgeSalesShipOrders","lnkSalesShipOrder", "View Open Order Line");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sales Ship Order' link clicked and 'View Open Order Line' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Click 'Add Shipment' button on 'View Open Order Line' page. 
+		//########################################################################################################
+		strStepDesc = "Click 'Add Shipment' button on 'View Open Order Line' page.";
+		strExpResult = "'Add Shipment' button should be clicked and 'Add Shipment' page should be displayed.";
+		blnFlag=clickAndVerify("pgeSalesShipOrders","btnAddShipment", "Add Shipment");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Shipment' button clicked and 'Add Shipment' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - Click 'Save and Allocate' button on 'Add Shipment' page. 
+		//########################################################################################################
+		strStepDesc = "Click 'Save and Allocate' button on 'Add Shipment' page.";
+		strExpResult = "'Save and Allocate' button should be clicked and 'View Open Order Line' page should be displayed.";
+		blnFlag=saveAndAllocate(strShipmentQty);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save and Allocate' button clicked and 'View Open Order Line' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - Click 'Shipment' link on 'View Open Order Line' page. 
+		//########################################################################################################
+		strStepDesc = "Click 'Shipment' link on 'View Open Order Line' page.";
+		strExpResult = "Shipment link should be clicked and 'Edit Shipment' page should be displayed.";
+		blnFlag=clickAndVerify("pgeSalesShipOrders","lnkShipmentNumber", "Edit Shipment");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Shipment link clicked and 'Edit Shipment' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - Process Scan and Ship tissue on 'Edit Shipment' page. 
+		//########################################################################################################
+		strStepDesc = "'Process Scan' and 'Ship' tissue on 'Edit Shipment' page.";
+		strExpResult = "Tissue should be processed, shipped and user '"+strUserName+"' should be returned to 'View Open Order' page.";
+		blnFlag=processScanForShipping();
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue processed, shipped successfully and user '"+strUserName+"' returned to 'View Open Order' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

@@ -1,0 +1,340 @@
+	
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-463
+		// # Test Case Name: VerifyAvKareScanRejectionsNegativeFunctionalityInRemoteAccessPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'AvKare Scan Rejections' landing
+		// # page under 'Remote Access', verify all the error messages and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 07-09-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Remote Access' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Remote Access' link given on left navigation area.";
+		strExpResult = "'Remote Access' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkRemoteAccess", "pgeAssembly_Lines", "lnkAvKareScanRejections");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Remote Access' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on AvKare Scan Rejections link and verify 'AvKare Scan Rejections' page.
+		// ########################################################################################################
+		strStepDesc = "Click on AvKare Scan Rejections link and verify 'AvKare Scan Rejections' page.";
+		strExpResult = "'AvKare Scan Rejections' landing page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines","lnkAvKareScanRejections", "AvKare Scan Rejections");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'AvKare Scan Rejections' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 5 - Enter some invalid/junk characters in the 'Purchase Order' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Purchase Order' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Purchase Order' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeAssembly_Lines", "Purchase Order", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Purchase Order' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear 'Purchase Order' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Purchase Order' search box and verify page refresh.";
+		strExpResult = "'Purchase Order' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeAssembly_Lines", "Purchase Order");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Purchase Order' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 7 - Enter some invalid/junk characters in the 'Serial 1' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Serial 1' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Serial 1' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeAssembly_Lines", "Serial 1", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Serial 1' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Clear 'Serial 1' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Serial 1' search box and verify page refresh.";
+		strExpResult = "'Serial 1' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeAssembly_Lines", "Serial 1");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Serial 1' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter some invalid/junk characters in the 'Serial 2' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Serial 2' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Serial 2' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeAssembly_Lines", "Serial 2", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Serial 2' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Clear 'Serial 2' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Serial 2' search box and verify page refresh.";
+		strExpResult = "'Serial 2' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeAssembly_Lines", "Serial 2");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Serial 2' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter some invalid/junk characters in the 'Serial 3' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Serial 3' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Serial 3' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeAssembly_Lines", "Serial 3", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Serial 3' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Clear 'Serial 3' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Serial 3' search box and verify page refresh.";
+		strExpResult = "'Serial 3' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeAssembly_Lines", "Serial 3");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Serial 3' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Enter some invalid/junk characters in the 'Serial 4' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Serial 4' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Serial 4' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeAssembly_Lines", "Serial 4", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Serial 4' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Clear 'Serial 4' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Serial 4' search box and verify page refresh.";
+		strExpResult = "'Serial 4' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeAssembly_Lines", "Serial 4");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Serial 4' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Enter some invalid/junk characters in the 'Serial 5' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Serial 5' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Serial 5' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeAssembly_Lines", "Serial 5", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Serial 5' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Clear 'Serial 5' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Serial 5' search box and verify page refresh.";
+		strExpResult = "'Serial 5' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeAssembly_Lines", "Serial 5");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Serial 5' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Enter some invalid/junk characters in the 'Serial 6' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Serial 6' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Serial 6' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeAssembly_Lines", "Serial 6", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Serial 6' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Clear 'Serial 6' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Serial 6' search box and verify page refresh.";
+		strExpResult = "'Serial 6' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeAssembly_Lines", "Serial 6");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Serial 6' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

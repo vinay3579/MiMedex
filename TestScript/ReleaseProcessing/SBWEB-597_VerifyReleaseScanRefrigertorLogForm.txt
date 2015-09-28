@@ -1,0 +1,217 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-597
+		// # Test Case Name: VerifyReleaseScanRefrigertorLogForm
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies Release Scan' Refrigerator Log Form and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// #Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		//# 				User is on "Recovered Tissue" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 03-12-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strRefrigeratorExpText = Script.dicTestData.get("strRefrigeratorExpText");
+		String strDate = Script.dicTestData.get("strDate");
+		
+		
+		//Get Tissue Recovery Id from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_ReleaseScan");
+		
+		// Define variables used in script
+		String strDonorKey="";
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Recovery' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkRecovered_Tissue");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Recovered Tissue link and verify 'Recovered Tissue' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Recovered Tissue link and verify 'Recovered Tissue' page is displayed.";
+		strExpResult = "'Recovered Tissue' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRecovered_Tissue", "pgeRecovered_Tissue", "btnReadScan");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovered Tissue' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - Search recovery id on 'Recovered Tissue' page.
+		//########################################################################################################
+		strStepDesc = "Search recovery id on 'Recovered Tissue' page.";
+		strExpResult = "Searched Recovery Id: '"+strRecoveryId+"' should be displayed in the 'Recovered Tissue' grid.";
+		blnFlag=verifySearch("pgeRecovered_Tissue","txtRecoveryId_RecoveredTissue","lnkRecoveryId", strRecoveryId);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched Recovery Id: '"+strRecoveryId+"' displayed in the 'Recovered Tissue' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - Verify released status on "Recovered Tissue" page. 
+		//########################################################################################################
+		strStepDesc = "Verify 'Released' status on 'Recovered Tissue' page.";
+		strExpResult = "'Released' status should be displayed for searched Recovery Id: '"+strRecoveryId+"'.";
+		blnFlag=verifyTissueStatus("pgeRecovered_Tissue", "objStatus", "Released");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Released' status displayed for searched Recovery Id: '"+strRecoveryId+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Click and verify Refrigerator Log link on Recovered Tissue page. 
+		//########################################################################################################
+		strStepDesc = "Click and verify 'Refrigerator Log' link on 'Recovered Tissue' page.";
+		strExpResult = "'Refrigerator Log' link should be clicked and the PDF content should be verified.";
+		blnFlag=clickRefrigeratorLogLink(strRecoveryId, strRefrigeratorExpText);
+		
+		if (blnFlag == true)
+		{
+			String expText=Script.dicTestData.get("ExpectedText");
+			reporter.ReportStep(strStepDesc, strExpResult, "'Refrigerator Log' link has been clicked and the PDF has been verified for the keywords '"+expText+"'.", "Pass");
+		}
+		else
+		{	
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 8 - 	Close the 'Refrigerator Log' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Refrigerator Log' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "PDF window should be closed.";
+		blnFlag=closePDF("Recovered Tissue");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Refrigerator Log' PDF has been closed successfully and the navigated page has been verified for the title 'Recovered Tissue'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Click on specified Recovery Id link on Recovered Tissue page.
+		// ########################################################################################################
+		strStepDesc = "Click on specified 'Recovery Id' link on 'Recovered Tissue' page.";
+		strExpResult = "'Recovery Id' link should be clicked and navigated page should be verified as 'Recovered Tissue "+strRecoveryId+"'";
+		blnFlag = clickLink(strRecoveryId, "Recovered Tissue "+strRecoveryId);
+
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery Id' link clicked and navigated page verified as 'Recovered Tissue "+strRecoveryId+"' successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Verify Refrigerator Date on Recovered Tissue page.
+		// ########################################################################################################
+		strStepDesc = "Verify Refrigerator Date on Recovered Tissue page.";
+		strExpResult = "Refrigerator Date should be verified for Current Date.";
+		blnFlag = verifyRefrigeratorDate("pgeRecovered_Tissue", "objRefrigerationDate", strDate);
+		String strCurrentDate=Script.dicTestData.get("strCalculatedDate");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Refrigerator Date is verified as Current Date '"+strCurrentDate+"' successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

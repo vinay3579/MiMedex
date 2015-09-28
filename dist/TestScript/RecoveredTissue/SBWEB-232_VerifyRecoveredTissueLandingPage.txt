@@ -1,0 +1,101 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-232
+		// # Test Case Name: VerifyRecoveredTissueLandingPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Recovered Tissue landing
+		// # page and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 07-07-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		blnFlag = LaunchApplicationUrl();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, "Launch application failed.", "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Recovery link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkRecovered_Tissue");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Recovered Tissue link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovered Tissue' link.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRecovered_Tissue", "pgeRecovered_Tissue", "btnReadScan");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"'Recovered Tissue' link clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 5 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+	

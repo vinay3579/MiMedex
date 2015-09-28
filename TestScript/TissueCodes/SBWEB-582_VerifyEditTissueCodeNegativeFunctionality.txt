@@ -1,0 +1,268 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-582
+		// # Test Case Name: VerifyEditTissueCodeNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Edit Tissue Code' landing
+		// # page, verify all the error messages and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Edit Tissue Code" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 07-16-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strInvalidText = Script.dicTestData.get("strInvalidText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");
+		String strExpectedText3 = Script.dicTestData.get("strExpectedText3");
+		String strExpectedText4 = Script.dicTestData.get("strExpectedText4");
+		String strExpectedText5 = Script.dicTestData.get("strExpectedText5");
+		String strExpectedText6 = Script.dicTestData.get("strExpectedText6");
+		String strExpectedText7 = Script.dicTestData.get("strExpectedText7");
+		String strExpectedText8 = Script.dicTestData.get("strExpectedText8");
+		
+		//fetch recently added tissue code from DB
+		String strTissueCode = Script.dicTestData.get("TissueCode");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link on left side navigation area.";
+		strExpResult = "'Resources' section should be expanded.";
+		
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkTissueCodes");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link is expanded successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Tissue Codes' link and verify 'Tissue Codes' landing page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue Codes' link under the 'Resources' option in the left side navigation area.";
+		strExpResult = "'Tissue Codes' landing page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkTissueCodes", "Tissue Codes");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Codes' link is clicked and 'Tissue Codes' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click any one of the link listed under the heading 'Tissue Code' and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click any one of the link listed under the heading 'Tissue Code' and verify navigated page.";
+		strExpResult = "'Edit Tissue Code' page should be displayed successfully.";
+		
+		blnFlag=clickAndVerify("pgeTissueCodes", "lnkTissueCode", "Edit Tissue Code");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "''Edit Tissue Code' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Clear Tissue Code and verify message displayed on clicking 'Save' button.
+		//########################################################################################################
+		strStepDesc = "Clear Tissue Code and verify message displayed on clicking 'Save' button.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeAddEditTissueCode","txtTissueCode","","pgeCommon", "btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter some invalid/junk characters in the 'X' text-box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'X' text-box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText2+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeAddEditTissueCode","txtX",strInvalidText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText2);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText2+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter some invalid/junk characters in the 'Y' text-box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Y' text-box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText3+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeAddEditTissueCode","txtX","","txtY", strInvalidText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText3);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText3+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter some invalid/junk characters in the 'Z' text-box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Z' text-box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText4+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeAddEditTissueCode","txtY","","txtZ", strInvalidText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText4);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText4+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter some invalid/junk characters in the 'Archive Samples' text-box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Archive Samples' text-box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText5+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeAddEditTissueCode","txtZ","","txtArchiveSamples", strInvalidText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText5);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText5+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter some invalid/junk characters in the 'Residual Moisture Samples' text-box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Residual Moisture Samples' text-box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText6+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeAddEditTissueCode","txtArchiveSamples","","txtResidualMoistureSamples", strInvalidText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText6);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText6+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter some invalid/junk characters in the 'Max Value' text-box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Max Value' text-box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText7+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeAddEditTissueCode","txtResidualMoistureSamples","","txtMaxValue", strInvalidText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText7);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText7+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Enter some invalid/junk characters in the 'Min Value' text-box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Min Value' text-box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText8+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeAddEditTissueCode","txtMaxValue","","txtMinValue", strInvalidText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText8);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText8+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	

@@ -1,0 +1,171 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-606
+		// # Test Case Name: VerifyEditAssemblyNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Edit Assembly
+		// # landing page, verify negative functionality on editing an Assembly and then successfully logs out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Kamlesh Yadav
+		// # Created on: 04-13-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strErrMessages = Script.dicTestData.get("strErrMessages");
+		
+		//Getting data from Db
+		String strAssemblyNameDb = Script.dicTestData.get("AssemblyName");	
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Packaging link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkProductAssembly");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Product Assembly' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Product Assembly' link and verify 'Product Assembly' page is displayed.";
+		strExpResult = "'Product Assembly' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkProductAssembly", "Product Assembly");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Product Assembly' link is clicked and 'Product Assembly' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+					
+		//########################################################################################################
+		//Step 5 - 	Search for an approved Product Assembly in Product Assembly grid.
+		//########################################################################################################
+		strStepDesc = "Search for an approved Product Assembly in Product Assembly grid.";
+		strExpResult = "Searched result ("+strAssemblyNameDb+") should be displayed in the 'Product Assembly' grid.";
+		blnFlag=verifySearch("pgeProductAssembly","txtAssemblyName","lnkAssemblyName", strAssemblyNameDb);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Product Assembly grid in the Product Assembly Name field with value '"+strAssemblyNameDb+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Click on the searched Product Assembly and verify 'Edit Assembly' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the searched Product Assembly and verify 'Edit Assembly' page is displayed.";
+		strExpResult = "The searched Product Assembly ("+strAssemblyNameDb+") should be clicked and 'Edit Assembly' page should be displayed.";
+		blnFlag=clickAndVerify("pgeProductAssembly", "lnkAssemblyName", "Edit Assembly");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The searched Product Assembly ("+strAssemblyNameDb+") is clicked and 'Product Assembly' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+			
+		// ########################################################################################################
+		// Step 7 - Click on 'Unlock' button and verify 'Save' button is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Unlock' button and verify 'Save' button is displayed.";
+		strExpResult = "'Save' button should be displayed.";
+		blnFlag=clickUnblockButton();	
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Unlock' button is clicked and 'Save' button is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		// ########################################################################################################
+		// Step 8 - Clear all the fields,click on the Save button and verify error messages displayed.
+		// ########################################################################################################
+		strStepDesc = "Clear all the fields,click on the Save button and verify error messages displayed.";
+		strExpResult = "All fields on 'Edit Assembly' page should be cleared out and error messages:("+strErrMessages+ ") should be successfully displayed on clicking 'Save' button.";
+		blnFlag=clearAllFieldAndVerifyErrorMessage("pgeProductAssembly","btnSave","pgeCommon","objMultipleErrorMessages",strErrMessages,"pgeProductAssembly","txtProductAssemblyName","txtPatientLabel","txtProductLabel","txtCustomLabel","txtProductCarton","txtBackLabel","txtPouch","txtInstructionsforUse","txtTURCard","txtStickers","txtCMVCard");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All the fields on 'Edit Assembly' page are successfully cleared out and Error Messages: ("+strErrMessages+ ") are successfully displayed on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+		// ########################################################################################################
+		// Step 9 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

@@ -1,0 +1,567 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-564
+		// # Test Case Name: VerifyFacilityDetailsNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'Facility Details' negative functionality in 'Resources' page
+		// # and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Facilities" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: 
+		// # Created on: 04-21-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL = Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strRandomInputText = Script.dicTestData.get("strRandomInputText");
+		String strFacilityNameMaxCharError = Script.dicTestData.get("strFacilityNameMaxCharError");
+		String strCityMaxCharError = Script.dicTestData.get("strCityMaxCharError");
+		String strStateMaxCharError = Script.dicTestData.get("strStateMaxCharError");
+		String strZipCodeMaxCharError = Script.dicTestData.get("strZipCodeMaxCharError");
+		String strFacilityNameRequiredError = Script.dicTestData.get("strFacilityNameRequiredError");
+		String strInvalidTelephoneError = Script.dicTestData.get("strInvalidTelephoneError");
+        String strCustomerMustBeSelectedError = Script.dicTestData.get("strCustomerMustBeSelectedError");
+		String strAlreadyReferenceCustomerError = Script.dicTestData.get("strAlreadyReferenceCustomerError");
+		
+        // Test Data to be fetched for the current 'Facilities' script from DB
+		String strCustomerDb = Script.dicTestData.get("CustomerName").toUpperCase();
+		String strFacilityIdDb = Script.dicTestData.get("FacilityId").toUpperCase();
+		String strFacilityNameDb = Script.dicTestData.get("FacilityName");	
+		String strQADLinkDb = Script.dicTestData.get("QADLink").toUpperCase();
+		
+		// Script Variables
+		String strCustomer = "";
+		String strPageTitle = "";
+					
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '" + strURL + "' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link on left side navigation area.";
+		strExpResult = "'Resources' section should be expanded.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkFacilities");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link is expanded successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Facilities' link and verify 'Facility' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Facilities' link under the 'Resources' option in the left side navigation area.";
+		strExpResult = "'Facility' page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines", "lnkFacilities", "Facility");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Facilities' link is clicked and 'Facility' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - Search for the existing Facility Id.
+		//########################################################################################################
+		strStepDesc = "Search for the Facility Id '" + strFacilityIdDb + "'.";
+		strExpResult = "Facility Id '" + strFacilityIdDb + "' should be displayed in the 'Facilities' grid.";
+		blnFlag = verifySearch("pgeFacility","txtSearchFacilityID","lnkFacilityID", strFacilityIdDb);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Facility Id '" + strFacilityIdDb + "' is searched and displayed successfully in the Facilities grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on the searched Facility Id on 'Facility' page.
+		// ########################################################################################################
+		strPageTitle = strFacilityNameDb + " Details";
+		strStepDesc = "Click on the searched Facility Id on 'Facility' page.";
+		strExpResult = "Facility Details page should be displayed.";
+		blnFlag = clickAndVerify("pgeFacility", "lnkFacilityID", strPageTitle);	
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Facility Id is clicked and Facility Details page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter more than 100 characters in 'Facility Name' field, click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 100 characters in 'Facility Name' field, click on 'Save' button and verify error message '" + strFacilityNameMaxCharError + "' is displayed.";
+		strExpResult = "'" + strFacilityNameMaxCharError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeFacility", "txtFacilityName", strRandomInputText, "101", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strFacilityNameMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strFacilityNameMaxCharError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter more than 45 characters in 'City' field, click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 45 characters in 'City' field, click on 'Save' button and verify error message '" + strCityMaxCharError + "' is displayed.";
+		strExpResult = "'" + strCityMaxCharError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeFacility", "txtCity", strRandomInputText, "46", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strCityMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strCityMaxCharError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter more than 20 characters in 'State' field, click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 20 characters in 'State' field, click on 'Save' button and verify error message '" + strStateMaxCharError + "' is displayed.";
+		strExpResult = "'" + strStateMaxCharError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeFacility", "txtState", strRandomInputText, "21", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strStateMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strStateMaxCharError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter more than 20 characters in 'Zip Code' field, click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 20 characters in 'Zip Code' field, click on 'Save' button and verify error message '" + strZipCodeMaxCharError + "' is displayed.";
+		strExpResult = "'" + strZipCodeMaxCharError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeFacility", "txtZipCode", strRandomInputText, "21", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strZipCodeMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strZipCodeMaxCharError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter some invalid/junk characters in 'Telephone' field, click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in 'Telephone' field, click on 'Save' button and verify error message '" + strInvalidTelephoneError + "' is displayed.";
+		strExpResult = "'" + strInvalidTelephoneError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyErrorMessage("pgeFacility", "txtTelephone", strSearchText, "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strInvalidTelephoneError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strInvalidTelephoneError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Clear all input fields, click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Clear all input fields, click on 'Save' button and verify error message '" + strFacilityNameRequiredError + "' is displayed.";
+		strExpResult = "'" + strFacilityNameRequiredError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = clearAllFieldAndVerifyErrorMessage("pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strFacilityNameRequiredError, "pgeFacility", "txtFacilityName", "txtTelephone", "txtCity", "txtState", "txtZipCode");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strFacilityNameRequiredError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 13 - Click on 'Add Customer' Button and verify 'Manage Facility Customer' dialog-box.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Customer' Button and verify 'Manage Facility Customer' dialog-box";
+		strExpResult = "'Manage Facility Customer' dialog-box should display.";
+		blnFlag = clickAndVerify("pgeFacility", "btnAddCustomer", "pgeFacility","lstFacilityCustomer");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Customer' button is clicked and 'Manage Facility Customer' dialog-box is successfully displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+	    //##########################################################################################################
+        //Step 14 - Click on 'Save' button on the 'Manage Facility Customer' pop-up without selecting any customer.
+        //##########################################################################################################
+		strStepDesc = "Click on 'Save' button on the 'Manage Facility Customer' pop-up without selecting any customer.";
+		strExpResult = "'Save' button should be clicked.";
+		blnFlag = Page("pgeFacility").Element("btnSave").Click(20);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is successfully clicked.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//##########################################################################################################
+        //Step 15 - Verify error message is displayed.
+        //##########################################################################################################
+		strStepDesc = "Verify '" + strCustomerMustBeSelectedError + "' error message is displayed.";
+		strExpResult = "'" + strCustomerMustBeSelectedError + "' error message should be displayed.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strCustomerMustBeSelectedError);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error message '" + strCustomerMustBeSelectedError + "' is successfully displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 - Click on 'Add Customer' Button and verify 'Manage Facility Customer' dialog-box.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Customer' Button and verify 'Manage Facility Customer' dialog-box";
+		strExpResult = "'Manage Facility Customer' dialog-box should display.";
+		blnFlag = clickAndVerify("pgeFacility", "btnAddCustomer", "pgeFacility","lstFacilityCustomer");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Customer' button is clicked and 'Manage Facility Customer' dialog-box is successfully displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+        //Step 17 - Select a customer from 'Manage Facility customer' pop-up which is already added to the facility,
+		//			click 'Save' button and verify displayed error message.
+        //########################################################################################################
+		strCustomer = strCustomerDb + "(" + strQADLinkDb + ")";
+		strStepDesc = "Select customer '" + strCustomer + "' from 'Manage Facility customer' pop-up which is already added to the facility, click 'Save' button and verify displayed error message.";
+		strExpResult = "The error message should be successfully displayed on clicking the 'Save' button.";
+		blnFlag = verifyErrorMessageOnSelectWithDBValue("pgeFacility", "lstFacilityCustomer", strCustomer, "pgeFacility", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strAlreadyReferenceCustomerError, "CustomerName", strCustomerDb);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The error message is successfully displayed on clicking the 'Save' button.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Enter some invalid/junk characters in the 'Customer Id' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Customer Id' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Customer Id' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFacility", "Customer Id", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Customer Id' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Clear 'Customer Id' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Customer Id' search box and verify page refresh.";
+		strExpResult = "'Customer Id' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeFacility", "Customer Id");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Customer Id' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Enter some invalid/junk characters in the 'Customer Name' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Customer Name' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Customer Name' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFacility", "Customer Name", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Customer Name' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 - Clear 'Customer Name' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Customer Name' search box and verify page refresh.";
+		strExpResult = "'Customer Name' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeFacility", "Customer Name");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Customer Name' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Enter some invalid/junk characters in the 'Telephone' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Telephone' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Telephone' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFacility", "Telephone", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Telephone' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Clear 'Telephone' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Telephone' search box and verify page refresh.";
+		strExpResult = "'Telephone' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeFacility", "Telephone");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Telephone' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 24 - Enter some invalid/junk characters in the 'Fax' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Fax' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Fax' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFacility", "Fax", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Fax' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 25 - Clear 'Fax' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Fax' search box and verify page refresh.";
+		strExpResult = "'Fax' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeFacility", "Fax");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Fax' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 26 - Enter some invalid/junk characters in the 'Consignment' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Consignment' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Consignment' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFacility", "Consignment", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Consignment' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 27 - Clear 'Consignment' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Consignment' search box and verify page refresh.";
+		strExpResult = "'Consignment' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeFacility", "Consignment");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Consignment' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 28 - Enter some invalid/junk characters in the 'Approved' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Approved' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Approved' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFacility", "Approved", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Approved' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 29 - Clear 'Approved' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Approved' search box and verify page refresh.";
+		strExpResult = "'Approved' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeFacility", "Approved");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Approved' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 30 - Enter some invalid/junk characters in the 'Parent Customer' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Parent Customer' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Parent Customer' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFacility", "Parent Customer", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Parent Customer' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 31 - Clear 'Parent Customer' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Parent Customer' search box and verify page refresh.";
+		strExpResult = "'Parent Customer' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeFacility", "Parent Customer");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Parent Customer' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		// ########################################################################################################
+		// Step 32 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

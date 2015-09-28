@@ -1,0 +1,159 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-355
+		// # Test Case Name: VerifyDeleteEquipmentFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Equipment' landing
+		// # page, delete an existing Equipment and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Equipment" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 12-11-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");				
+		
+		// Get Test Name from the Common datasheet.
+		String strEquipment = Script.dicCommonValue.get("strEquipment");
+						
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 3 - Click on Resources link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkEquipment");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Equipment' link and verify 'Equipment' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Equipment' link and verify 'Equipment' page is displayed.";
+		strExpResult = "'Equipment' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkEquipment", "Equipment");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Equipment' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 5 - 	Verify that the Equipment is searched in Equipment grid.
+		//########################################################################################################
+		strStepDesc = "Verify that the Equipment ("+strEquipment+") is searched in Equipment grid.";
+		strExpResult = "The Equipment '"+strEquipment+"' should be displayed in the 'Equipment' grid.";
+		blnFlag=verifySearch("pgeEquipment","txtEquipmentNumber","lnkEquipmentNumber", strEquipment);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Equipment '"+strEquipment+"' is searched successfully in the Equipment grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on the delete link against the searched Equipment and verify 'Equipment' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the delete link against the searched Equipment and verify 'Equipment' page is displayed.";
+		strExpResult = "The delete link against the Equipment '"+strEquipment+"' should be clicked and 'Equipment' page should be displayed.";
+		blnFlag=clickAndVerify("pgeEquipment", "lnkDeleteEquipment","Equipment");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The delete link against the Equipment '"+strEquipment+"' is clicked and 'Equipment' page is  displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Verify that the deleted Equipment is not displayed in Equipment grid.
+		//########################################################################################################
+		strStepDesc = "Verify that the deleted Equipment '"+strEquipment+"' is not displayed in Equipment grid.";
+		strExpResult = "The Equipment '"+strEquipment+"' should not be displayed in the 'Equipment' grid.";
+		blnFlag=verifySearchRecordNotFound("pgeEquipment","txtEquipmentNumber","lnkEquipmentNumber",strEquipment);     
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Equipment '"+strEquipment+"' is not present in the Equipment grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}	
+
+		// ########################################################################################################
+		// Step 8 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

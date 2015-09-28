@@ -1,0 +1,267 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-351
+		// # Test Case Name: VerifyProcessScanAndShipFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the MRB Disposal 
+		// # landing page and verify Process Scan and Ship functionality and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "MRB Disposal" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 12-16-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strLocation = Script.dicTestData.get("strLocation");
+		String strConfMsg = Script.dicTestData.get("strConfMsg");
+		
+		//Variables used in script
+		String strQuantity="";
+		String strTissue="";
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Process' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkMRBDisposal");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Location Inventory' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Location Inventory' link and verify 'Inventory' page is displayed.";
+		strExpResult = "'Inventory' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkLocationInventory", "Inventory");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Location Inventory' link is clicked and 'Inventory' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 		
+		// ########################################################################################################
+		// Step 5 - Get initial quantity of 'MRB Quarantine' tissues on 'Inventory' page.
+		// ########################################################################################################
+		strStepDesc = "Get initial quantity of 'MRB Quarantine' tissues on 'Inventory' page.";
+		strExpResult = "Quantity of 'MRB Quarantine' tissues should be fetched.";
+		blnFlag=fetchQuantity("pgeInventoryLocation","objQuantity","Inventory");
+		if (blnFlag == true) 
+		{
+			strQuantity=Script.dicCommonValue.get("strQuantity");
+			reporter.ReportStep(strStepDesc, strExpResult, "Quantity '"+strQuantity+"' of 'MRB Quarantine' tissues is fetched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'MRB Quarantine' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'MRB Quarantine' link and verify 'MRB Quarantine - Inventory' page is displayed.";
+		strExpResult = "'MRB Quarantine - Inventory' page should be displayed.";
+		blnFlag=clickLink(strLocation,"MRB Quarantine - Inventory");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'MRB Quarantine' link is clicked and 'MRB Quarantine - Inventory' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		 
+		// ########################################################################################################
+		// Step 7 - Get tissue as pre-requisite for 'MRB Disposal' functionality.
+		// ########################################################################################################
+		strStepDesc = "Get tissue as pre-requisite for 'MRB Disposal' functionality.";
+		strExpResult = "Tissue should be fetched.";
+		blnFlag=getTissueCode(strLocation);
+		if (blnFlag == true) 
+		{
+			strTissue=Script.dicCommonValue.get("strTissueCode");
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue '"+strTissue+"' is fetched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'MRB Disposal' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'MRB Disposal' link and verify 'MRB Disposal' page is displayed.";
+		strExpResult = "'MRB Disposal' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkMRBDisposal", "MRB Disposal");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'MRB Disposal' link is clicked and 'MRB Disposal' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 		
+		// ########################################################################################################
+		// Step 9 - Enter tissue in 'Scanned Barcodes' area on 'MRB Disposal' page.
+		// ########################################################################################################
+		strStepDesc = "Enter tissue in 'Scanned Barcodes' area on 'MRB Disposal' page.";
+		strExpResult = "Tissue should be entered.";
+		blnFlag=Page("pgeMRBDisposal").Element("txtScanList").Type(strTissue);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue '"+strTissue+"' is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click on 'Process Scan' button on 'MRB Disposal' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process Scan' button on 'MRB Disposal' page.";
+		strExpResult = "'Process Scan' button should be clicked and tissue '"+strTissue+"' should be displayed at the bottom.";
+		blnFlag=clickAndVerify("pgeMRBDisposal","btnProcessScans", "pgeMRBDisposal","objTissueCode" );
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process Scan' button is clicked and tissue '"+strTissue+"' is displayed at the bottom.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Click on 'Ship' button on 'MRB Disposal' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Ship' button on 'MRB Disposal' page.";
+		strExpResult = "'Ship' button should be clicked and confirmation message should be displayed on 'MRB Disposal' page.";
+		blnFlag=clickAndVerify("pgeMRBDisposal","btnShip", "pgeMRBDisposal","objConfMsg" );
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Ship' button is clicked and confirmation message is displayed on 'MRB Disposal' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Validate confirmation message on 'MRB Disposal' page.
+		// ########################################################################################################
+		strStepDesc = "Validate confirmation message on 'MRB Disposal' page.";
+		strExpResult = "Confirmation message '"+strConfMsg+"' should be displayed.";
+		blnFlag=verifyExactText("pgeMRBDisposal", "objConfMsg", strConfMsg);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Confirmation message '"+strConfMsg+"' is displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+		// ########################################################################################################
+		// Step 13 - Click on 'Location Inventory' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Location Inventory' link and verify 'Inventory' page is displayed.";
+		strExpResult = "'Inventory' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkLocationInventory", "Inventory");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Location Inventory' link is clicked and 'Inventory' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - After 'MRB Disposal' process validate updated quantity of 'MRB Quarantine' tissues on 'Inventory' page.
+		// ########################################################################################################
+		strStepDesc = "After 'MRB Disposal' process validate updated quantity of 'MRB Quarantine' tissues on 'Inventory' page.";
+		strExpResult = "Quantity of 'MRB Quarantine' tissues should be decreased by one from the initial quantity.";
+		blnFlag=validateQuantity("pgeInventoryLocation","objQuantity","Inventory",strQuantity);
+		if (blnFlag == true) 
+		{
+			String strFinalQuantity=Script.dicCommonValue.get("strFinalQuantity");	
+			reporter.ReportStep(strStepDesc, strExpResult, "Initial quantity '"+strQuantity+"' and Final quantity '"+strFinalQuantity+"' of 'MRB Quarantine' tissues are validated as expected.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

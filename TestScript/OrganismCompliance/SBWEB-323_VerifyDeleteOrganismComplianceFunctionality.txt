@@ -1,0 +1,157 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-323
+		// # Test Case Name: VerifyDeleteOrganismComplianceFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Organism Compliance' landing
+		// # page, delete an existing Organism and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Lab Test Compliance" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 12-2-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");				
+		
+		// Get Test Name from the Common datasheet.
+		String strOrganism = Script.dicCommonValue.get("strOrganism");
+						
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkOrganismCompliance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Organism Compliance' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Organism Compliance' link and verify 'Organism Compliance' page is displayed.";
+		strExpResult = "'Organism Compliance' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkOrganismCompliance", "Organism Compliance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Organism Compliance' link is clicked and 'Organism Compliance' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 5 - 	Verify that the test Organism is searched in Organism Compliance grid.
+		//########################################################################################################
+		strStepDesc = "Verify that the test Organism ("+strOrganism+") is searched in Organism Compliance grid.";
+		strExpResult = "The test Organism '"+strOrganism+"' should be displayed in the 'Organism Compliance' grid.";
+		blnFlag=verifySearch("pgeOrganismCompliance","txtOrganismName","lnkOrganismName", strOrganism);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Organism '"+strOrganism+"' is searched successfully in the Organism Compliance grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on the delete link against the searched Organism and verify 'Organism Compliance' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the delete link against the searched Organism and verify 'Organism Compliance' page is displayed.";
+		strExpResult = "The delete link against the Organism '"+strOrganism+"' should be clicked and 'Organism Compliance' page should be displayed.";
+		blnFlag=clickAndVerify("pgeOrganismCompliance", "lnkDelete","Organism Compliance");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The delete link against the Organism '"+strOrganism+"' is clicked and 'Organism Compliance' page is  displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Verify that the deleted Organism is not displayed in Organism Compliance grid.
+		//########################################################################################################
+		strStepDesc = "Verify that the deleted Organism '"+strOrganism+"' is not displayed in Organism Compliance grid.";
+		strExpResult = "The Organism '"+strOrganism+"' should not be displayed in the 'Organism Compliance' grid.";
+		blnFlag=verifySearchRecordNotFound("pgeOrganismCompliance","txtOrganismName","lnkOrganismName",strOrganism);     
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Organism '"+strOrganism+"' is not present in the Organism Compliance grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}	
+
+		// ########################################################################################################
+		// Step 8 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

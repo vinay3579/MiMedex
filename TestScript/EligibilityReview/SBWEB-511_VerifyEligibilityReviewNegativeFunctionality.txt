@@ -1,0 +1,377 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-511
+		// # Test Case Name: VerifyEligibilityReviewNegativeFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Eligibility Review' landing
+		// # page, verify all the error messages and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Eligibility Review" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 07-08-2015
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer:
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strInputText = Script.dicTestData.get("strInvalidText");
+		String strMaxLength = Script.dicTestData.get("strMaxLength");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");
+		
+		// Get Tissue Recovery Id from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_EligibilityReview");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkEligibility_Review");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Eligibility Review' link and verify 'Release Processing' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Eligibility Review' link and verify 'Release Processing' page.";
+		strExpResult = "'Release Processing' page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkEligibility_Review", "pgeRelease_Processing", "txtRecoveryId");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Release Processing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Click on any 'Recovery ID' link on 'Release Processing' page.
+		//########################################################################################################
+		strStepDesc = "Click on any 'Recovery ID' link on 'Release Processing' page.";
+		strExpResult = "Recovery Id link should be clicked and 'Recovered Tissue' for selected recovery ID  should appear.";
+		
+		blnFlag=clickAndVerify("pgeRelease_Processing", "lnkRecoveryId", "Recovered Tissue");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Recovery Id link is clicked and 'Recovered Tissue' for selected recovery ID appears successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 6 - 	Click on 'Verify Eligibility' link on Recovered Tissue page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Verify Eligibility' link on 'Recovered Tissue' page.";
+		strExpResult = "'Verify Eligibility' link should be clicked and 'Forms Package' page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "lnkVerifyEligibility", "pgeForms_Package", "btnEligible");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Verify Eligibility' link clicked and 'Forms Package' page displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - Click on 'Eligible' button on Forms Package page. 
+		//########################################################################################################
+		strStepDesc = "Verify 'Eligible' button functionality on 'Forms Package' page.";
+		strExpResult = "'Eligible' button should be clicked and 'Tissue is Eligible for Transplant' window should be opened.";
+		
+		blnFlag=clickAndVerify("pgeForms_Package", "btnEligible", "pgeForms_Package", "objTissueEligibleWindow");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Eligible' button clicked and 'Tissue is Eligible for Transplant' window opened.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//#####################################################################################################################
+		//Step 8 - Enter more than 500 characters in 'Comments' field and verify message displayed on clicking 'Commit' button.
+		//#####################################################################################################################
+		strStepDesc = "Enter more than 500 characters in 'Comments' field and verify message displayed on clicking 'Commit' button.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		
+		blnFlag=verifyMaxCharacErrorMessage("pgeForms_Package","txtUserComments",strInputText,strMaxLength,"pgeForms_Package","btnCommit","pgeCommon","objUIMessageErrorSummary",strExpectedText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Click on 'Return' button and verify 'Release Processing' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify 'Release Processing' page.";
+		strExpResult = "'Release Processing' page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "btnReturn", "pgeRelease_Processing", "txtRecoveryId");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Release Processing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - 	Click on any 'Recovery ID' link on 'Release Processing' page.
+		//########################################################################################################
+		strStepDesc = "Click on any 'Recovery ID' link on 'Release Processing' page.";
+		strExpResult = "Recovery Id link should be clicked and 'Recovered Tissue' for selected recovery ID  should appear.";
+		
+		blnFlag=clickAndVerify("pgeRelease_Processing", "lnkRecoveryId", "Recovered Tissue");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Recovery Id link is clicked and 'Recovered Tissue' for selected recovery ID appears successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 11 - 	Click on 'Verify Eligibility' link on Recovered Tissue page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Verify Eligibility' link on 'Recovered Tissue' page.";
+		strExpResult = "'Verify Eligibility' link should be clicked and 'Forms Package' page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "lnkVerifyEligibility", "pgeForms_Package", "btnEligible");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Verify Eligibility' link clicked and 'Forms Package' page displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - 	Click on 'Not Eligible' button on Forms Package page. 
+		//########################################################################################################
+		strStepDesc = "Verify 'Not Eligible' button functionality on 'Forms Package' page.";
+		strExpResult = "'Not Eligible' button should be clicked on 'Forms Package' page.";
+
+		blnFlag=clickAndVerify("pgeForms_Package", "btnNotEligible", "pgeForms_Package", "objTissueNotEligibleWindow");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Not Eligible' button clicked successfully on 'Forms Package' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//#####################################################################################################################
+		//Step 13 - Enter more than 500 characters in 'Comments' field and verify message displayed on clicking 'Commit' button.
+		//#####################################################################################################################
+		strStepDesc = "Enter more than 500 characters in 'Comments' field and verify message displayed on clicking 'Commit' button.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		
+		blnFlag=verifyMaxCharacErrorMessage("pgeForms_Package","txtUserComments",strInputText,strMaxLength,"pgeForms_Package","btnCommit","pgeCommon","objUIMessageErrorSummary",strExpectedText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+		// ########################################################################################################
+		// Step 14 - Click on 'Return' button and verify 'Release Processing' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify 'Release Processing' page.";
+		strExpResult = "'Release Processing' page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "btnReturn", "pgeRelease_Processing", "txtRecoveryId");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Release Processing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 15 - 	Click on any 'Recovery ID' link on 'Release Processing' page.
+		//########################################################################################################
+		strStepDesc = "Click on any 'Recovery ID' link on 'Release Processing' page.";
+		strExpResult = "Recovery Id link should be clicked and 'Recovered Tissue' for selected recovery ID  should appear.";
+		
+		blnFlag=clickAndVerify("pgeRelease_Processing", "lnkRecoveryId", "Recovered Tissue");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Recovery Id link is clicked and 'Recovered Tissue' for selected recovery ID appears successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 16 - 	Click on 'Verify Eligibility' link on Recovered Tissue page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Verify Eligibility' link on 'Recovered Tissue' page.";
+		strExpResult = "'Verify Eligibility' link should be clicked and 'Forms Package' page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "lnkVerifyEligibility", "pgeForms_Package", "btnEligible");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Verify Eligibility' link clicked and 'Forms Package' page displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 17 - Click on 'Incomplete' button on Forms Package page. 
+		//########################################################################################################
+		strStepDesc = "Verify 'Incomplete' button functionality on 'Forms Package' page.";
+		strExpResult = "'Incomplete' button should be clicked on 'Forms Package' page.";
+		
+		blnFlag=clickAndVerify("pgeForms_Package", "btnIncomplete", "pgeForms_Package", "objTissueIncompleteWindow");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Incomplete' button clicked successfully on 'Forms Package' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//#############################################################################################################################################
+		//Step 18 - Click on 'Commit' button on 'Tissue Eligibility Review is Complete' pop-up without entering any Notes and verify message displayed.
+		//#############################################################################################################################################
+		strStepDesc = "Click on 'Commit' button on 'Tissue Eligibility Review is Complete' pop-up without entering any Notes and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText1+"' should be displayed.";
+
+		blnFlag=verifyErrorMessage("pgeForms_Package","btnCommit", "pgeCommon","objUIMessageErrorSummary",strExpectedText1);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText1+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 19 - Click on 'Incomplete' button on Forms Package page. 
+		//########################################################################################################
+		strStepDesc = "Verify 'Incomplete' button functionality on 'Forms Package' page.";
+		strExpResult = "'Incomplete' button should be clicked on 'Forms Package' page.";
+		
+		blnFlag=clickAndVerify("pgeForms_Package", "btnIncomplete", "pgeForms_Package", "objTissueIncompleteWindow");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Incomplete' button clicked successfully on 'Forms Package' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//#####################################################################################################################
+		//Step 20 - Enter more than 500 characters in 'Notes' field and verify message displayed on clicking 'Commit' button.
+		//#####################################################################################################################
+		strStepDesc = "Enter more than 500 characters in 'Notes' field and verify message displayed on clicking 'Commit' button.";
+		strExpResult = "Error Message '"+strExpectedText2+"' should be displayed.";
+		
+		blnFlag=verifyMaxCharacErrorMessage("pgeForms_Package","txtUserComments",strInputText,strMaxLength,"pgeForms_Package","btnCommit","pgeCommon","objUIMessageErrorSummary",strExpectedText2);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText2+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

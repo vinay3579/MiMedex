@@ -1,0 +1,175 @@
+        // ########################################################################################################
+		// # Test Case ID: SBWEB-468
+		// # Test Case Name: VerifyAddNewHireTaskNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifes negative functionality of 'Add New Hire Task' in 'Human Resources' page.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// #                 MiMedx SBWeb URL is accessible to the user			
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Kamlesh Kumar
+		// # Created on: 07-07-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strPageTitle = Script.dicTestData.get("strPageTitle");
+		String strInputText = Script.dicTestData.get("strInputText");
+		String strErrorMessage = Script.dicTestData.get("strErrorMessage");
+		String strErrorMessage1 = Script.dicTestData.get("strErrorMessage1");
+		String strExceptionMessage = Script.dicTestData.get("strExceptionMessage");
+		String strMaxCharTemplate = Script.dicTestData.get("strMaxCharTemplate");
+		String strMaxLength = Script.dicTestData.get("strMaxLength");
+		
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+					
+		// ########################################################################################################
+		// Step 3 - Click on 'Human Resources' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Human Resources' link given on left navigation area.";
+		strExpResult = "'Human Resources' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkHumanResources", "pgeAssembly_Lines", "lnkNewHireTasks");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Human Resources' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 4 - Click on 'New Hire Tasks' link and verify 'Human Resources' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Hire Tasks' link and verify 'Human Resources' page is displayed.";
+		strExpResult = "'Human Resources' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkNewHireTasks",strPageTitle);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Human Resources' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on 'New Task' button and verify 'Human Resources' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Task' link and verify 'Human Resources' page is displayed.";
+		strExpResult = "'Human Resources' page should be displayed.";
+		blnFlag=clickAndVerify("pgeHumanResources", "btnNewTask",strPageTitle);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Human Resources' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click Save button without entering anything.
+		// ########################################################################################################
+		strStepDesc = "Click Save button without entering anything.";
+		strExpResult = "Error message '"+strErrorMessage+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strErrorMessage);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strErrorMessage+"' is displayed successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 -Enter Max character in 'Description' field and click on Save button.
+		// ########################################################################################################
+		strStepDesc = "Enter Max character in 'Description' field and click on Save button.";
+		strExpResult = "Exception '"+strExceptionMessage+"' should be displayed.";
+		blnFlag=verifyMaxCharacErrorMessage("pgeHumanResources","txtDescription",strMaxCharTemplate,strMaxLength,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary", strExceptionMessage); 
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionMessage+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Add description, enter some invalid/junk characters in email and click on the Save button.
+		// ########################################################################################################
+		strStepDesc = "Add description, enter some invalid/junk characters in email and click on the Save button.";
+		strExpResult = "Exception '"+strErrorMessage1+"' should be displayed.";;
+	
+		blnFlag = verifyErrorMessage("pgeHumanResources","txtDescription",strInputText,"txtEmail", strMaxCharTemplate ,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strErrorMessage1);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Exception '"+strErrorMessage1+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		// ########################################################################################################
+		// Step 9 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

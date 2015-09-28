@@ -1,0 +1,307 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-375
+		// # Test Case Name: VerifyAddEditNewPhysiciansFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Physicians' landing
+		// # page, add a New Physician and edit the same and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Physicians" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 11-20-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+
+		// More test data 
+		String strFirstName = Script.dicTestData.get("strFirstName");
+		String strLastName = Script.dicTestData.get("strLastName");
+		String strTitle = Script.dicTestData.get("strTitle");
+		String strQualifier = Script.dicTestData.get("strQualifier");
+		String strEditManager = Script.dicTestData.get("strEditManager");
+		
+		//Test Data to be fetched for the current 'Physicians' script from DB.
+		String strDBQualifier = Script.dicTestData.get("Qualifier");
+		
+		// Define variables used in script
+		String strNewQualifier="";
+					
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Recovery' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkHospitals");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Physicians link and verify 'Physicians' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Physicians link and verify 'Physicians' page is displayed.";
+		strExpResult = "'Physicians' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkPhysicians", "pgePhysicians", "btnNewPhysician");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Physicians' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 		
+		//########################################################################################################
+		//Step 5 - Calculate a Qualifier that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Qualifier that does not exist in the application for further use.";
+		strExpResult = "A Qualifier that does not exist in the application should be calculated for further use.";
+		blnFlag=calculateNewItem(strQualifier, strDBQualifier); 
+		if (blnFlag == true)
+		{
+			strNewQualifier = Script.dicCommonValue.get("strCalculatedItem");
+			reporter.ReportStep(strStepDesc, strExpResult, "Qualifier '"+strNewQualifier+"' is calculated for further use.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'New Physician' button and verify 'New Physician' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Physician' button and verify 'New Physician' page is displayed.";
+		strExpResult = "'New Physician' page should be displayed.";
+		blnFlag=clickAndVerify("pgePhysicians", "btnNewPhysician", "New Physician");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Physician' button is clicked and 'New Physician' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter details in 'New Physician' page.
+		// ########################################################################################################
+		strStepDesc = "Enter details in 'New Physician' page.";
+		strExpResult = "All required details in the 'New Physician' should be filled.";
+		blnFlag=fillNewPhysicianForm(strFirstName, strLastName, strTitle, strNewQualifier);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All required details in the 'New Physician' page is filled successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'Save' button and verify 'Edit Physician' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Edit Physician' page is displayed.";
+		strExpResult = "'Edit Physician' page should be displayed.";
+		blnFlag=clickAndVerify("pgePhysicians", "btnSave", "Edit Physician");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Edit Physician' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 9 - Click 'Return' button on 'Edit Physician' page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Return' button on 'Edit Physician' page.";
+		strExpResult = "'Return' button should be clicked and 'Physicians' page should be displayed.";
+		blnFlag=clickAndVerify("pgePhysicians", "btnReturn", "Physicians");		
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button clicked and 'Physicians' page displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - Search for the added entry in the 'Physicians' grid.
+		//########################################################################################################
+		strStepDesc = "Search for the added entry in the 'Physicians' grid.";
+		strExpResult = "Added entry should be displayed in the 'Physicians' grid.";
+		blnFlag=verifySearch("pgePhysicians","txtQualifierSearch","objQualifier", strNewQualifier);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Added entry is displayed successfully in the search result in the 'Physicians' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+		//########################################################################################################
+		//Step 11 - Click on the physician id link and verify if 'Edit Physician' page is displayed successfully.
+		//########################################################################################################
+		strStepDesc = "Click on the physician id link and verify if 'Edit Physician' page is displayed successfully.";
+		strExpResult = "Physician id link should be clicked and 'Edit Physician' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgePhysicians","lnkPhysicianId", "Edit Physician");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Physician link is clicked and 'Edit Physician' page is displayed sucecssfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 12 - Edit manager name on 'Edit Physician' page.
+		// ########################################################################################################
+		strStepDesc = "Edit manager name on 'Edit Physician' page.";
+		strExpResult = "Manager name ("+strEditManager+") should be entered in 'Manager' field on 'Edit Physician' page successfully.";
+		blnFlag=Page("pgePhysicians").Element("txtManager").Type(strEditManager);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Manager name ("+strEditManager+") entered in 'Manager' field on 'Edit Physician' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Click on 'Save' button and verify 'Edit Physician' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Edit Physician' page is displayed.";
+		strExpResult = "'Edit Physician' page should be displayed.";
+		blnFlag=clickAndVerify("pgePhysicians", "btnSave", "Edit Physician");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Edit Physician' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Click 'Return' button on 'Edit Physician' page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Return' button on 'Edit Physician' page.";
+		strExpResult = "'Return' button should be clicked and 'Physicians' page should be displayed.";
+		blnFlag=clickAndVerify("pgePhysicians", "btnReturn", "Physicians");		
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button clicked and 'Physicians' page displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 15 - Search for the edited entry in the 'Physicians' grid.
+		//########################################################################################################
+		strStepDesc = "Search for the edited entry in the 'Physicians' grid.";
+		strExpResult = "Edited entry should be displayed in the 'Physicians' grid.";
+		blnFlag=verifySearch("pgePhysicians","txtQualifierSearch","objQualifier", strNewQualifier);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Edited entry is displayed successfully in the search result in the 'Physicians' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Verify if the manager edit is successful on 'Physician' page.
+		// ########################################################################################################
+		strStepDesc = "Verify if the manager edit is successful on 'Physician' page.";
+		strExpResult = "The edited manager name("+strEditManager+") should be displayed in the 'Physicians' grid.";
+		blnFlag=verifyExactText("pgePhysicians", "objManager", strEditManager);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited manager name ("+strEditManager+") is displayed successfully in the search result in the 'Physicians' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 17 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

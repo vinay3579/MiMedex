@@ -1,0 +1,245 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-261
+		// # Test Case Name: VerifyCommitButtonFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Donors to Package' landing
+		// # page ,enter entries in Packaging Collection page and click on 'Commit' button.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Donors to Package" page.
+		// #				 User is on "Packaging Collection" page.			
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 08-21-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strDonorKey = Script.dicCommonValue.get("strDonorKey_PackagingCollection");
+			
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+					
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkDonorstoPackage");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.";
+		strExpResult = "'Donors to Package' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonorstoPackage", "Donors to Package");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donors to Package' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly in Donors to Package grid.
+		//########################################################################################################
+		strStepDesc = "Verify that search functionality works properly in Donors to Package grid.";
+		strExpResult = "Searched result should be displayed in the 'Donors to Package' grid.";
+		blnFlag=verifySearch("pgeDonorstoPackage","txtDonorSearch","lnkDonorID", strDonorKey);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality is working properly in Donors to Package grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click on the 'Quantity' header to sort the quantity in ascending order(To make sure Available Qty = 1 is always on top).
+		//########################################################################################################
+		strStepDesc = "Click on the 'Quantity' header to sort the quantity in ascending order(To make sure Available Qty = 1 is always on top).";
+		strExpResult = "The 'Quantity' should be sorted in ascending order.";
+		blnFlag=clickAndVerify("pgeDonorstoPackage", "lnkQuantity", "pgeDonorstoPackage", "objQuantity");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Quantity' is sorted in ascending order.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Click on searched Donor key and verify if navigated to 'Packaging Collection' page.
+		//########################################################################################################
+		strStepDesc = "Click on searched Donor key and verify if navigated to 'Packaging Collection' page.";
+		strExpResult = "The searched Donor Key '"+strDonorKey+"' should be clicked and the 'Packaging Collection' page should be verified.";
+		blnFlag=clickAndVerify("pgeDonorstoPackage", "lnkDonorID", "Packaging Collection");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The searched Donor Key '"+strDonorKey+"' is clicked and the 'Packaging Collection' page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Fill the required entries in  "Packaging Collection" page.
+		//########################################################################################################
+		strStepDesc = "Fill the required entries in  'Packaging Collection' page.";
+		strExpResult = "The Packaging Collection page should be filled with required entries.";
+		blnFlag= fillPackagingPage(strUserName);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Packaging Collection page is filled with required entries.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Click on 'Commit' button and verify if the entries are saved by validating if 'Commit' button does not exist anymore.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify if the entries are saved by validating if 'Commit' button does not exist anymore.";
+		strExpResult = "The 'Commit' button should be clicked and the entries saved. 'Commit' button should not exist anymore.";
+		blnFlag=clickAndVerifyNotExist("pgeCommon", "btnCommit", "pgeCommon", "btnCommit");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Commit' button is clicked and the entries are saved. 'Commit' button does not exist anymore.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.";
+		strExpResult = "'Donors to Package' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonorstoPackage", "Donors to Package");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donors to Package' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - 	Filter for the retrieved donor Key.
+		//########################################################################################################
+		strStepDesc = "Filter for the retrieved donor Key.";
+		strExpResult = "The donor key '"+strDonorKey+"' should be filtered.";
+		blnFlag=verifySearch("pgeDonorstoPackage","txtDonorSearch","lnkDonorID", strDonorKey);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The donor key '"+strDonorKey+"' is filtered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - 	Click on the 'Quantity' header to sort the quantity in ascending order(To make sure Available Qty = 1 is always on top).
+		//########################################################################################################
+		strStepDesc = "Click on the 'Quantity' header to sort the quantity in ascending order(To make sure Available Qty = 1 is always on top).";
+		strExpResult = "The 'Quantity' should be sorted in ascending order.";
+		blnFlag=clickAndVerify("pgeDonorstoPackage", "lnkQuantity", "pgeDonorstoPackage", "objQuantity");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Quantity' is sorted in ascending order.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 13 - 	Verify if status has been changed to 'Needs Pre-packaging Inspection Signature'.
+		//########################################################################################################
+		strStepDesc = "Verify if status has been changed to 'Needs Pre-packaging Inspection Signature'.";
+		strExpResult = "The donor key '"+strDonorKey+"' should have the status 'Needs Pre-packaging Inspection Signature'.";
+		blnFlag=verifyExactText("pgeDonorstoPackage","objStatusResult", "Needs Pre-packaging Inspection Signature");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The donor key '"+strDonorKey+"' now has status 'Needs Pre-packaging Inspection Signature'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

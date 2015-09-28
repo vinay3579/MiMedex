@@ -1,0 +1,190 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-501
+		// # Test Case Name: VerifyPrintReportMaintenanceRunFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Autoclave Log landing 
+		// #  page,pick the Load number from previous script, verifies 'Print Report' and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Autoclave Log" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 02-27-2015
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+							
+		//Test Data to be fetched for the current 'Autoclave Log' script from Common Sheet.
+		String strLoadNumber = Script.dicCommonValue.get("strLoadNumber_Maintenance");			
+				
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Manufacturing link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Manufacturing' link given on left navigation area.";
+		strExpResult = "'Manufacturing' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkManufacturing", "pgeAssembly_Lines", "lnkAutoclaveLog");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Manufacturing' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Autoclave Log' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Autoclave Log' link and verify navigated page.";
+		strExpResult = "'Autoclave Log' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkAutoclaveLog", "Autoclave Log");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - Click on the 'Show All Autoclave Log' checkbox and wait for page refresh.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Show All Autoclave Log' checkbox and wait for page refresh.";
+		strExpResult = "The 'Show All Autoclave Log' checkbox should be clicked successfully.";
+		blnFlag=clickWaitforPageRefresh("pgeAutoclaveLog", "chkShowAllLogs");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Show All Autoclave Log' checkbox is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Search for an eligible autoclave Load number on Autoclave Log page.
+		//########################################################################################################
+		strStepDesc = "Search for an eligible autoclave Load number on Autoclave Log page.";
+		strExpResult = "Searched load number '"+strLoadNumber+"' should be displayed in the 'Autoclave Log' grid.";
+		blnFlag=verifySearch("pgeAutoclaveLog","txtLoadNumber","lnkLoadNumber",strLoadNumber);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumber+"' is displayed in the 'Autoclave Log' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}				
+		
+		//########################################################################################################
+		//Step 7 - 	Click on the 'Load number' that is searched on the grid and verify navigated page.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Load number' that is searched on the grid and verify navigated page.";
+		strExpResult = "Searched load number '"+strLoadNumber+"' should be clicked and 'Edit Autoclave Log' page should be verified.";
+		blnFlag=clickAndVerify("pgeAutoclaveLog","lnkLoadNumber","Edit Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumber+"' is clicked and 'Edit Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 	
+		
+		//########################################################################################################
+		//Step 7 - Click on 'Print Report' on 'Edit Autoclave Log' page and verify if the Load Number is present in the Report PDF.
+		//########################################################################################################
+		strStepDesc = "Click on 'Print Report' on 'Edit Autoclave Log' page and verify if the Load Number is present in the Report PDF.";
+		strExpResult = "'Print Report' on 'Edit Autoclave Log' page should be clicked and the Load Number("+strLoadNumber+") should be present in the Report PDF.";
+		blnFlag= clickPrintReportAutoclave(strLoadNumber) ;
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Report on 'Edit Autoclave Log' page is clicked and the Load Number("+strLoadNumber+") is verified in the Report PDF successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 
+		
+		//########################################################################################################
+		//Step 8 - 	 Close the 'Print Report' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Print Report' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Print Report' PDF should be closed successfully.";
+		blnFlag=closePDF("Edit Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Report' PDF has been closed successfully and the navigated page has been verified for the title 'Edit Autoclave Log'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+		
+		// ########################################################################################################
+		// Step 9 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

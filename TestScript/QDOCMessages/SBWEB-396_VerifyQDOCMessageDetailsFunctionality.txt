@@ -1,0 +1,142 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-396
+		// # Test Case Name: VerifyQDOCMessageDetailsFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the QDOC Messages 
+		// # landing page and verify message details functionality then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "View QDOC Messages" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 12-05-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		
+		//Test Data to be fetched for the current 'QDOC Messages' script from DB.
+		String strMessageId = Script.dicTestData.get("MessageId");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on IT Support link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'IT Support' link given on left navigation area.";
+		strExpResult = "'IT Support' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkITSupport", "pgeAssembly_Lines", "lnkQDOCMessages");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'IT Support' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'QDOC Messages' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'QDOC Messages' link and verify navigated page.";
+		strExpResult = "'View QDOC Messages' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkQDOCMessages", "View QDOC Messages");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'View QDOC Messages' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly on 'View QDOC Messages' page.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'View QDOC Messages' page.";
+		strExpResult = "Searched message id ("+strMessageId+") should be displayed in the 'View QDOC Messages' grid.";
+		blnFlag=verifySearch("pgeQDOC_Message","txtMessageId","lnkMessageId",strMessageId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in 'View QDOC Messages' grid and verified for the value ("+strMessageId+").", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click on searched message id link on 'View QDOC Messages' page.";
+		//########################################################################################################
+		strStepDesc = "Click on searched message id link on 'View QDOC Messages' page.";
+		strExpResult = "Message Id ("+strMessageId+") link should be clicked and 'QDOC Message Details' page should be displayed.";
+		blnFlag=clickLink(strMessageId, "QDOC Message Details");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message Id ("+strMessageId+") link is clicked and 'QDOC Message Details' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+					
+		// ########################################################################################################
+		// Step 7 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

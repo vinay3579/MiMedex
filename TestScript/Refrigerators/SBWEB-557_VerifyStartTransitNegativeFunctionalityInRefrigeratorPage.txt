@@ -1,0 +1,180 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-557
+		// # Test Case Name: VerifyStartTransitNegativeFunctionalityInRefrigeratorPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies 'Refrigerator Start Transit' Screen negative functionality in 
+		// # 'Recovery' page.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: 
+		// # Created on: 03-30-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL = Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strRecoveryId = Script.dicTestData.get("strRecoveryId");
+		
+		//Script Variables
+		String strExpText = "";
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc,strExpResult, "SBWEB application url: '" + strURL + "' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Recovery link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkRefrigerators");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Refrigerators' link and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Refrigerators' link and verify 'Refrigerators' landing page is displayed.";
+		strExpResult = "'Refrigerators' landing page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines","lnkRefrigerators", "Refrigerators");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, " 'Refrigerators' link is clicked and 'Refrigerators' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on 'Start Transit' Button and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Start Transit' button and verify 'Start Transit Recovered Tissue' landing page is displayed.";
+		strExpResult = "'Start Transit Recovered Tissue' landing page should be displayed.";
+		blnFlag = clickAndVerify("pgeRefrigerators","btnStartTransit", "Start Transit Recovered Tissue");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, " 'Start Transit' button is clicked and 'Start Transit Recovered Tissue' landing page is displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Enter Recovery ID.
+		// ########################################################################################################
+		strStepDesc = "Enter Recovery ID.";
+		strExpResult = "Recovery ID should be successfully entered.";
+		blnFlag = Page("pgeRefrigerators").Element("txtscanList").Type(strRecoveryId);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Recovery ID '" + strRecoveryId + "' entered successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Click 'Process Scans' button.
+		// ########################################################################################################
+		strStepDesc = "Click 'Process Scans' button.";
+		strExpResult = "'Process Scans' button should be clicked successfully.";
+		blnFlag = clickAndVerify("pgeRefrigerators","btnProcessScans", "Start Transit Recovered Tissue");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Process Scans' button is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Verify message 'Recovery Tissue [Recovery ID] is not in the database.' is displayed.
+		// ########################################################################################################
+		strExpText = "Recovery Tissue " + strRecoveryId + " is not in the database.";
+		strStepDesc = "Verify message '" + strExpText + "' is displayed.";
+		strExpResult = "Message '" + strExpText + "' should be displayed successfully.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strExpText);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Message '" + strExpText + "' is displayed successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

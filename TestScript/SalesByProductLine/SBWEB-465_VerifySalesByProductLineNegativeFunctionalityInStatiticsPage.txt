@@ -1,0 +1,128 @@
+        // ########################################################################################################
+		// # Test Case ID: SBWEB-465
+		// # Test Case Name: VerifySalesByProductLineNegativeFunctionalityInStatiticsPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Sales by Product Line' landing
+		// # page under 'Statistics' tab, verify negative functionality and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Sales by Product Line" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 07-14-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strInvalidText = Script.dicTestData.get("strInvalidText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");		
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Statistics' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Statistics' link on left side navigation area.";
+		strExpResult = "'Statistics' section should be expanded.";
+		
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkStatistics", "pgeAssembly_Lines", "lnkSalesbyProductLine");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Statistics' link is expanded successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Sales by Product Line' link and verify 'Sales by Product Line' landing page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Sales by Product Line' link and verify 'Sales by Product Line' landing page is displayed.";
+		strExpResult = "'Sales by Product Line' landing page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkSalesbyProductLine", "Sales by Product Line");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sales by Product Line' landing page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// #################################################################################################################
+		// Step 5 - Enter some invalid/junk characters in the search box and verify error message on clicking Filter button.
+		// #################################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the search box and verify error message on clicking Filter button.";
+		strExpResult = "Error Message '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifyErrorMessage("pgeSalesByProductLine","txtProductCode",strInvalidText,"btnFilter","pgeCommon","objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

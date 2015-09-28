@@ -1,0 +1,342 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-305
+		// # Test Case Name: VerifyNewUtilizationFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Tissue Utilization' landing
+		// # page, verifies if the New Utilization functionality works fine and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Tissue Utilization" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 09-29-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strPatientId = Script.dicTestData.get("strPatientId");		
+		String strPatientLastName = Script.dicTestData.get("strPatientLastName");		
+		String strPatientFirstName = Script.dicTestData.get("strPatientFirstName");	
+		String strGender = Script.dicTestData.get("strGender");	
+		String strBirthDate = Script.dicTestData.get("strBirthDate");		
+		String strSurgeonLastName = Script.dicTestData.get("strSurgeonLastName");		
+		String strSurgeonFirstName = Script.dicTestData.get("strSurgeonFirstName");		
+		
+		// Retrieve data from the database for TissueId
+		String strTissue = Script.dicTestData.get("tissueid");		
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Tissue Utilization link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue Utilization' link given on left navigation area.";
+		strExpResult = "'Tissue Utilization' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkTissueUtilization", "pgeAssembly_Lines", "lnkTissueUtilizationSubLink");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Utilization' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Tissue Utilization' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue Utilization' link and verify 'Tissue Utilization' page is displayed.";
+		strExpResult = "'Tissue Utilization' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkTissueUtilizationSubLink", "Tissue Utilization");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Utilization' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - 	Click on 'New Utilization' button and verify that 'New Utilization' page should be displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'New Utilization' button and verify that 'New Utilization' page should be displayed.";
+		strExpResult = "'New Utilization' button on 'Tissue Utilization' page should be clicked and 'New Utilization' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeTissueUtilization","btnNewUtilization", "New Utilization");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Utilization' button on 'Tissue Utilization' page is clicked and 'New Utilization' page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Enter a valid tissue in Tissue field.
+		//########################################################################################################
+		strStepDesc = "Enter a valid tissue in Tissue field.";
+		strExpResult = "'" + strTissue + "' should be entered in Tissue text box.";
+		blnFlag=Page("pgeTissueUtilization").Element("txtTissueId").Type(strTissue);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strTissue + "' is entered in Tissue text box successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+				
+		//########################################################################################################
+		//Step 7 - 	Click on the first Facility Name on the Facility grid list.
+		//########################################################################################################
+		strStepDesc = "Click on the first Facility Name on the Facility grid list.";
+		strExpResult = "The first Facility Name on the Facility grid list should be clicked.";
+		blnFlag=Page("pgeTissueUtilization").Element("lnkFacilityName").Click(20);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The first Facility Name on the Facility grid list has been clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Verify if a Facility Name has been populated in the Facility text box.
+		//########################################################################################################
+		strStepDesc = "Verify if a Facility Name has been populated in the Facility text box.";
+		strExpResult = "Facility Name should be populated in the Facility text box.";
+		blnFlag=verifyFieldnotEmpty("pgeTissueUtilization","lstFacility");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Facility list box displays Facilty Name successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Verify if the Distributor name is not empty.
+		//########################################################################################################
+		strStepDesc = "Verify if the Distributor name is not empty.";
+		strExpResult = "The Distributor name field should not be empty.";
+		blnFlag=verifyFieldnotEmpty("pgeTissueUtilization","objDistributor");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Distributor name field is not empty.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - 	Enter the Patient ID in the Patient Id field.
+		//########################################################################################################
+		strStepDesc = "Enter the Patient ID in the Patient Id field.";
+		strExpResult = "'" + strPatientId + "' should be entered in the Patient Id field.";
+		blnFlag=Page("pgeTissueUtilization").Element("txtPatientId").Type(strPatientId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strPatientId + "' has been entered in the Patient Id field successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - 	Enter the Patient Last Name in the Patient Last Name field.
+		//########################################################################################################
+		strStepDesc = "Enter the Patient Last Name in the Patient Last Name field.";
+		strExpResult = "'" + strPatientLastName + "' should be entered in the Patient Last Name text box.";
+		blnFlag=Page("pgeTissueUtilization").Element("txtPatientLastName").Type(strPatientLastName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strPatientLastName + "' has been entered in the Patient Last Name text box successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - 	Enter the Patient First Name in the Patient First Name field.
+		//########################################################################################################
+		strStepDesc = "Enter the Patient First Name in the Patient First Name field.";
+		strExpResult = "'" + strPatientFirstName + "' should be entered in the Patient First Name text box.";
+		blnFlag=Page("pgeTissueUtilization").Element("txtPatientFirstName").Type(strPatientFirstName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strPatientFirstName + "' has been entered in the Patient First Name text box successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 13 - 	Click on the gender radio button.
+		//########################################################################################################
+		strStepDesc = "Click on the gender radio button.";
+		strExpResult = "'" + strGender+ "' gender radio button should be clicked.";
+		blnFlag=genderSelection(strGender);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+ strGender + "' gender radio button is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 14 - 	Enter a valid birthdate in the Birth Date calendar field.
+		//########################################################################################################
+		strStepDesc = "Enter a valid birthdate in the Birth Date calendar field.";
+		strExpResult = "'" + strBirthDate + "' shoul be entered in the Birth Date field.";
+		blnFlag=Page("pgeTissueUtilization").Element("txtBirthDate").Type(strBirthDate);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strBirthDate + "' has been entered in the Birth Date field successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 15 - 	Enter the Surgeon Last Name in the Surgeon Last Name field.
+		//########################################################################################################
+		strStepDesc = "Enter the Surgeon Last Name in the Surgeon Last Name field.";
+		strExpResult = "'" + strSurgeonLastName + "' should be entered in the Surgeon Last Name text box.";
+		blnFlag=Page("pgeTissueUtilization").Element("txtSurgeonLastName").Type(strSurgeonLastName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strSurgeonLastName + "' has been entered in the Surgeon Last Name text box successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 - 	Enter the Surgeon First Name in the Surgeon First Name field.
+		//########################################################################################################
+		strStepDesc = "Enter the Surgeon First Name in the Surgeon First Name field.";
+		strExpResult = "'" + strSurgeonFirstName + "' should be entered in the Patient First Name text box.";
+		blnFlag=Page("pgeTissueUtilization").Element("txtSurgeonFirstName").Type(strSurgeonFirstName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strSurgeonFirstName + "' has been entered in the Patient First Name text box successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 17 - 	Enter the current date in the Procedure Date calendar field.
+		//########################################################################################################
+		strStepDesc = "Enter the current date in the Procedure Date calendar field.";
+		strExpResult = "The current date should be entered in the Procedure Date field.";
+		blnFlag=enterCurrentDate("pgeTissueUtilization", "txtProcedureDate","MMM dd, YYYY");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The current date has been entered in the Procedure Date field successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 18 - 	Click on 'Save' button and verify that 'Tissue Utilization' page should be displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify that 'Tissue Utilization' page should be displayed.";
+		strExpResult = "'Save' button on 'New Utilization' page should be clicked and 'Tissue Utilization' page should be verified.";
+		blnFlag=clickAndVerify("pgeCommon","btnSave", "Tissue Utilization");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button on 'New Utilization' page is clicked and 'Tissue Utilization' page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Push the Tissue Id to the 'Common' Sheet so that it can be used for further 'Tissue Utilization' scripts.
+		// ########################################################################################################
+		strStepDesc = "Push this Tissue Id to the 'Common' Sheet so that it can be used for further 'Tissue Utilization' scripts.";
+		strExpResult = "Tissue Id '"+strTissue+"' should be pushed to the Common datasheet under 'strTissueId_TissueUtilization' for further use.";
+		blnFlag = sendValuetoCommonSheet("strTissueId_TissueUtilization",strTissue);
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue Id '"+strTissue+"' is pushed successfully to the Common datasheet under 'strTissueId_TissueUtilization' for further use.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue Id '"+strTissue+"' was not written successfully to the Common datasheet under 'strTissueId_TissueUtilization'.", "Fail");
+		}	
+		
+		// ########################################################################################################
+		// Step 20 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

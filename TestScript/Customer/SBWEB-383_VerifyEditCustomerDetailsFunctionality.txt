@@ -1,0 +1,250 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-383
+		// # Test Case Name: VerifyEditCustomerDetailsFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Customers landing
+		// # page and verifies edit customer details functionality then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Customers" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 11-13-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strFirstName = Script.dicTestData.get("strFirstName");
+		String strLastName = Script.dicTestData.get("strLastName");
+		
+		//Test Data to be fetched for the current 'Costomers' script from DB.
+		String strCustomerId = Script.dicTestData.get("CustomerId");
+		String strCustomerName = Script.dicTestData.get("CustomerName");
+		
+		//Creating dynamic page title to validate user is navigating on correct page.
+		String strPageTitle=strCustomerName+" Details";
+		String strRepName=strFirstName+" "+strLastName;
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkCustomer");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Customers link and verify 'Customers' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Customers link and verify 'Customers' page is displayed.";
+		strExpResult = "'Customers' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkCustomer", "pgeCustomers", "txtCustomerId");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Customers' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+				
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly in Customers entry table.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly in Customers entry table.";
+		strExpResult = "Searched result should be displayed in Customers grid.";
+		blnFlag=verifySearch("pgeCustomers","txtCustomerId","objCustomer", strCustomerId);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Customers grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click on searched 'Customer Id' link on 'Customers' page.
+		//########################################################################################################
+		strStepDesc = "Click on searched 'Customer Id' link on 'Customers' page.";
+		strExpResult = "User should be navigated to '"+strPageTitle+"' page.";
+		blnFlag=clickAndVerify("pgeCustomers","lnkCustomerId", strPageTitle);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strPageTitle+"' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 7 - Enter first name on 'Customer Details' page.
+		//########################################################################################################
+		strStepDesc = "Enter first name on 'Customer Details' page.";
+		strExpResult = "First name should be entered on '"+strPageTitle+"' page.";
+		blnFlag=Page("pgeCustomers").Element("txtFirstName").Type(strFirstName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strFirstName+"' entered in first name field on '"+strPageTitle+"' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 8 - Enter last name on 'Customer Details' page.
+		//########################################################################################################
+		strStepDesc = "Enter last name on 'Customer Details' page.";
+		strExpResult = "Last name should be entered on '"+strPageTitle+"' page.";
+		blnFlag=Page("pgeCustomers").Element("txtLastName").Type(strLastName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strLastName+"' entered in last name field on '"+strPageTitle+"' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Click 'Save' button on 'Customer Details' page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Save' button on 'Customer Details' page.";
+		strExpResult = "'Save' button should be clicked and entries should be saved on the same page.";
+		blnFlag=clickAndVerify("pgeCustomers","btnSave", strPageTitle);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button clicked and entries saved on the same page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click 'Return' button on 'Customer Details' page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Return' button on 'Customer Details' page.";
+		strExpResult = "'Return' button should be clicked and 'Customers' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCustomers", "btnReturn", "pgeCustomers", "txtCustomerId");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button clicked and 'Customers' page displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - Search recently edited entry in Customers entry table on 'Customers' page.
+		//########################################################################################################
+		strStepDesc = "Search recently edited entry in Customers entry table on 'Customers' page.";
+		strExpResult = "Searched result should be displayed in Customers grid.";
+		blnFlag=verifySearch("pgeCustomers","txtCustomerId","objCustomer", strCustomerId);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched result displayed in Customers grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - Verify edited entry in Customers entry table.
+		//########################################################################################################
+		strStepDesc = "Verify edited entry in Customers entry table.";
+		strExpResult = "Entries should be displayed in grid with the edited details.";
+		blnFlag=verifyEntriesAfterUpdate("pgeCustomers","objRepName", strRepName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Entries displayed in grid with the edited details.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		// ########################################################################################################
+		// Step 11 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

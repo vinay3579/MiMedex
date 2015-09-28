@@ -1,0 +1,906 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-498
+		// # Test Case Name: VerifyPrintLabelsPrintReportFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Autoclave Log landing 
+		// #  page,pick the Load number from previous script, verifies 'Print Labels' and 'Print Report' and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Autoclave Log" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 02-26-2015
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+							
+		//Test Data to be fetched for the current 'Autoclave Log' script from Common Sheet.
+		String strLoadNumber = Script.dicCommonValue.get("strLoadNumber");	
+		
+		//Variables used in script
+		String strEquipmentNumber= "";
+		String strInstrumentName = "";
+		String strPartNumber = "";
+		String strLoadTech = "";
+		String strUnloadTech = "";
+		
+		//Test Data to be fetched for the current 'Autoclave Log' script from DB.
+		String strLoadNumberDB = Script.dicTestData.get("LoadNumber");		
+		String strStatusDB = Script.dicTestData.get("Status");			
+		String strEquipmentNumberDB = Script.dicTestData.get("EquipmentNumber");		
+		String strCalibrationDueDateDB = Script.dicTestData.get("CalibrationDueDate");			
+		String strLoadTechnicianDB = Script.dicTestData.get("LoadTechnician");			
+		String strLoadDateDB = Script.dicTestData.get("LoadDate");		
+		String strMaintenanceRunDB = Script.dicTestData.get("MaintenanceRun");		
+		String strUnloadtechnicianDB = Script.dicTestData.get("UnloadTechnician");		
+		String strUnloadDateDB = Script.dicTestData.get("UnloadDate");		
+		String strSuccessfulRunDB = Script.dicTestData.get("SuccessfulRun");		
+				
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Manufacturing link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Manufacturing' link given on left navigation area.";
+		strExpResult = "'Manufacturing' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkManufacturing", "pgeAssembly_Lines", "lnkAutoclaveLog");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Manufacturing' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Autoclave Log' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Autoclave Log' link and verify navigated page.";
+		strExpResult = "'Autoclave Log' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkAutoclaveLog", "Autoclave Log");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - Click on the 'Show All Autoclave Log' checkbox and wait for page refresh.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Show All Autoclave Log' checkbox and wait for page refresh.";
+		strExpResult = "The 'Show All Autoclave Log' checkbox should be clicked successfully.";
+		blnFlag=clickWaitforPageRefresh("pgeAutoclaveLog", "chkShowAllLogs");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Show All Autoclave Log' checkbox is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Search for an eligible autoclave Load number on Autoclave Log page.
+		//########################################################################################################
+		strStepDesc = "Search for an eligible autoclave Load number on Autoclave Log page.";
+		strExpResult = "Searched load number '"+strLoadNumber+"' should be displayed in the 'Autoclave Log' grid.";
+		blnFlag=verifySearch("pgeAutoclaveLog","txtLoadNumber","lnkLoadNumber",strLoadNumber);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumber+"' is displayed in the 'Autoclave Log' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 7 - 	Click on the 'Load number' that is searched on the grid and verify navigated page.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Load number' that is searched on the grid and verify navigated page.";
+		strExpResult = "Searched load number '"+strLoadNumber+"' should be clicked and 'Edit Autoclave Log' page should be verified.";
+		blnFlag=clickAndVerify("pgeAutoclaveLog","lnkLoadNumber","Edit Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumber+"' is clicked and 'Edit Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+
+		//########################################################################################################
+		//Step 8 - 	Retrieve the Equipment Number from the 'Edit Autoclave Log' page for verification in the label and report.
+		//########################################################################################################
+		strStepDesc = "Retrieve the Equipment Number from the 'Edit Autoclave Log' page for verification in the label and report.";
+		strExpResult = "The Equipment Number from the 'Edit Autoclave Log' page should be retrieved for verification in the label and report.";
+		blnFlag=retrieveValueFromField("pgeEditAutoclaveLog","objAutoclaveEQ");
+		if (blnFlag == true)
+		{
+			strEquipmentNumber = Script.dicTestData.get("strValueRetrievedfromField");
+			reporter.ReportStep(strStepDesc, strExpResult, "The Equipment Number ("+strEquipmentNumber+") from the 'Edit Autoclave Log' page is retrieved for verification in the label and report successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		} 
+		
+		//########################################################################################################
+		//Step 9 - 	Retrieve the Instrument Name from the 'Edit Autoclave Log' page for verification in the label and report.
+		//########################################################################################################
+		strStepDesc = "Retrieve the Instrument Name from the 'Edit Autoclave Log' page for verification in the label and report.";
+		strExpResult = "The Instrument Name from the 'Edit Autoclave Log' page should be retrieved for verification in the label and report.";
+		blnFlag=retrieveValueFromField("pgeEditAutoclaveLog","objInstruments");
+		if (blnFlag == true)
+		{
+			strInstrumentName = Script.dicTestData.get("strValueRetrievedfromField");
+			reporter.ReportStep(strStepDesc, strExpResult, "The Instrument Name ("+strInstrumentName+") from the 'Edit Autoclave Log' page is retrieved for verification in the label and report successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		} 
+		
+		//########################################################################################################
+		//Step 10 - 	Retrieve the Part Number from the 'Edit Autoclave Log' page for verification in the label and report.
+		//########################################################################################################
+		strStepDesc = "Retrieve the Part Number from the 'Edit Autoclave Log' page for verification in the label and report.";
+		strExpResult = "The Part Number from the 'Edit Autoclave Log' page should be retrieved for verification in the label and report.";
+		blnFlag=retrieveValueFromField("pgeEditAutoclaveLog","objPartNumber");
+		if (blnFlag == true)
+		{
+			strPartNumber = Script.dicTestData.get("strValueRetrievedfromField");
+			reporter.ReportStep(strStepDesc, strExpResult, "The Part Number ("+strPartNumber+") from the 'Edit Autoclave Log' page is retrieved for verification in the label and report successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		} 
+		
+		//########################################################################################################
+		//Step 11 - 	Retrieve the Load Technician from the 'Edit Autoclave Log' page for verification in the label and report.
+		//########################################################################################################
+		strStepDesc = "Retrieve the Load Technician from the 'Edit Autoclave Log' page for verification in the label and report.";
+		strExpResult = "The  Load Technician from the 'Edit Autoclave Log' page should be retrieved for verification in the label and report.";
+		blnFlag=retrieveValueFromField("pgeEditAutoclaveLog","objLoadTechnician");
+		if (blnFlag == true)
+		{
+			strLoadTech = Script.dicTestData.get("strValueRetrievedfromField");
+			reporter.ReportStep(strStepDesc, strExpResult, "The Load Technician ("+strLoadTech+") from the 'Edit Autoclave Log' page is retrieved for verification in the label and report successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		} 
+
+		//########################################################################################################
+		//Step 12 - 	Retrieve the Unload Technician from the 'Edit Autoclave Log' page for verification in the label and report.
+		//########################################################################################################
+		strStepDesc = "Retrieve the Unload Technician from the 'Edit Autoclave Log' page for verification in the label and report.";
+		strExpResult = "The Unload Technician from the 'Edit Autoclave Log' page should be retrieved for verification in the label and report.";
+		blnFlag=retrieveValueFromField("pgeEditAutoclaveLog","objUnloadTechnician");
+		if (blnFlag == true)
+		{
+			strUnloadTech = Script.dicTestData.get("strValueRetrievedfromField");
+			reporter.ReportStep(strStepDesc, strExpResult, "The Unload Technician ("+strUnloadTech+") from the 'Edit Autoclave Log' page is retrieved for verification in the label and report successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+
+		//########################################################################################################
+		//Step 13 - Click on 'Print Labels' on 'Edit Autoclave Log' page and verify if the fetched details are present in the Label PDF.
+		//########################################################################################################
+		strStepDesc = "Click on 'Print Labels' on 'Edit Autoclave Log' page and verify if the fetched details are present in the Label PDF.";
+		strExpResult = "'Print Labels' on 'Edit Autoclave Log' page should be clicked and the details("+strLoadNumber+","+strEquipmentNumber+","+ strInstrumentName+","+strPartNumber+") should be present in the Label PDF.";
+		blnFlag= clickPrintLabels(strLoadNumber, strEquipmentNumber, strInstrumentName, strPartNumber) ;
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Labels' on 'Edit Autoclave Log' page is clicked and the details("+strLoadNumber+","+strEquipmentNumber+","+ strInstrumentName+","+strPartNumber+") are verified in the Label PDF successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 
+		
+		//########################################################################################################
+		//Step 14 - 	 Close the 'Print Labels' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Print Labels' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Print Labels' PDF should be closed successfully.";
+		blnFlag=closePDF("Edit Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Labels' PDF has been closed successfully and the navigated page has been verified for the title 'Edit Autoclave Log'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 15 - Click on 'Print Report' on 'Edit Autoclave Log' page and verify if the fetched details are present in the Report PDF.
+		//########################################################################################################
+		strStepDesc = "Click on 'Print Report' on 'Edit Autoclave Log' page and verify if the fetched details are present in the Report PDF.";
+		strExpResult = "'Print Report' on 'Edit Autoclave Log' page should be clicked and the details("+strExpectedText+","+strLoadNumber+","+strEquipmentNumber+","+ strInstrumentName+","+strPartNumber+","+strLoadTech+","+strUnloadTech+") should be present in the Report PDF.";
+		blnFlag= clickPrintReportAutoclave(strExpectedText, strLoadNumber, strEquipmentNumber, strInstrumentName, strPartNumber, strLoadTech, strUnloadTech) ;
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Report on 'Edit Autoclave Log' page is clicked and the details("+strExpectedText+","+strLoadNumber+","+strEquipmentNumber+","+ strInstrumentName+","+strPartNumber+","+strLoadTech+","+strUnloadTech+") are verified in the Report PDF successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 
+		
+		//########################################################################################################
+		//Step 16 - 	 Close the 'Print Report' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Print Report' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Print Report' PDF should be closed successfully.";
+		blnFlag=closePDF("Edit Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Report' PDF has been closed successfully and the navigated page has been verified for the title 'Edit Autoclave Log'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 17 - 	Click on the 'Return' button and verify navigated page.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Return' button and verify navigated page.";
+		strExpResult = "'Return' button should be clicked and 'Autoclave Log' page should be verified.";
+		blnFlag=clickAndVerify("pgeCommon","btnReturn","Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked and 'Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 18 - 	Click on the 'Print Report' button on 'Autoclave Log' page and verify 'Completed Autoclave Log Records' window title display.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Print Report' button on 'Autoclave Log' page and verify 'Completed Autoclave Log Records' window title display.";
+		strExpResult = "'Print Report' button on 'Autoclave Log' page should be clicked and 'Completed Autoclave Log Records' window title should be displayed.";
+		blnFlag=clickAndVerifyVisible("pgeAutoclaveLog","btnPrintReport","pgeAutoclaveLog","objCompletedLogRecordsTitle");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Report' button on 'Autoclave Log' page is clicked and 'Completed Autoclave Log Records' window title display is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 19 - 	Search for the completed Load number on 'Completed Autoclave Log Records' dialog.
+		//########################################################################################################
+		strStepDesc = "Search for the completed Load number on 'Completed Autoclave Log Records' dialog.";
+		strExpResult = "Searched load number '"+strLoadNumber+"' should be displayed on 'Completed Autoclave Log Records' dialog.";
+		blnFlag=verifySearch("pgeAutoclaveLog","txtLoadNumber_Dialog","objLoadNumber_Dialog",strLoadNumber);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumber+"' is displayed on 'Completed Autoclave Log Records' dialog.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 20 - Click on the checkbox against the searched Load Number on 'Completed Autoclave Log Records' dialog.
+		//########################################################################################################
+		strStepDesc = "Click on the checkbox against the searched Load Number on 'Completed Autoclave Log Records' dialog.";
+		strExpResult = "The checkbox against the searched Load Number on 'Completed Autoclave Log Records' dialog should be clicked successfully.";
+		blnFlag=Page("pgeAutoclaveLog").Element("chkFirstRow_CompletedAutoclaveLog").Click(20);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The checkbox against the searched Load Number on 'Completed Autoclave Log Records' dialog is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 21 - Click on 'Print' on 'Completed Autoclave Log Records' dialog and verify if the fetched details are present in the Report PDF.
+		//########################################################################################################
+		strStepDesc = "Click on 'Print' on 'Completed Autoclave Log Records' dialog and verify if the fetched details are present in the Report PDF.";
+		strExpResult = "'Print' on 'Completed Autoclave Log Records' dialog should be clicked and the details("+strExpectedText+","+strLoadNumber+","+strEquipmentNumber+","+strLoadTech+") should be present in the Report PDF.";
+		blnFlag= clickPrint("pgeAutoclaveLog","btnPrint_Dialog",strExpectedText, strLoadNumber, strEquipmentNumber, strLoadTech) ;
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print' on 'Completed Autoclave Log Records' dialog is clicked and the details("+strExpectedText+","+strLoadNumber+","+strEquipmentNumber+","+strLoadTech+") are verified in the Report PDF successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		}
+		
+		//########################################################################################################
+		//Step 22 - 	 Close the 'Print' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Print' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Print' PDF should be closed successfully.";
+		blnFlag=closePDF("Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print' PDF has been closed successfully and the navigated page has been verified for the title 'Autoclave Log'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+			
+
+		//########################################################################################################
+		//Step 23 	Search for the Completed Load number on Autoclave Log page.
+		//########################################################################################################
+		strStepDesc = "Search for the Completed  Load number on Autoclave Log page.";
+		strExpResult = "Searched load number '"+strLoadNumber+"' should be displayed in the 'Autoclave Log' grid.";
+		blnFlag=verifySearch("pgeAutoclaveLog","txtLoadNumber","lnkLoadNumber",strLoadNumber);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumber+"' is displayed in the 'Autoclave Log' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+
+		//########################################################################################################
+		//Step 24 - Click on 'Print Report' for the searched entry and verify if the fetched details are present in the Report PDF.
+		//########################################################################################################
+		strStepDesc = "Click on 'Print Report' for the searched entry and verify if the fetched details are present in the Report PDF.";
+		strExpResult = "'Print Report' for the searched entry should be clicked and the details("+strExpectedText+","+strLoadNumber+","+strEquipmentNumber+","+strLoadTech+") should be present in the Report PDF.";
+		blnFlag= clickPrint("pgeAutoclaveLog","lnkPrintReport_FirstRow",strExpectedText, strLoadNumber, strEquipmentNumber, strLoadTech) ;
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Report' for the searched entry is clicked and the details("+strExpectedText+","+strLoadNumber+","+strEquipmentNumber+","+strLoadTech+") are verified in the Report PDF successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		}
+		
+		//########################################################################################################
+		//Step 25 - 	 Close the 'Print' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Print' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Print' PDF should be closed successfully.";
+		blnFlag=closePDF("Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print' PDF has been closed successfully and the navigated page has been verified for the title 'Autoclave Log'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 26 - 	Click on the 'Print Report' button on 'Autoclave Log' page and verify 'Completed Autoclave Log Records' window title display.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Print Report' button on 'Autoclave Log' page and verify 'Completed Autoclave Log Records' window title display.";
+		strExpResult = "'Print Report' button on 'Autoclave Log' page should be clicked and 'Completed Autoclave Log Records' window title should be displayed.";
+		blnFlag=clickAndVerifyVisible("pgeAutoclaveLog","btnPrintReport","pgeAutoclaveLog","objCompletedLogRecordsTitle");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Report' button on 'Autoclave Log' page is clicked and 'Completed Autoclave Log Records' window title display is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		//########################################################################################################
+		//Step 27 - 	Clear the pre-populated Load Number on 'Completed Autoclave Log Records' window.
+		//########################################################################################################
+		strStepDesc = "Clear the pre-populated Load Number on 'Completed Autoclave Log Records' window.";
+		strExpResult = "The pre-populated Load Number on 'Completed Autoclave Log Records' window should be cleared.";
+		blnFlag=clearFieldandWait("pgeAutoclaveLog","txtLoadNumber_Dialog");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The pre-populated Load Number on 'Completed Autoclave Log Records' window is cleared successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}	
+
+		// ########################################################################################################
+		// Step 28 - Sort on Status field.
+		// ########################################################################################################
+		strStepDesc = "Sort on Status field.";
+		strExpResult = "Status should be sorted successfully.";
+		blnFlag=sortWaitforPageRefresh("pgeAutoclaveLog", "objStatusHeader");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Status is sorted successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+		
+		// ########################################################################################################
+		// Step 29 - Verify if the first entry in under 'Status' column is 'Complete'.
+		// ########################################################################################################
+		strStepDesc = "Verify if the first entry in under 'Status' column is 'Complete'.";
+		strExpResult = "The first entry under 'Status' column should be 'Complete'.";
+		blnFlag= verifyExactText("pgeAutoclaveLog","objStatus_FirstRow","Complete");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The first entry under 'Status' column is 'Complete'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 30 - Sort on Status field again.
+		// ########################################################################################################
+		strStepDesc = "Sort on Status field again.";
+		strExpResult = "Status should be sorted successfully.";
+		blnFlag=sortWaitforPageRefresh("pgeAutoclaveLog", "objStatusHeader");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Status is sorted successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 31 - Verify if the first entry in under 'Status' column is 'Complete'.
+		// ########################################################################################################
+		strStepDesc = "Verify if the first entry in under 'Status' column is 'Complete'.";
+		strExpResult = "The first entry under 'Status' column should be 'Complete'.";
+		blnFlag= verifyExactText("pgeAutoclaveLog","objStatus_FirstRow","Complete");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The first entry under 'Status' column is 'Complete'. This implies that only Completed Records are present in the table.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 32 - Verify if the search functionality works correctly in 'Status' column.
+		// ########################################################################################################
+		strStepDesc = "Verify if the search functionality works correctly in 'Status' column.";
+		strExpResult = "The search functionality should work correctly in 'Status' column.Search value is '"+strStatusDB+"'.";
+		blnFlag= verifySearch("pgeAutoclaveLog","txtStatus_Dialog","objStatus_FirstRow",strStatusDB);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The search functionality works correctly in 'Status' column.Search value is '"+strStatusDB+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 33 - Clear the 'Status' column.
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Status' column.";
+		strExpResult = "The 'Status' column should be cleared.";
+		blnFlag= clearFieldandWait("pgeAutoclaveLog","txtStatus_Dialog");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Status' column is cleared successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 34 - Verify if the search functionality works correctly in 'Equipment Number' column.
+		// ########################################################################################################
+		strStepDesc = "Verify if the search functionality works correctly in 'Equipment Number' column.";
+		strExpResult = "The search functionality should work correctly in 'Equipment Number' column.Search value is '"+strEquipmentNumberDB+"'.";
+		blnFlag= verifySearch("pgeAutoclaveLog","txtEquipmentNumber_Dialog","objEquipmentNumber_FirstRow",strEquipmentNumberDB);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The search functionality works correctly in 'Equipment Number' column.Search value is '"+strEquipmentNumberDB+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 35 - Clear the 'Equipment Number' column.
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Equipment Number' column.";
+		strExpResult = "The 'Equipment Number' column should be cleared.";
+		blnFlag= clearFieldandWait("pgeAutoclaveLog","txtEquipmentNumber_Dialog");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Equipment Number' column is cleared successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 36 - Verify if the search functionality works correctly in 'Calibration Due Date' column.
+		// ########################################################################################################
+		strStepDesc = "Verify if the search functionality works correctly in 'Calibration Due Date' column.";
+		strExpResult = "The search functionality should work correctly in 'Calibration Due Date' column.Search value is '"+strCalibrationDueDateDB+"'.";
+		blnFlag= verifySearch("pgeAutoclaveLog","txtCalibrationDueDate_Dialog","objCalibrationDueDate_FirstRow",strCalibrationDueDateDB);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The search functionality works correctly in 'Calibration Due Date' column.Search value is '"+strCalibrationDueDateDB+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 37 - Clear the 'Calibration Due Date' column.
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Calibration Due Date' column.";
+		strExpResult = "The 'Calibration Due Date' column should be cleared.";
+		blnFlag= clearFieldandWait("pgeAutoclaveLog","txtCalibrationDueDate_Dialog");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Calibration Due Date' column is cleared successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 38 - Verify if the search functionality works correctly in 'Load Technician' column.
+		// ########################################################################################################
+		strStepDesc = "Verify if the search functionality works correctly in 'Load Technician' column.";
+		strExpResult = "The search functionality should work correctly in 'Load Technician' column.Search value is '"+strLoadTechnicianDB+"'.";
+		blnFlag= verifySearch("pgeAutoclaveLog","txtLoadTechnician_Dialog","objLoadTechnician_FirstRow",strLoadTechnicianDB);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The search functionality works correctly in 'Load Technician' column.Search value is '"+strLoadTechnicianDB+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 39 - Clear the 'Load Technician' column.
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Load Technician' column.";
+		strExpResult = "The 'Load Technician' column should be cleared.";
+		blnFlag= clearFieldandWait("pgeAutoclaveLog","txtLoadTechnician_Dialog");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Load Technician' column is cleared successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 40 - Verify if the search functionality works correctly in 'Load Date' column.
+		// ########################################################################################################
+		strStepDesc = "Verify if the search functionality works correctly in 'Load Date' column.";
+		strExpResult = "The search functionality should work correctly in 'Load Date' column.Search value is '"+strLoadDateDB+"'.";
+		blnFlag= verifySearch("pgeAutoclaveLog","txtLoadDate_Dialog","objLoadDate_FirstRow",strLoadDateDB);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The search functionality works correctly in 'Load Date' column.Search value is '"+strLoadDateDB+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 41 - Clear the 'Load Date' column.
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Load Date' column.";
+		strExpResult = "The 'Load Date' column should be cleared.";
+		blnFlag= clearFieldandWait("pgeAutoclaveLog","txtLoadDate_Dialog");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Load Date' column is cleared successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 42 - Verify if the search functionality works correctly in 'Maintenance Run?' column.
+		// ########################################################################################################
+		strStepDesc = "Verify if the search functionality works correctly in 'Maintenance Run?' column.";
+		strExpResult = "The search functionality should work correctly in 'Maintenance Run?' column.Search value is '"+strMaintenanceRunDB+"'.";
+		blnFlag= verifySearch("pgeAutoclaveLog","txtMaintenanceRun_Dialog","objMaintenanceRun_FirstRow",strMaintenanceRunDB);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The search functionality works correctly in 'Maintenance Run?' column.Search value is '"+strMaintenanceRunDB+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 43 - Clear the 'Maintenance Run?' column.
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Maintenance Run?' column.";
+		strExpResult = "The 'Maintenance Run?' column should be cleared.";
+		blnFlag= clearFieldandWait("pgeAutoclaveLog","txtMaintenanceRun_Dialog");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Maintenance Run?' column is cleared successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 44 - Verify if the search functionality works correctly in 'Unload Technician' column.
+		// ########################################################################################################
+		strStepDesc = "Verify if the search functionality works correctly in 'Unload Technician' column.";
+		strExpResult = "The search functionality should work correctly in 'Unload Technician' column.Search value is '"+strUnloadtechnicianDB+"'.";
+		blnFlag= verifySearch("pgeAutoclaveLog","txtUnloadTechnician_Dialog","objUnloadTechnician_FirstRow",strUnloadtechnicianDB);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The search functionality works correctly in 'Unload Technician' column.Search value is '"+strUnloadtechnicianDB+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 45 - Clear the 'Unload Technician' column.
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Unload Technician' column.";
+		strExpResult = "The 'Unload Technician' column should be cleared.";
+		blnFlag= clearFieldandWait("pgeAutoclaveLog","txtUnloadTechnician_Dialog");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Unload Technician' column is cleared successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 46 - Verify if the search functionality works correctly in 'Unload Date' column.
+		// ########################################################################################################
+		strStepDesc = "Verify if the search functionality works correctly in 'Unload Date' column.";
+		strExpResult = "The search functionality should work correctly in 'Unload Date' column.Search value is '"+strUnloadDateDB+"'.";
+		blnFlag= verifySearch("pgeAutoclaveLog","txtUnloadDate_Dialog","objUnloadDate_FirstRow",strUnloadDateDB);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The search functionality works correctly in 'Unload Date' column.Search value is '"+strUnloadDateDB+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 47 - Clear the 'Unload Date' column.
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Unload Date' column.";
+		strExpResult = "The 'Unload Date' column should be cleared.";
+		blnFlag= clearFieldandWait("pgeAutoclaveLog","txtUnloadDate_Dialog");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Unload Date' column is cleared successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 48 - Verify if the search functionality works correctly in 'Successful Run' column.
+		// ########################################################################################################
+		strStepDesc = "Verify if the search functionality works correctly in 'Successful Run' column.";
+		strExpResult = "The search functionality should work correctly in 'Successful Run' column.Search value is '"+strSuccessfulRunDB+"'.";
+		blnFlag= verifySearch("pgeAutoclaveLog","txtSuccesfulRun_Dialog","objSuccessfulRun_FirstRow",strSuccessfulRunDB);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The search functionality works correctly in 'Successful Run' column.Search value is '"+strSuccessfulRunDB+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 49 - Clear the 'Successful Run' column.
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Successful Run' column.";
+		strExpResult = "The 'Successful Run' column should be cleared.";
+		blnFlag= clearFieldandWait("pgeAutoclaveLog","txtSuccesfulRun_Dialog");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Successful Run' column is cleared successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 50 - 	Search for the Load number fetched at random from the database on 'Completed Autoclave Log Records' dialog.
+		//########################################################################################################
+		strStepDesc = "Search for the Load number fetched at random from the database on 'Completed Autoclave Log Records' dialog.";
+		strExpResult = "Searched load number '"+strLoadNumberDB+"' should be displayed on 'Completed Autoclave Log Records' dialog.";
+		blnFlag=verifySearch("pgeAutoclaveLog","txtLoadNumber_Dialog","objLoadNumber_Dialog",strLoadNumberDB);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumberDB+"' is displayed on 'Completed Autoclave Log Records' dialog.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 51 - Click on the checkbox against the searched Load Number on 'Completed Autoclave Log Records' dialog.
+		//########################################################################################################
+		strStepDesc = "Click on the checkbox against the searched Load Number on 'Completed Autoclave Log Records' dialog.";
+		strExpResult = "The checkbox against the searched Load Number on 'Completed Autoclave Log Records' dialog should be clicked successfully.";
+		blnFlag=Page("pgeAutoclaveLog").Element("chkFirstRow_CompletedAutoclaveLog").Click(20);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The checkbox against the searched Load Number on 'Completed Autoclave Log Records' dialog is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 52 - Click on 'Print' on 'Completed Autoclave Log Records' dialog and verify if the fetched details are present in the Report PDF.
+		//########################################################################################################
+		strStepDesc = "Click on 'Print' on 'Completed Autoclave Log Records' dialog and verify if the fetched details are present in the Report PDF.";
+		strExpResult = "'Print' on 'Completed Autoclave Log Records' dialog should be clicked and the details("+strExpectedText+","+strLoadNumberDB+","+strEquipmentNumberDB+","+strLoadTechnicianDB+") should be present in the Report PDF.";
+		blnFlag= clickPrint("pgeAutoclaveLog","btnPrint_Dialog",strExpectedText, strLoadNumberDB, strEquipmentNumberDB, strLoadTechnicianDB) ;
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print on 'Completed Autoclave Log Records' dialog is clicked and the details("+strExpectedText+","+strLoadNumberDB+","+strEquipmentNumberDB+","+strLoadTechnicianDB+") are verified in the Report PDF successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		}
+		
+		//########################################################################################################
+		//Step 53 - 	 Close the 'Print' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Print' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Print' PDF should be closed successfully.";
+		blnFlag=closePDF("Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print' PDF has been closed successfully and the navigated page has been verified for the title 'Autoclave Log'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		// ########################################################################################################
+		// Step 54 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

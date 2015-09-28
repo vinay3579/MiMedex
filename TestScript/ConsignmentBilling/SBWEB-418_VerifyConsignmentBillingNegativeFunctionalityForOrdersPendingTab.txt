@@ -1,0 +1,465 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-418
+		// # Test Case Name: VerifyConsignmentBillingNegativeFunctionalityForOrdersPendingTab
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies error messages on 'Orders' page for 'Pending' tab under
+		// #              'Consignment Billing' functionality.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: 	MiMedx SBWeb URL is accessible to the user.
+		// #					User is logged in into the MiMedx SBWeb application.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 05-05-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");
+		String strExpectedText3 = Script.dicTestData.get("strExpectedText3");
+		String strCurrentAgent = "";
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Orders link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkConsignmentBilling");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Consignment Billing' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Consignment Billing' link and verify navigated page.";
+		strExpResult = "'Consignment Billing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkConsignmentBilling", "Consignment Billing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Consignment Billing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click 'Pending' tab.
+		// ########################################################################################################
+		strStepDesc = "Click 'Pending' tab.";
+		strExpResult = "'Pending' tab should be displayed.";
+		blnFlag=clickTab("pgeConsignmentBilling","tabPending", "Consignment Billing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Pending' tab displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Enter some invalid/junk characters in the 'Purchase Order' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Purchase Order' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Purchase Order' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling", "Purchase Order", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Purchase Order' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Clear 'Purchase Order' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Purchase Order' search box and verify page refresh.";
+		strExpResult = "'Purchase Order' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeConsignmentBilling", "Purchase Order");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Purchase Order' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter some invalid/junk characters in the 'Status' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Status' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Status' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling", "Status", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Status' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Clear 'Status' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Status' search box and verify page refresh.";
+		strExpResult = "'Status' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeConsignmentBilling", "Status");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Status' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter some invalid/junk characters in the 'Bill To' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Bill To' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Bill To' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling", "Bill To", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Bill To' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Clear 'Bill To' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Bill To' search box and verify page refresh.";
+		strExpResult = "'Bill To' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeConsignmentBilling", "Bill To");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Bill To' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter some invalid/junk characters in the 'Ship To' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Ship To' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Ship To' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling", "Ship To", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Ship To' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Clear 'Ship To' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Ship To' search box and verify page refresh.";
+		strExpResult = "'Ship To' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeConsignmentBilling", "Ship To");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Ship To' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Enter some invalid/junk characters in the 'Sales Agent' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Sales Agent' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Sales Agent' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling", "Sales Agent", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Sales Agent' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Clear 'Sales Agent' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Sales Agent' search box and verify page refresh.";
+		strExpResult = "'Sales Agent' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeConsignmentBilling", "Sales Agent");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sales Agent' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Enter some invalid/junk characters in the 'Date' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Date' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Date' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling", "Date", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Date' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Clear 'Date' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Date' search box and verify page refresh.";
+		strExpResult = "'Date' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeConsignmentBilling", "Date");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Date' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Select any purchase order from Pending tab. 
+		// ########################################################################################################
+		strStepDesc = "Select any purchase order from Pending tab. ";
+		strExpResult = "The Purchase Order details should be displayed.";
+		blnFlag=clickAndVerify("pgeConsignmentBilling","lnkPurchaseOrder_Pending", "Consignment Billing");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"The Purchase Order details is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Select a different customer from the drop down and click on 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "Select a different customer from the drop down and click on 'Save' button.";
+		strExpResult = "Error Message '"+strExpectedText1+"' should be displayed.";
+		blnFlag = VerifyDropDownNewSelectionErrorMessages("pgeConsignmentBilling","lstCustomerName","btnSave","objUIMessageErrorSummary",strExpectedText1);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText1+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Click on 'Return' button. 
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button.";
+		strExpResult = "Return button should be clicked.";
+		blnFlag=clickAndVerify("pgeCommon","btnReturn", "Consignment Billing");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Return button clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		
+		// ########################################################################################################
+		// Step 21 - Select any Purchase Order from Pending tab. 
+		// ########################################################################################################
+		strStepDesc = "Select any Purchase Order from Pending tab. ";
+		strExpResult = "The Purchase Order details should be displayed.";
+		blnFlag=clickAndVerify("pgeConsignmentBilling","lnkPurchaseOrder_Pending", "Consignment Billing");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"The Purchase Order details is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Fetch currently selected 'Agent' from the 'Agent' drop-down for the selected Purchase Order.
+		// ########################################################################################################
+		strStepDesc = "Fetch currently selected 'Agent' from the 'Agent' drop-down for the selected Purchase Order.";
+		strExpResult = "Currently selected agent for the selected purchase order should be fetched from 'Agent' drop-down.";
+		blnFlag = fetchSelectedValueFromDropdown("pgeConsignmentBilling","lstAgentName");
+		
+		if (blnFlag == true) 
+		{
+			strCurrentAgent = Script.dicCommonValue.get("strCurrentValue");
+			reporter.ReportStep(strStepDesc, strExpResult,"Currently selected agent '"+strCurrentAgent+"' is fetched successfully for selected Purchase order.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Select a different Sales Agent and click on 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "Select a different Sales Agent and click on 'Save' button.";
+		strExpResult = "Error Message '"+strExpectedText2+"' should be displayed.";
+		blnFlag = VerifyDropDownNewSelectionErrorMessages("pgeConsignmentBilling","lstAgentName","btnSave","objUIMessageWarnSummary",strExpectedText2);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText2+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 24 - Select default 'Agent' name from the 'Agent' drop-down and save the changes.
+		// ########################################################################################################
+		strStepDesc = "Select default 'Agent' name from the 'Agent' drop-down and save the changes.";
+		strExpResult = "Default Agent '"+strCurrentAgent+"' should be selected and changes should be saved.";
+		blnFlag = selectValueClickButtonAndNavigate("pgeConsignmentBilling","lstAgentName",strCurrentAgent,"btnSave","Consignment Billing");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Default Agent '"+strCurrentAgent+"' is selected and changes is saved successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 25 - Click on 'Reject' button. 
+		// ########################################################################################################
+		strStepDesc = "Click on 'Reject' button.";
+		strExpResult = "'Reject Purchase Order' dialog should appear.";
+		blnFlag=clickAndVerify("pgeConsignmentBilling","btnReject","pgeConsignmentBilling","objRejectPurchaseOrder");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Reject Purchase Order' dialog is appearing successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 26 - Click on 'Commit' button  without entering any 'Reason'.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button  without entering any 'Reason'.";
+		strExpResult = "Error Message '"+strExpectedText3+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeConsignmentBilling","btnCommit","pgeCommon","objUIMessageErrorSummary",strExpectedText3);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText3+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 27 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

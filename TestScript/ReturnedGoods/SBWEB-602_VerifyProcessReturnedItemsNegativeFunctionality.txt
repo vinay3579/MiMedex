@@ -1,0 +1,551 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-602
+		// # Test Case Name: VerifyProcessReturnedItemsNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies 'Process Returned Item' negative functionality in 'Orders'  
+		// # page and then log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Returned Goods" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: 
+		// # Created on: 04-20-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strContact = Script.dicTestData.get("strContact");
+		String strReturnReason = Script.dicTestData.get("strReturnReason");
+		String strRandomInputText = Script.dicTestData.get("strMaxCharTemplate");
+								
+		String strPouchIntegrityMaxCharError = Script.dicTestData.get("strPouchIntegrityMaxCharError");
+		String strLabelIntegrityMaxCharError = Script.dicTestData.get("strLabelIntegrityMaxCharError");
+		String strLabelAccuracyMaxCharError = Script.dicTestData.get("strLabelAccuracyMaxCharError");
+		String strBoxIntegrityMaxCharError = Script.dicTestData.get("strBoxIntegrityMaxCharError");
+		String strContaminationMaxCharError = Script.dicTestData.get("strContaminationMaxCharError");
+		String strExpiredMaxCharError = Script.dicTestData.get("strExpiredMaxCharError");
+		String strHandlingMaxCharError = Script.dicTestData.get("strHandlingMaxCharError");
+		
+		//Variable used in the script
+		String strCustomer= "";
+				
+		//Test Data to be fetched for the current 'Returned Goods' script from the DB.
+		String strCustomerName = Script.dicTestData.get("CustomerName");
+		String strQADLink = Script.dicTestData.get("QADLink");		
+		String strTissueId = Script.dicTestData.get("TissueId");	
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Orders' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkShipping");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Returned Goods' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Returned Goods' link and verify 'Returned Goods' page is displayed.";
+		strExpResult = "'Returned Goods' page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines","lnkReturnedGoods", "Returned Goods");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Returned Goods' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on 'New Authorization' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Authorization' button and verify navigated page.";
+		strExpResult = "'New Authorization' button should be clicked and 'Add Return Goods Authorization' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","btnNewAuthorization", "Add Return Goods Authorization");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Authorization' button is clicked and 'Add Return Goods Authorization' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Enter Current Date in the 'Date' Text box.
+		// ########################################################################################################
+		strStepDesc = "Enter Current Date in the 'Date' Text box.";
+		strExpResult = "The current date should be entered in 'Date' text box.";
+		blnFlag = enterCurrentDate("pgeReturnedGoods","txtDate","MMM dd, YYYY");   
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The current date is entered in 'Date' text box successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Select customer from the 'Customer' list box.
+		// ########################################################################################################
+		strStepDesc = "Select customer from the 'Customer' list box.";
+		strCustomer = strCustomerName + "(" + strQADLink + ")";
+		strExpResult = "'" + strCustomer + "' should be selected from 'Customer' list box.";
+		blnFlag = Page("pgeReturnedGoods").Element("lstCustomer").Select(strCustomer);		
+		waitForSync(4);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strCustomer + "' is selected from 'Customer' list box successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter Contact in the 'Contact' text box.
+		// ########################################################################################################
+		strStepDesc = "Enter Contact in the 'Contact' text box.";
+		strExpResult = "'" + strContact + "' should be typed in 'Contact' text box.";
+		blnFlag = Page("pgeReturnedGoods").Element("txtContact").Type(strContact);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strContact + "' is typed in 'Contact' text box successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter 'Return Reason' in the 'Return Reason' text box.
+		// ########################################################################################################
+		strStepDesc = "Enter 'Return Reason' in the 'Return Reason' text box.";
+		strExpResult = "'" + strReturnReason + "' should be typed in 'Return Reason' text box.";
+		blnFlag = Page("pgeReturnedGoods").Element("txtReturnReason").Type(strReturnReason);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strReturnReason + "' is typed in 'Return Reason' text box successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Select 'No' from the 'Exchange?' list box.
+		// ########################################################################################################
+		strStepDesc = "Select 'No' from the 'Exchange?' list box.";
+		strExpResult = "'No' should be selected from 'Exchange?' list box.";
+		blnFlag = Page("pgeReturnedGoods").Element("lstExchange").Select("No");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'No' is selected from 'Exchange?' list box successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Click on 'Save' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify navigated page.";
+		strExpResult = "'Save' button should be clicked and 'Returned Goods' page should be verified.";
+		blnFlag = clickAndVerify("pgeCommon","btnSave", "Returned Goods");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Returned Goods' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+			
+		// ########################################################################################################
+		// Step 12 - Enter tissue in the free-form text box.
+		// ########################################################################################################
+		strStepDesc = "Enter tissue in the free-form text box.";
+		strExpResult = "The Tissue ID '" + strTissueId + "' should be entered in the free-form text box.";
+		blnFlag = Page("pgeReturnedGoods").Element("txtscanList").Type(strTissueId);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Tissue ID '" + strTissueId + "' is entered in the free-form text box successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Click on 'Process Scans' button.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process Scans' button.";
+		strExpResult = "The 'Process Scans' button should be clicked.";
+		blnFlag = Page("pgeReturnedGoods").Element("btnProcessScans").Click(20);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Process Scans' button clicked successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Verify if the Tissue is updated in the grid.
+		// ########################################################################################################
+		strStepDesc = "Verify if the Tissue is updated in the grid.";
+		strExpResult = "The Tissue ID '" + strTissueId + "' should be updated in the grid.";
+		blnFlag = verifyExactText("pgeReturnedGoods", "lnkTissue", strTissueId);   
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Tissue ID '" + strTissueId + "' has been updated in the grid successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Click on 'Commit' button.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button.";
+		strExpResult = "The 'Commit' button should be clicked.";
+		blnFlag = Page("pgeCommon").Element("btnCommit").Click(20);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Commit' button has been clicked successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Verify if 'Commit Complete' messsage is displayed in the Message header.
+		// ########################################################################################################
+		strStepDesc = "Verify if 'Commit Complete' messsage is displayed in the Message header.";
+		strExpResult = "The 'Commit complete.' message should be displayed in the Message header.";
+		blnFlag = verifyExactText("pgeReturnedGoods", "objMessageSummary", "Commit complete.");   
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Commit complete.' message is displayed successfully in the Message header.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		// ########################################################################################################
+		// Step 17 - Click on 'Tissue' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue' link and verify navigated page.";
+		strExpResult = "'Tissue' link should be clicked and 'Process Returned Item' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","lnkTissue", "Process Returned Item");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue' link is clicked and 'Process Returned Item' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 18 - Enter more than 100 characters in 'Pouch Integrity' field, click on 'Commit' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 100 characters in 'Pouch Integrity' field, click on 'Commit' button and verify error message '" + strPouchIntegrityMaxCharError + "' is displayed.";
+		strExpResult = "'" + strPouchIntegrityMaxCharError + "' message should be displayed on clicking 'Commit' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeReturnedGoods", "txtPouchIntegrityComments", strRandomInputText, "101", "pgeCommon", "btnCommit", "pgeCommon", "objUIMessageErrorSummary", strPouchIntegrityMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strPouchIntegrityMaxCharError + "' message is displayed successfully on clicking 'Commit' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Click on 'Tissue' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue' link and verify navigated page.";
+		strExpResult = "'Tissue' link should be clicked and 'Process Returned Item' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","lnkTissue", "Process Returned Item");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue' link is clicked and 'Process Returned Item' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Enter more than 100 characters in 'Label Integrity' field, click on 'Commit' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 100 characters in 'Label Integrity' field, click on 'Commit' button and verify error message '" + strLabelIntegrityMaxCharError + "' is displayed.";
+		strExpResult = "'" + strLabelIntegrityMaxCharError + "' message should be displayed on clicking 'Commit' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeReturnedGoods", "txtLabelIntegrityComments", strRandomInputText, "101", "pgeCommon", "btnCommit", "pgeCommon", "objUIMessageErrorSummary", strLabelIntegrityMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strLabelIntegrityMaxCharError + "' message is displayed successfully on clicking 'Commit' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 - Click on 'Tissue' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue' link and verify navigated page.";
+		strExpResult = "'Tissue' link should be clicked and 'Process Returned Item' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","lnkTissue", "Process Returned Item");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue' link is clicked and 'Process Returned Item' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Enter more than 100 characters in 'Label Accuracy' field, click on 'Commit' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 100 characters in 'Label Accuracy' field, click on 'Commit' button and verify error message '" + strLabelAccuracyMaxCharError + "' is displayed.";
+		strExpResult = "'" + strLabelAccuracyMaxCharError + "' message should be displayed on clicking 'Commit' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeReturnedGoods", "txtLabelAccuracyComments", strRandomInputText, "101", "pgeCommon", "btnCommit", "pgeCommon", "objUIMessageErrorSummary", strLabelAccuracyMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strLabelAccuracyMaxCharError + "' message is displayed successfully on clicking 'Commit' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Click on 'Tissue' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue' link and verify navigated page.";
+		strExpResult = "'Tissue' link should be clicked and 'Process Returned Item' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","lnkTissue", "Process Returned Item");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue' link is clicked and 'Process Returned Item' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 24 - Enter more than 100 characters in 'Box Integrity' field, click on 'Commit' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 100 characters in 'Box Integrity' field, click on 'Commit' button and verify error message '" + strBoxIntegrityMaxCharError + "' is displayed.";
+		strExpResult = "'" + strBoxIntegrityMaxCharError + "' message should be displayed on clicking 'Commit' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeReturnedGoods", "txtBoxIntegrityComments", strRandomInputText, "101", "pgeCommon", "btnCommit", "pgeCommon", "objUIMessageErrorSummary", strBoxIntegrityMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strBoxIntegrityMaxCharError + "' message is displayed successfully on clicking 'Commit' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 25 - Click on 'Tissue' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue' link and verify navigated page.";
+		strExpResult = "'Tissue' link should be clicked and 'Process Returned Item' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","lnkTissue", "Process Returned Item");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue' link is clicked and 'Process Returned Item' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 26 - Enter more than 100 characters in 'Evidence of Contamination' field, click on 'Commit' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 100 characters in 'Evidence of Contamination' field, click on 'Commit' button and verify error message '" + strContaminationMaxCharError + "' is displayed.";
+		strExpResult = "'" + strContaminationMaxCharError + "' message should be displayed on clicking 'Commit' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeReturnedGoods", "txtContaminationComments", strRandomInputText, "101", "pgeCommon", "btnCommit", "pgeCommon", "objUIMessageErrorSummary", strContaminationMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strContaminationMaxCharError + "' message is displayed successfully on clicking 'Commit' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 27 - Click on 'Tissue' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue' link and verify navigated page.";
+		strExpResult = "'Tissue' link should be clicked and 'Process Returned Item' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","lnkTissue", "Process Returned Item");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue' link is clicked and 'Process Returned Item' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 28 - Enter more than 100 characters in 'Is the product expired?' field, click on 'Commit' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 100 characters in 'Is the product expired?' field, click on 'Commit' button and verify error message '" + strExpiredMaxCharError + "' is displayed.";
+		strExpResult = "'" + strExpiredMaxCharError + "' message should be displayed on clicking 'Commit' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeReturnedGoods", "txtExpiredComments", strRandomInputText, "101", "pgeCommon", "btnCommit", "pgeCommon", "objUIMessageErrorSummary", strExpiredMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strExpiredMaxCharError + "' message is displayed successfully on clicking 'Commit' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 29 - Click on 'Tissue' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue' link and verify navigated page.";
+		strExpResult = "'Tissue' link should be clicked and 'Process Returned Item' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","lnkTissue", "Process Returned Item");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue' link is clicked and 'Process Returned Item' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 30 - Enter more than 100 characters in 'Product handling, storage and shipping of tissue compliant 
+		// with tissue requirements?' field, click on 'Commit' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 100 characters in 'Product handling, storage and shipping of tissue compliant with tissue requirements?' field, click on 'Commit' button and verify error message '" + strHandlingMaxCharError + "' is displayed.";
+		strExpResult = "'" + strHandlingMaxCharError + "' message should be displayed on clicking 'Commit' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeReturnedGoods", "txtHandlingComments", strRandomInputText, "101", "pgeCommon", "btnCommit", "pgeCommon", "objUIMessageErrorSummary", strHandlingMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strHandlingMaxCharError + "' message is displayed successfully on clicking 'Commit' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 31 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

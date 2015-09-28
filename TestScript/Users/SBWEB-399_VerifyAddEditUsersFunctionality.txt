@@ -1,0 +1,398 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-399
+		// # Test Case Name: VerifyAddEditUsersFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Users' landing
+		// # page, add a new user and edit the same and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Users" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 4-12-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+		String strLoginName = Script.dicTestData.get("strLoginName");
+
+		// More test data 
+		String strAccessLevel = Script.dicTestData.get("strAccessLevel");
+		String strFullName = Script.dicTestData.get("strFullName");
+		String strEmail = Script.dicTestData.get("strEmail");
+		String strInitialApplication = Script.dicTestData.get("strInitialApplication");
+		String strOutsideAccess = Script.dicTestData.get("strOutsideAccess");
+		String strSSOEnabled = Script.dicTestData.get("strSSOEnabled");
+		String strEditedFullName = Script.dicTestData.get("strEditedFullName");
+						
+		//Test Data to be fetched for the current 'Users' script from DB.
+		String strDbUserName = Script.dicTestData.get("UserName");
+		
+		strLoginName = "Test User 3";
+								
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Resources link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkUsers");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Users' link and verify 'Users' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Users' link and verify 'Users' page is displayed.";
+		strExpResult = "'Users' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkUsers", "Users");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Users' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 		
+		//########################################################################################################
+		//Step 5 - Calculate a User that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a User that does not exist in the application for further use.";
+		strExpResult = "A User that does not exist in the application should be calculated for further use.";
+		blnFlag=calculateNewItem(strLoginName, strDbUserName)   ; 
+		if (blnFlag == true)
+		{
+			strLoginName = Script.dicCommonValue.get("strCalculatedItem");    
+			reporter.ReportStep(strStepDesc, strExpResult, "New User '"+strLoginName+"' is calculated for further use.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 6 - Click on 'New User' button and verify 'Add New User' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New User' button and verify 'Add New User' page is displayed.";
+		strExpResult = "'New User' page should be displayed.";
+		blnFlag=clickAndVerify("pgeUsers", "btnNewUser", "Add New User");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New User' button is clicked and 'Add New User' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter User Name in 'User Name' field in 'Add New User' page.
+		// ########################################################################################################
+		strStepDesc = "Enter User Name in 'User Name' field in 'Add New User' page.";
+		strExpResult = "The User Name ("+strLoginName+") in 'Add New User' page should be entered.";
+		blnFlag= Page("pgeUsers").Element("txtNewUserName").Type(strLoginName); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The User Name ("+strLoginName+") in 'Add New User' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter Access Level in 'Access Level' field in 'Add New User' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Access Level in 'Access Level' field in 'Add New User' page.";
+		strExpResult = "The Access Level ("+strAccessLevel+") in 'Add New User' page should be entered.";
+		blnFlag= Page("pgeUsers").Element("txtAccessLevel").Type(strAccessLevel); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Access Level ("+strAccessLevel+") in 'Add New User' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		// ########################################################################################################
+		// Step 9 - Enter Full Name in 'Full Name' field in 'Add New User' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Full Name in 'Full Name' field in 'Add New User' page.";
+		strExpResult = "The Full Name ("+strFullName+") in 'Add New User' page should be entered.";
+		blnFlag= Page("pgeUsers").Element("txtFullName").Type(strFullName); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Full Name ("+strFullName+") in 'Add New User' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter Email in 'Email' field in 'Add New User' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Email in 'Email' field in 'Add New User' page.";
+		strExpResult = "The Email ("+strEmail+") in 'Add New User' page should be entered.";
+		blnFlag= Page("pgeUsers").Element("txtEmail").Type(strEmail); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Email ("+strEmail+") in 'Add New User' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Select the Initial Application from 'Initial Application' dropdown in 'Add New User' page.
+		// ########################################################################################################
+		strStepDesc = "Select the Initial Application from 'Initial Application' dropdown in 'Add New User' page.";
+		strExpResult = "The Initial Application ("+strInitialApplication+") in 'Add New User' page should be entered.";
+		blnFlag= Page("pgeUsers").Element("lstInitialApplication").Select(strInitialApplication); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Initial Application ("+strInitialApplication+") in 'Add New User' page is selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Select the Outside Access Yes/No value from 'Outside Access' dropdown in 'Add New User' page.
+		// ########################################################################################################
+		strStepDesc = "Select the Outside Access Yes/No value from 'Outside Access' dropdown in 'Add New User' page.";
+		strExpResult = "The Outside Access value("+strOutsideAccess+") in 'Add New User' page should be entered.";
+		blnFlag= Page("pgeUsers").Element("drpOutsideAccess").Select(strOutsideAccess); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Outside Access value("+strOutsideAccess+") in 'Add New User' page is selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Select the SSO Enabled value Yes/No value from 'SSO Enabled' dropdown in 'Add New User' page.
+		// ########################################################################################################
+		strStepDesc = "Select the SSO Enabled Yes/No value from 'SSO Enabled' dropdown in 'Add New User' page.";
+		strExpResult = "The SSO Enabled value("+strSSOEnabled+") in 'Add New User' page should be entered.";
+		blnFlag= Page("pgeUsers").Element("drpSSOEnabled").Select(strSSOEnabled); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The SSO Enabled value("+strSSOEnabled+") in 'Add New User' page is selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Click on 'Save' button and verify 'Edit User' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Edit User' page is displayed.";
+		strExpResult = "'Save' button should be clicked and 'Edit User' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "Edit User");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Edit User' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Validate if information message 'User Added, please set password and database access' is displayed.
+		// ########################################################################################################
+		strStepDesc = "Validate if information message 'User Added, please set password and database access' is displayed.";
+		strExpResult = "Information message 'User Added, please set password and database access' should be displayed.";
+		blnFlag=verifyExactText("pgeUsers", "objInformationMessage", "User added, please set password and database access.");				
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Information message 'User Added, please set password and database access' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Click on 'Return' button and verify 'Users' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify 'Users' page is displayed.";
+		strExpResult = "'Return' button should be clicked and 'Users' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnReturn", "Users");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked and 'Users' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Verify if the User is added in the User grid.
+		// ########################################################################################################
+		strStepDesc = "Verify if the User is added in the User grid.";
+		strExpResult = "The User added ("+strLoginName+") should be displayed in 'User' grid.";
+		blnFlag=verifySearch("pgeUsers","txtLoginName","objLoginName", strLoginName);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The User added ("+strLoginName+")is displayed in 'User' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Click on the User ID link for the added user and verify 'Edit User' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the User ID link for the added user and verify 'Edit User' page is displayed.";
+		strExpResult = "The User ID for the added user '"+strLoginName+"' should be clicked and 'Edit User' page should be displayed.";
+		blnFlag=clickAndVerify("pgeUsers", "lnkUserID","Edit User");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'The added User '"+strLoginName+"' link is clicked and 'Edit User' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Enter new Full Name in 'Edit User' page.
+		// ########################################################################################################
+		strStepDesc = "Enter new Full Name in 'Edit User' page.";
+		strExpResult = "The new Full Name ("+strEditedFullName+") in 'Edit User' page should be entered.";
+		blnFlag= Page("pgeUsers").Element("txtFullName").Type(strEditedFullName); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The New Full Name ("+strEditedFullName+") in 'Edit User' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Click on 'Save' button and verify 'Users' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Users' page is displayed.";
+		strExpResult = "'Save' button should be clicked and 'Users' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "Users");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Users' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 21 - 	Search for the added User in User grid.
+		//########################################################################################################
+		strStepDesc = "Search for the added User in User grid.";
+		strExpResult = "Added User '"+strLoginName+"' should be displayed in the 'User' grid.";
+		blnFlag=verifySearch("pgeUsers","txtLoginName","objLoginName", strLoginName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added User '"+strLoginName+"' is searched successfully in the User grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Verify if the edited Full Name is displayed in the User grid.
+		// ########################################################################################################
+		strStepDesc = "Verify if the edited Full Name is displayed in the User grid.";
+		strExpResult = "The edited Full Name ("+strEditedFullName+") should be displayed in 'User' grid.";
+		blnFlag=verifyExactText("pgeUsers", "objFullName", strEditedFullName);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Full Name ("+strEditedFullName+") is displayed in 'User' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

@@ -1,0 +1,412 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-553
+		// # Test Case Name: VerifyCustomerDetailsNegativeFunctionalityInResourcesPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'Customer Details' negative functionality in 'Resources' page
+		// # and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Customers" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: 
+		// # Created on: 04-01-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL = Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String[] strExpText = Script.dicTestData.get("strExpText").split(";");
+		
+		//Test Data to be fetched for the current 'Costomers' script from DB.
+		String strCustomerId = Script.dicTestData.get("CustomerId");
+		String strCustomerName = Script.dicTestData.get("CustomerName");
+		
+		//Creating dynamic page title to validate user is navigating on correct page.
+		String strPageTitle = strCustomerName + " Details";
+		String strMsgText = "";
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '" + strURL + "' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName + "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkCustomer");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Customers' link and verify 'Customers' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Customers' link and verify 'Customers' page is displayed.";
+		strExpResult = "'Customers' page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines", "lnkCustomer", "pgeCustomers", "txtCustomerId");
+				
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Customers' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - Search for the customer ID.
+		//########################################################################################################
+		strStepDesc = "Search for the customer ID '" + strCustomerId + "'.";
+		strExpResult = "Searched result should be displayed in Customers result grid.";
+		blnFlag = verifySearch("pgeCustomers","txtCustomerId","objCustomer", strCustomerId);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Customer ID '" + strCustomerId + "' should be successfully displayed in the result grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - Click on searched 'Customer Id' link on 'Customers' page.
+		//########################################################################################################
+		strStepDesc = "Click on searched 'Customer Id' link on 'Customers' page.";
+		strExpResult = "User should be navigated to '" + strPageTitle + "' page.";
+		blnFlag = clickAndVerify("pgeCustomers","lnkCustomerId", strPageTitle);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strPageTitle + "' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 7 - Enter invalid characters in the Telephone input field
+		//########################################################################################################
+		strStepDesc = "Enter invalid characters in the Telephone input field.";
+		strExpResult = "Invalid characters should be entered in the Telephone input field.";
+		blnFlag = Page("pgeCustomers").Element("txtTelephone").Type("xyz#123");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid characters successfully entered in the Telephone input field.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 8 - Click 'Save' button on 'Customers' page.
+		//########################################################################################################
+		strStepDesc = "Click 'Save' button on 'Customers' page.";
+		strExpResult = "'Save' button should be clicked on 'Customers' page.";
+		blnFlag = clickAndVerify("pgeCustomers","btnSave", strPageTitle);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is successfully clicked on 'Customers' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Verify message 'Your telephone number contains too many numbers or contains invalid characters.'
+		// is displayed on the 'Customer Details' page.
+		// ########################################################################################################
+		strStepDesc = "Verify message '" + strExpText[0] + "' is displayed on the 'Customer Details' page.";
+		strExpResult = "Message '" + strExpText[0] + "' should be displayed on the 'Customer Details' page.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strExpText[0]);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message '" + strExpText[0] + "' is successfully displayed on the 'Customer Details' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - Clear the Telephone input field.
+		//########################################################################################################
+		strStepDesc = "Clear the Telephone input field.";
+		strExpResult = "Telephone input field should be cleared.";
+		blnFlag = Page("pgeCustomers").Element("txtTelephone").Type("");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Telephone input field is successfully cleared.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - Enter invalid characters in the Fax input field
+		//########################################################################################################
+		strStepDesc = "Enter invalid characters in the Fax input field.";
+		strExpResult = "Invalid characters should be entered in the Fax input field.";
+		blnFlag = Page("pgeCustomers").Element("txtFax").Type("xyz#123");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid characters successfully entered in the Fax input field.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 12 - Click 'Save' button on 'Customers' page.
+		//########################################################################################################
+		strStepDesc = "Click 'Save' button on 'Customers' page.";
+		strExpResult = "'Save' button should be clicked on 'Customers' page.";
+		blnFlag = clickAndVerify("pgeCustomers","btnSave", strPageTitle);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is successfully clicked on 'Customers' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Verify message 'Your fax number contains too many numbers or contains invalid characters.'
+		// is displayed on the 'Customer Details' page.
+		// ########################################################################################################
+		strStepDesc = "Verify message '" + strExpText[1] + "' is displayed on the 'Customer Details' page.";
+		strExpResult = "Message '" + strExpText[1] + "' should be displayed on the 'Customer Details' page.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strExpText[1]);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message '" + strExpText[1] + "' is successfully displayed on the 'Customer Details' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 14 - Clear the Fax input field.
+		//########################################################################################################
+		strStepDesc = "Clear the Fax input field.";
+		strExpResult = "Fax input field should be cleared.";
+		blnFlag = Page("pgeCustomers").Element("txtFax").Type("");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Fax input field is successfully cleared.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Click on 'Join' button on the 'Customers' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Join' button on the 'Customers' page.";
+		strExpResult = "'Join' button should be clicked on the 'Customers' page.";
+		blnFlag = clickAndVerifyVisible("pgeCustomers", "btnJoin", "pgeCommon", "objPopUpTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Join' button is successfully clicked on the 'Customers' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Verify pop-up with title 'Customer Approval' is displayed.
+		// ########################################################################################################
+		strMsgText = "Customer Approval";
+		strStepDesc = "Verify pop-up with title '" + strMsgText + "' is displayed.";
+		strExpResult = "Pop-up with title '" + strMsgText + "' should be displayed.";
+		blnFlag = verifyTextContains("pgeCommon", "objPopUpTitle", strMsgText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Pop-up with title '" + strMsgText + "' is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Click 'Save' button on the pop-up without selecting customer group.
+		// ########################################################################################################
+		strStepDesc = "Click 'Save' button on the pop-up without selecting any customer group.";
+		strExpResult = "'Save' button should be clicked on the pop-up without selecting any customer group.";
+		blnFlag = clickAndVerify("pgeCommon", "btnSaveOnPopup", strPageTitle);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button on the pop-up is successfully clicked without selecting any customer group.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Verify message 'A customer group is required.' is displayed on the 'Customer Details' page.
+		// ########################################################################################################
+		strStepDesc = "Verify message '" + strExpText[2] + "' is displayed on the 'Customer Details' page.";
+		strExpResult = "Message '" + strExpText[2] + "' should be displayed on the 'Customer Details' page.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strExpText[2]);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message '" + strExpText[2] + "' is successfully displayed on the 'Customer Details' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Click on 'Add Facility' button on the 'Customers' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Add Facility' button on the 'Customers' page.";
+		strExpResult = "'Add Facility' button should be clicked on the 'Customers' page.";
+		blnFlag = clickAndVerifyVisible("pgeCustomers", "btnAddFacility", "pgeCommon", "objPopUpTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Facility' button is successfully clicked on the 'Customers' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Verify pop-up with title 'Manage Customer Facility' is displayed.
+		// ########################################################################################################
+		strMsgText = "Manage Customer Facility";
+		strStepDesc = "Verify pop-up with title '" + strMsgText + "' is displayed.";
+		strExpResult = "Pop-up with title '" + strMsgText + "' should be displayed.";
+		blnFlag = verifyTextContains("pgeCommon", "objPopUpTitle", strMsgText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Pop-up with title '" + strMsgText + "' is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 - Click 'Save' button on the pop-up without selecting any Facility.
+		// ########################################################################################################
+		strStepDesc = "Click 'Save' button on the pop-up without selecting any Facility.";
+		strExpResult = "'Save' button should be clicked on the pop-up without selecting any Facility.";
+		blnFlag = clickAndVerify("pgeCommon", "btnSaveOnPopup", strPageTitle);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button on the pop-up is successfully clicked without selecting any Facility.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Verify message 'A facility is required.' is displayed on the 'Customer Details' page.
+		// ########################################################################################################
+		strStepDesc = "Verify message '" + strExpText[3] + "' is displayed on the 'Customer Details' page.";
+		strExpResult = "Message '" + strExpText[3] + "' should be displayed on the 'Customer Details' page.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strExpText[3]);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message '" + strExpText[3] + "' is successfully displayed on the 'Customer Details' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		

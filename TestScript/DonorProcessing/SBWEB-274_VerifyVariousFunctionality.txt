@@ -1,0 +1,358 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-274
+		// # Test Case Name: VerifyVariousFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'Get Tissue', 'Select for Processing' and 'Process Scan' button 
+		// # functionality.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Donor List" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 08-04-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strRecoveryId;
+		String strDonorKey = "";
+		
+		//Test Data to be fetched for the current 'Donor Processing' script from the DB.
+		strRecoveryId = Script.dicTestData.get("RecoveryKey");
+		strDonorKey= Script.dicTestData.get("DonorKey");			
+				
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Push the Full Name of the User logged in for future reference in all PDF related scripts to the 'Common' Sheet.		
+		// ########################################################################################################
+		strStepDesc = "Push the Full Name of the User logged in for future reference in all PDF related scripts to the 'Common' Sheet.";
+		strExpResult = "The Full Name of the logged in user should be pushed successfully to the Common Sheet under 'strFullName'.";
+		blnFlag = pushFullNametoCommonSheet();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The full name of the logged in user is pushed successfully to the field 'strFullName' in the Common Sheet.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+				
+		
+		// ########################################################################################################
+		// Step 4 - Click on Process link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkDonor_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 5 - Click on Donor Processing link and verify 'Donor List' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Donor Processing link and verify 'Donor List' page is displayed.";
+		strExpResult = "'Donor List' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonor_Processing", "Donor List");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor List' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 6 - 	Click on 'Get Tissue' button  "Donor List" page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Get Tissue' button  'Donor List' page.";
+		strExpResult = "'Get Tissue' button should be clicked successfully.";
+		blnFlag=clickAndVerify("pgeDonor_List", "btnGetTissue", "pgeRecovered_Tissue", "btnSelectforProcessing");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Get Tissue' button is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Verify if search functionality works properly in 'Recovered Tissue for Manufacturing' grid.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly in 'Recovered Tissue for Manufacturing' grid.";
+		strExpResult = "Searched result should be displayed in the 'Recovered Tissue for Manufacturing' grid.";
+		blnFlag=verifySearch("pgeRecovered_Tissue","txtRecoveryId_RecoveredTissue","lnkRecoveryId", strRecoveryId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in 'Recovered Tissue for Manufacturing' grid in the Recovery ID field with value '"+strRecoveryId+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Select check box against searched recovery Id in the grid on "Recovered Tissue for Manufacturing" page.
+		//########################################################################################################
+		strStepDesc = "Select check box against searched recovery Id '"+strRecoveryId+"' in the grid on 'Recovered Tissue for Manufacturing' page.";
+		strExpResult = "Check box against searched recovery Id in the grid on 'Recovered Tissue for Manufacturing' page should be checked successfully.";
+		blnFlag= clickRecoveryIDCheckBox(strRecoveryId);
+		if (blnFlag == true)
+		{
+			strDonorKey= Script.dicTestData.get("strDonorKey");
+			reporter.ReportStep(strStepDesc, strExpResult, "Check box against searched recovery Id in the grid on 'Recovered Tissue for Manufacturing' page is selected successfully.", "Pass");			
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Click on 'Select for Processing' button on "Recovered Tissue for Manufacturing" page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Select for Processing' button on 'Recovered Tissue for Manufacturing' page.";		
+		strExpResult = "'Select for Processing' button should be clicked successfully.";
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "btnSelectforProcessing", "pge_ProcessRecoveredTissues", "objProcessRecoveredTissuesHeader");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Select for Processing' button is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - 	 Verify pre-populated data in grid on  "Process Recovered Tissues" page.
+		//########################################################################################################
+		strStepDesc = "Verify pre-populated data in grid on  'Process Recovered Tissues' page.";
+		strExpResult = "The pre-populated data on the grid should be verified for '"+strRecoveryId+"'.";
+		blnFlag=verifyPrepopulatedData(strRecoveryId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The pre-populated data on the grid is verified for '"+strRecoveryId+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - 	Fill the Recovery ID in the text box.
+		//########################################################################################################
+		strStepDesc = "Fill the Recovery ID in the text box.";
+		strExpResult = "'Recovery Id "+strRecoveryId+"' should be entered in text box.";
+		blnFlag=Page("pge_ProcessRecoveredTissues").Element("txtScanBox").Type(strRecoveryId);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Entered 'Recovery Id "+strRecoveryId+"' in text box successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - 	Click on 'Process Scan' button on "Process Recovered Tissues" page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Process Scan' button on 'Process Recovered Tissues' page.";
+		strExpResult = "'Process Scan' button on 'Process Recovered Tissues' page should be clicked.";
+		blnFlag=Page("pge_ProcessRecoveredTissues").Element("btnProcessScans").Click(20);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process Scan' button is clicked sucessfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 13 - 	Verify if system generated message is displayed that the scanning is successsful for the Recovery ID.
+		//########################################################################################################
+		strStepDesc = "Verify if system generated message is displayed that the scanning is successsful for the Recovery ID.";
+		strExpResult = "A system generated message that the scanning is successful for the Recovery ID should be displayed.";
+		blnFlag= verifyExactText("pge_ProcessRecoveredTissues","objMessage", "Recovery "+strRecoveryId+" was scanned successfully.");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery "+strRecoveryId+" was scanned successfully.' message has been verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+				
+		//########################################################################################################
+		//Step 14 - 	Verify 'Manufacturing Line' and 'Technician' electronic signature area displayed on the page.
+		//########################################################################################################
+		strStepDesc = "Verify 'Manufacturing Line' and 'Technician' electronic signature area displayed on the page.";
+		strExpResult = "'Manufacturing Line' and 'Technician' ("+strUserName+") electronic signature area should be displayed on the page.";
+		blnFlag=verifyManufacturingLineTechnicianObjects(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Existence of 'Manufacturing Line' dropdown and Technician username '"+strUserName+"' is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+				
+		//########################################################################################################
+		//Step 15 - 	Verify 'Print Nalgene Labels' on 'Process Recovered Tissues' page.
+		//########################################################################################################
+		strStepDesc = "Verify 'Print Nalgene Labels' on 'Process Recovered Tissues' page.";
+		strExpResult = "'Print Nalgene Labels' PDF should be verified for the keywords '"+strDonorKey+","+strExpectedText+"'.";
+		blnFlag= clickPrintNalgeneLabelsLink(strDonorKey, strExpectedText);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Nalgene Link' has been clicked and the PDF has been verified for the keywords '"+strDonorKey+","+strExpectedText+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 - 	 Close the 'Print Nalgene Labels' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Print Nalgene Labels' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Print Nalgene Labels' PDF should be closed successfully.";
+		blnFlag=closePDF("Process Recovered Tissues");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Nalgene Labels' PDF has been closed successfully and the navigated page has been verified for the title 'Process Recovered Tissues'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}				
+				
+		//########################################################################################################
+		//Step 17 - 	Select a value from 'Manufacturing line' list box.
+		//########################################################################################################
+		strStepDesc = "Select a value from 'Manufacturing Line' list box.";
+		strExpResult = "'West Oak' should be selected from the Manufacturing line list box.";
+		blnFlag=Page("pge_ProcessRecoveredTissues").Element("lstManufacturingLine").Select("West Oak");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'West Oak' has been selected from the Manufacturing line list box successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+			
+		//########################################################################################################
+		//Step 18 - 	Click on 'Commit' button and verify new Donor Tissue page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify new Donor Tissue page.";		
+		strExpResult = "Commit button should be clicked and new Donor Tissue page should be verified.";
+		blnFlag=clickAndVerify("pge_ProcessRecoveredTissues", "btnCommit", "pgeDonorProcessing", "objDonorTissuesHeader");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Commit button is clicked and new Donor Tissue page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		// ########################################################################################################
+		// Step 19 - Push this recovery ID to the 'Common' Sheet so that it can be used for further 'Donor Processing' scripts.
+		// ########################################################################################################
+		strStepDesc = "Push this recovery ID to the 'Common' Sheet so that it can be used for further 'Donor Processing' scripts.";
+		strExpResult = "Recovery ID'"+strRecoveryId+"' should be pushed successfully to the Common datasheet under 'strRecoveryId_DonorProcessing'.";
+		blnFlag = sendValuetoCommonSheet("strRecoveryId_DonorProcessing",strRecoveryId);
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "Recovery ID '"+strRecoveryId+"' is pushed successfully to the Common datasheet under 'strRecoveryId_DonorProcessing' for further use.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Recovery ID'"+strRecoveryId+"' was not written successfully to the Common datasheet under 'strRecoveryId_DonorProcessing'.", "Fail");
+		}	
+
+		// ########################################################################################################
+		// Step 20 - Push this Donor Key to the 'Common' Sheet so that it can be used for further 'Donor Processing' scripts.
+		// ########################################################################################################
+		strStepDesc = "Push this Donor Key to the 'Common' Sheet so that it can be used for further 'Donor Processing' scripts.";
+		strExpResult = "Donor Key '"+strDonorKey+"' should be pushed successfully to the Common datasheet under 'strDonorKey_DonorProcessing'.";
+		blnFlag = sendValuetoCommonSheet("strDonorKey_DonorProcessing",strDonorKey);
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "Donor Key '"+strDonorKey+"' is pushed successfully to the Common datasheet under 'strDonorKey_DonorProcessing' for further use.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Donor Key'"+strDonorKey+"' was not written successfully to the Common datasheet under 'strDonorKey_DonorProcessing'.", "Fail");
+		}			
+		
+		// ########################################################################################################
+		// Step 21 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		

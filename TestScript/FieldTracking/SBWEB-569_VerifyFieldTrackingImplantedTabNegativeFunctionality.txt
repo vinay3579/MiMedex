@@ -1,0 +1,446 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-569
+		// # Test Case Name: VerifyFieldTrackingImplantedTabNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Field Tracking landing 
+		// # page then click on Implanted tab verifies negative functionality  and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-25-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Remote Access link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Remote Access' link given on left navigation area.";
+		strExpResult = "'Remote Access' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRemoteAccess", "pgeAssembly_Lines", "lnkFieldTracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Remote Access' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Field Tracking' link and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Field Tracking' link and verify 'Field Tracking' landing page is displayed.";
+		strExpResult = "'Field Tracking' landing page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkFieldTracking", "Field Tracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Field Tracking' link is clicked and 'Field Tracking' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click 'Implanted' tab on Field Tracking page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Implanted' tab on Field Tracking page.";
+		strExpResult = "'Implanted' tab should be clicked.";
+		blnFlag=clickTab("pgeFieldTracking","tabImplanted", "Implanted");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Implanted' tab clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Enter some invalid/junk characters in the 'Customer' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Customer' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Customer' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtCustomer_Implanted", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Customer' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Clear 'Customer' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Customer' search box and verify page refresh.";
+		strExpResult = "'Customer' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtCustomer_Implanted");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Customer' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 8 - Enter some invalid/junk characters in the 'Tissue' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Tissue' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Tissue' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtTissue_Implanted", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Tissue' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Clear 'Tissue' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Tissue' search box and verify page refresh.";
+		strExpResult = "'Tissue' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtTissue_Implanted");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 10 - Enter some invalid/junk characters in the 'Product' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Product' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Product' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtProduct_Implanted", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Product' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Clear 'Product' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Product' search box and verify page refresh.";
+		strExpResult = "'Product' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtProduct_Implanted");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Product' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter some invalid/junk characters in the 'Ship Date' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Ship Date' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Ship Date' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtShipDate_Implanted", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Ship Date' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Clear 'Ship Date' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Ship Date' search box and verify page refresh.";
+		strExpResult = "'Ship Date' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtShipDate_Implanted");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Ship Date' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 14 - Enter some invalid/junk characters in the 'Implant Date' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Implant Date' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Implant Date' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtImplantDate_Implanted", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Implant Date' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Clear 'Implant Date' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Implant Date' search box and verify page refresh.";
+		strExpResult = "'Implant Date' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtImplantDate_Implanted");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Implant Date' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 16 - Enter some invalid/junk characters in the 'TUR By' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'TUR By' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'TUR By' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtTURBy_Implanted", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'TUR By' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Clear 'TUR By' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'TUR By' search box and verify page refresh.";
+		strExpResult = "'TUR By' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtTURBy_Implanted");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'TUR By' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 18 - Enter some invalid/junk characters in the 'Sales PO' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Sales PO' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Sales PO' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtSalesPO_Implanted", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Sales PO' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Clear 'Sales PO' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Sales PO' search box and verify page refresh.";
+		strExpResult = "'Sales PO' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtSalesPO_Implanted");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sales PO' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Enter some invalid/junk characters in the 'Payment PO' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Payment PO' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Payment PO' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtPaymentPO_Implanted", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Payment PO' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 - Clear 'Payment PO' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Payment PO' search box and verify page refresh.";
+		strExpResult = "'Payment PO' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtPaymentPO_Implanted");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Payment PO' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Enter some invalid/junk characters in the 'Last Name' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Last Name' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Last Name' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtLastName_Implanted", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Last Name' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Clear 'Last Name' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Last Name' search box and verify page refresh.";
+		strExpResult = "'Last Name' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtLastName_Implanted");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Last Name' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		
+		// ########################################################################################################
+		// Step 24 - Enter some invalid/junk characters in the 'Notes' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Notes' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Notes' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtNotes_Implanted", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Notes' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 25 - Clear 'Notes' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Notes' search box and verify page refresh.";
+		strExpResult = "'Notes' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtNotes_Implanted");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Notes' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 26 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

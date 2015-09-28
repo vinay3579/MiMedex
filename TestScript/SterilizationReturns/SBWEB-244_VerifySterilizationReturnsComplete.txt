@@ -1,0 +1,202 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-244
+		// # Test Case Name: VerifySterilizationReturnsComplete
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies if Sterilization returns processing is complete, and verifies the changed location.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # 				 'Sterilization Returns' process has already been completed for the Sterlization ID.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 08-18-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSterilizationID = Script.dicCommonValue.get("strSterilizationId_SterilizationReturns");
+		String strLocation = Script.dicTestData.get("strLocation");
+		
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Process link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkSterilizationReturns");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Sterilization Returns' link and verify if 'Sterlization Returns' page is displayed successfully.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Sterilization Returns' link and verify if 'Sterlization Returns' page is displayed successfully.";
+		strExpResult = "'Sterlization Returns' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkSterilizationReturns", "Sterilization Returns");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sterlization Returns' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on Sterilization ID link and verify the navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on Sterilization ID link.";
+		strExpResult = "Sterilization ID '"+strSterilizationID+"' link should be clicked and navigated page should be verified.";
+		blnFlag=clickVendorName("pgeSterilizationReturns", strSterilizationID , "pgeSterilizationReturns", "objValidateReturnedItems");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sterilization ID "+strSterilizationID+"' link is clicked successfully and navigated page is verified.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 -  Verify 'Complete' link displayed on 'Validate Returned Items from Sterilization' page.
+		// ########################################################################################################
+		strStepDesc = "Verify 'Complete' link displayed on 'Validate Returned Items from Sterilization' page.";
+		strExpResult = "'Complete' link should be displayed on 'Validate Returned Items from Sterilization' page.";
+		blnFlag=Page("pgeSterilizationReturns").Element("lnkComplete").Exist();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Complete' link is displayed on 'Validate Returned Items from Sterilization' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 -  Verify 'Sterilization' displayed in the grid under 'Location' on 'Validate Returned Items from Sterilization' page.
+		// ########################################################################################################
+		strStepDesc = "Verify 'Sterilization' displayed in the grid under 'Location' on 'Validate Returned Items from Sterilization' page.";
+		strExpResult = "'Sterilization' should be displayed in the grid under 'Location' on 'Validate Returned Items from Sterilization' page.";
+		blnFlag = verifyLocationGridUpdated ("Sterilization");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sterilization' is displayed in the grid under 'Location' on 'Validate Returned Items from Sterilization' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 -  Select the Location 'Post Sterilization Quarantine - West Oak' from the Location dropdown.
+		// ########################################################################################################
+		strStepDesc = "Select the Location 'Post Sterilization Quarantine - West Oak' from the Location dropdown.";
+		strExpResult = "Location 'Post Sterilization Quarantine - West Oak' should be selected from the dropdown.";
+		blnFlag = Page("pgeSterilizationReturns").Element("lstLocation").Select(strLocation);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Location 'Post Sterilization Quarantine - West Oak' was selected from the dropdown successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 -  Click on 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button.";
+		strExpResult = "'Save' button should be clicked.";
+		blnFlag = Page("pgeSterilizationReturns").Element("btnSave").Click(20);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button was clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 -  Verify if the location is updated in the grid to 'Post Sterilization Quarantine - West Oak'.
+		// ########################################################################################################
+		strStepDesc = "Verify if the location is updated in the grid to 'Post Sterilization Quarantine - West Oak'.";
+		strExpResult = "Location in the grid should be updated as '"+strLocation+"'.";
+		blnFlag = verifyLocationGridUpdated (strLocation);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Location in the grid is successfully updated as '"+strLocation+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 11 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

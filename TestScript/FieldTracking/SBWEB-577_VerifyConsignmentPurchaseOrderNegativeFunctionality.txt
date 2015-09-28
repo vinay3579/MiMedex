@@ -1,0 +1,297 @@
+	
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-577
+		// # Test Case Name: VerifyConsignmentPurchaseOrderNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies error messages on 'Consignment Purchase Order' page and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Kamlesh Yadav
+		// # Created on: 04-28-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+				//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strPurchaseOrder = Script.dicTestData.get("strPurchaseOrder");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");	
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");	
+		String strExpectedText3 = Script.dicTestData.get("strExpectedText3");	
+
+		//Test Data to be fetched for the current 'Field Tracking' script from DB.
+		String strAgentName = Script.dicTestData.get("AgentName");
+		String strCustomerName = Script.dicTestData.get("CustomerName");
+		
+				// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Remote Access' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Remote Access' link given on left navigation area.";
+		strExpResult = "'Remote Access' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkRemoteAccess", "pgeAssembly_Lines", "lnkFieldTracking");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Remote Access' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Field Tracking' link and verify 'Field Tracking' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Field Tracking' link and verify 'Field Tracking' page is displayed.";
+		strExpResult = "'Field Tracking' page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines","lnkFieldTracking", "Field Tracking");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Field Tracking' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Enter a Sales Agent and click on Consignment Billing button.
+		// ########################################################################################################
+		strStepDesc = "Enter a Sales Agent and click on Consignment Billing button.";
+		strExpResult = "Agent name '"+strAgentName+"' should be entered and page 'Consignment Purchase Order' should be displayed.";
+		blnFlag=EnterAgentNameAndClickConsignmentBillingButton(strAgentName);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Agent name '"+strAgentName+"' entered and page 'Consignment Purchase Order' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on Next button without entering any data and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Next button without entering any data and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeConsignmentPurchaseOrder", "txtPurchaseOrder", "", "btnNext", "pgeCommon", "objUIMessageErrorSummary", strExpectedText);  
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		///########################################################################################################
+		//Step 7 - 	Enter purchase order on 'Consignment Purchase Order' page.
+		//########################################################################################################
+		strStepDesc = "Enter purchase order on 'Consignment Purchase Order' page.";
+		strExpResult = "Purchase order should be entered in 'Purchase Order' field.";
+		blnFlag=enterPurchaseOrder(strPurchaseOrder);
+		if (blnFlag == true)
+		{
+			strPurchaseOrder=Script.dicCommonValue.get("strPurchaseOrder");
+			reporter.ReportStep(strStepDesc, strExpResult, "Purchase order: '"+strPurchaseOrder+"' entered in 'Purchase Order' field.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on Next button and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Next button and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText1+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeConsignmentPurchaseOrder", "txtCustomer", "", "btnNext", "pgeCommon", "objUIMessageErrorSummary", strExpectedText1);  
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText1+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 9 - Clear purchase order,enter a customer and verify message displayed on clicking 'Next' button.
+		// ########################################################################################################
+		strStepDesc = "Clear purchase order,enter a customer and verify message displayed on clicking 'Next' button.";
+		strExpResult = "Error Message '"+strExpectedText2+"' should be displayed.";
+		blnFlag = clearAllFieldAndVerifyErrorMessage("pgeConsignmentPurchaseOrder","btnNext","pgeCommon","objUIMessageErrorSummary",strExpectedText2,"pgeConsignmentPurchaseOrder","txtCustomer",strCustomerName,"txtPurchaseOrder");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText2+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - Enter purchase order,enter a valid customer and click on Next button
+		//########################################################################################################
+		strStepDesc = "Enter purchase order, a valid customer and click on Next button";
+		strExpResult = "User should be redirected to second step and some tissues should be present in Available Tissues and Selected Tissues grid for Purchase Order '"+strPurchaseOrder+"' and Customer '"+strCustomerName+"'.";
+		blnFlag=EnterDataOnConsignmentPurchaseOrderAndClickNext(strPurchaseOrder,strCustomerName,"objAvailableTissues");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"User is redirected successfully to second step with tissues present in Available Tissues and Selected Tissues grid for Purchase Order '"+strPurchaseOrder+"' and Customer '"+strCustomerName+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 11 - Enter some invalid/junk characters in Available Tissues search box and verify all tissues disappears from Available Tissues grid.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in Available Tissues search box and verify all tissues disappears from Available Tissues grid.";
+		strExpResult = "All Tissues should disappear from Available Tissues grid.";
+		blnFlag = VerifyOutstandingTissuesErrors(strSearchText,"txtAvailableTissues","objSourcePickList") ;
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All Tissues disappear from Available Tissues grid successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Select tissue from 'Available Tissues' grid and move to 'Selected Tissues' grid.
+		// ########################################################################################################
+		strStepDesc = "Select tissue from 'Available Tissues' grid and move to 'Selected Tissues' grid.";
+		strExpResult = "Tissue should be moved from 'Available Tissues' grid and displayed under 'Selected Tissues' grid.";
+		blnFlag=selectAndMoveTissue();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue is moved from 'Available Tissues' grid and displayed under 'Selected Tissues' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Enter some invalid/junk characters in Selected Tissues search box and verify tissues disappears from Selected Tissues grid.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in Selected Tissues search box and verify all tissues disappears from Selected Tissues grid.";
+		strExpResult = "All Tissues should disappear from Selected Tissues grid.";
+		blnFlag = VerifyOutstandingTissuesErrors(strSearchText,"txtSelectedTissues","objTargetPickList") ;
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All Tissues disappear from Selected Tissues grid successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Remove selected tissue from 'Selected Tissues' grid and move back to 'Available Tissues' grid.
+		// ########################################################################################################
+		strStepDesc = "Remove selected tissue from 'Selected Tissues' grid and move back to 'Available Tissues' grid.";
+		strExpResult = "Selected Tissue should be removed from 'Selected Tissues' grid and displayed under 'Available Tissues' grid.";
+		blnFlag=removeSelectedTissueAndMoveToAvailableTissuesGrid();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Selected Tissue is removed from 'Selected Tissues' grid and displayed under 'Available Tissues' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Click on next button and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Click on next button and verify displayed message.";
+		strExpResult = "Error Message '"+strExpectedText3+"' should be displayed.";
+		blnFlag= verifyErrorMessage("pgeConsignmentPurchaseOrder", "txtSelectedTissues", "", "btnNext", "pgeCommon", "objUIMessageErrorSummary", strExpectedText3);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText3+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

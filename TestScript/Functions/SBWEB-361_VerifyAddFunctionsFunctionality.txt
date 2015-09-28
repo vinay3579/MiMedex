@@ -1,0 +1,225 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-361
+		// # Test Case Name: VerifyAddFunctionsFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Functions landing
+		// # page and add a new Function on the page then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Functions" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 12-15-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strFunctionName = Script.dicTestData.get("strFunctionName");
+		String strApplication = Script.dicTestData.get("strApplication");
+		String strInitialForm = Script.dicTestData.get("strInitialForm");
+		
+		//Test Data to be fetched for the current 'Recovery Groups' script from DB.
+		String strDBFunctionName = Script.dicTestData.get("Function");
+				
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Resources link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkFunctions");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Functions' link and verify 'Functions' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Functions' link and verify 'Functions' page is displayed.";
+		strExpResult = "'Functions' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkFunctions", "Functions");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Functions' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+		//########################################################################################################
+		//Step 5 - 	Calculate a Function Name that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Function Name that does not exist in the application for further use.";
+		strExpResult = "A Function Name that does not exist in the application should be calculated for further use.";
+		blnFlag=calculateNewItem(strFunctionName, strDBFunctionName); 
+		if (blnFlag == true)
+		{
+			strFunctionName = Script.dicCommonValue.get("strCalculatedItem");
+			reporter.ReportStep(strStepDesc, strExpResult, "Function Name '"+strFunctionName+"' is pushed to the Common Sheet under 'strCalculatedItem'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'New Function' button and verify 'New Function' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Function' button and verify 'New Function' page is displayed.";
+		strExpResult = "'New Function' page should be displayed.";
+		blnFlag=clickAndVerify("pgeFunctions", "btnNewFunction", "New Function");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Function' button is clicked and 'New Function' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter Application in 'New Function' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Application in 'New Function' page.";
+		strExpResult = "Application ("+strApplication+") should be entered in 'New Function' page.";
+		blnFlag=Page("pgeFunctions").Element("txtNewApplication").Type(strApplication);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Application ("+strApplication+") is entered in 'New Function' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter Function Name in 'New Function' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Function Name in 'New Function' page.";
+		strExpResult = "Function Name ("+strFunctionName+") should be entered in 'New Function' page.";
+		blnFlag=Page("pgeFunctions").Element("txtNewFunctionName").Type(strFunctionName);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Function Name ("+strFunctionName+") is entered in 'New Function' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter Initial Form in 'New Function' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Initial Form in 'New Function' page.";
+		strExpResult = "Initial Form ("+strInitialForm+") should be entered in 'New Function' page.";
+		blnFlag=Page("pgeFunctions").Element("txtNewInitialForm").Type(strInitialForm);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Initial Form ("+strInitialForm+") is entered in 'New Function' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click on 'Save' button and verify 'Functions' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Functions' page is displayed.";
+		strExpResult = "'Functions' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "Functions");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Functions' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Search for the added Function in the 'Functions' grid.
+		// ########################################################################################################
+		strStepDesc = "Search for the added Function in the 'Functions' grid.";
+		strExpResult = "The added Function ("+strFunctionName+") should be displayed in the 'Functions' grid.";
+		blnFlag=verifySearch("pgeFunctions","txtFunctionName","objFunctionName", strFunctionName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Function ("+strFunctionName+") is displayed successfully in the search result in the 'Functions' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

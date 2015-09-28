@@ -1,0 +1,212 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-566
+		// # Test Case Name: VerifyTissueDetailsNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies error messages on 'Tissue Details' page
+		// # and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Kamlesh Yadav
+		// # Created on: 05-11-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+        String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");
+	
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc,strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Tissue Utilization link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue Utilization' link given on left navigation area.";
+		strExpResult = "'Tissue Utilization' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkTissueUtilization", "pgeAssembly_Lines", "lnkTissueUtilizationSubLink");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Utilization' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Tissue Utilization' sub-link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue Utilization' sub-link and verify navigated page.";
+		strExpResult = "'Tissue Utilization' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkTissueUtilizationSubLink", "Tissue Utilization");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Utilization' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 -  Click on any tissue ID.
+		//########################################################################################################
+		strStepDesc = "Click on any tissue ID.";
+		strExpResult = "'Tissue Details' page should be displayed.";
+		blnFlag=clickAndVerify("pgeTissueUtilization","lnkTissue", "Details");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Details' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear all fields on 'Tissue Details' page.
+		// ########################################################################################################
+		strStepDesc = "Clear all fields on 'Tissue Details' page.";
+		strExpResult = "All fields should be cleared out on 'Tissue Details' page.";
+		blnFlag = clearAllField("pgeTissueUtilization","txtFacilityName","txtFacilityPhone","txtSurgeonFirstName","txtSurgeonLastName","txtPatientFirstName","txtPatientLastName","txtBirthDate","txtProcedureDate","txtProcedureType","txtProcedureCode1","txtProcedureCode2","txtSalesRep","txtComments","txtPatientId");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"All fields are cleared out successfully on 'Tissue Details' page.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Click on 'Save' button and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify message displayed.";
+		strExpResult = "Error message '"+strExpectedText+"' should be displayed.";
+		blnFlag=verifyErrorMessage("pgeTissueUtilization","btnSaveDetails","pgeCommon","objUIMessageErrorSummary",strExpectedText); 
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Clear Birth Date field, Enter some invalid/junk characters and verify message displayed.
+		//########################################################################################################
+		strStepDesc = "Clear Birth Date field, Enter some invalid/junk characters and verify message displayed.";
+		strExpResult = "Error message '"+strExpectedText1+"' should be displayed.";
+		blnFlag=verifyErrorMessage("pgeTissueUtilization","txtBirthDate",strSearchText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText1);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strExpectedText1+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Clear Birth Date field.
+		//########################################################################################################
+		strStepDesc = "Clear Birth Date field.";
+		strExpResult = "'Birth Date' field should be cleared-out.";
+		blnFlag=clearAllField("pgeTissueUtilization","txtBirthDate");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Birth Date' field is cleared-out successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Clear Procedure Date field, Enter some invalid/junk characters and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Clear Procedure Date field, Enter some invalid/junk characters and verify message displayed.";
+		strExpResult = "Error message '"+strExpectedText2+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeTissueUtilization","txtProcedureDate",strSearchText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText2);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strExpectedText2+"' is displayed successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+        // ########################################################################################################
+		// Step 11 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		

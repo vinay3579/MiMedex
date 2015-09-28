@@ -1,0 +1,471 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-415
+		// # Test Case Name: VerifyPackageInspectionNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description:Verify 'Packaging Inspection' negative functionality in 'Packaging' page.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// #				 User is on 'Packaging Inspection' page.
+		// #				 User is on 'Packaging Inspection' grid.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Sharma
+		// # Created on: 05-20-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strInspectionUserName = Script.dicTestData.get("strInspectionUserName");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strTissueDBErrorText = Script.dicTestData.get("strTissueDBErrorText");
+		String strPouchErrorText = Script.dicTestData.get("strPouchErrorText");
+		String strProductErrorText = Script.dicTestData.get("strProductErrorText");
+		String strTURCardErrorText = Script.dicTestData.get("strTURCardErrorText");
+		String strLabelErrorText = Script.dicTestData.get("strLabelErrorText");
+		String StrInsErrorText = Script.dicTestData.get("StrInsErrorText");
+		String strStickerErrorText = Script.dicTestData.get("strStickerErrorText");
+		String strCMVErrorText = Script.dicTestData.get("strCMVErrorText");
+		String strFailureErrorText = Script.dicTestData.get("strFailureErrorText");		
+		String strSuccessfullText = Script.dicTestData.get("strSuccessfullText");
+		String strSaveErrorText = Script.dicTestData.get("strSaveErrorText");
+					
+		//Getting AssemblyLineName from the DB
+		String strAssemblyLine = Script.dicTestData.get("LineName");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkPackagingInspection");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+        
+		// ########################################################################################################
+		// Step 4 - Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.";
+		strExpResult = "'Donors to Package' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonorstoPackage", "Donors to Package");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donors to Package' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5- Take a donor product through to Inspection which has only  1 tissue.
+		// ########################################################################################################
+		strStepDesc = "Take a donor product through to Inspection which has only  1 tissue.";
+		strExpResult = "Tissue should be moved to Inspection successfully.";
+		blnFlag=completeTissueInspection(strUserName,strInspectionUserName,strPassword,strAssemblyLine);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue moved to Inspection successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		// ########################################################################################################
+		// Step 6 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 7 - Click on 'Packaging Inspection' link and verify 'Packaging Inspection' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging Inspection' link and verify 'Packaging Inspection' page is displayed.";
+		strExpResult = "'Packaging Inspection' page should be verified.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkPackagingInspection", "Packaging Inspection");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging Inspection' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Select an assembly line from the "Packaging Inspection" page.
+		// ########################################################################################################
+		strStepDesc = "Select assembly line from the 'Packaging Inspection' page.";
+		strExpResult = "The value '"+strAssemblyLine+"' should be selected from the Assembly line dropdown on 'Packaging Inspection' page.";
+		blnFlag=Page("pgePackagingCollection").Element("lstAssemblyLine_PackagingInspection").Select(strAssemblyLine);	
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The value '"+strAssemblyLine+"' is selected from the Assembly line dropdown on 'Packaging Inspection' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}	
+				
+		// ########################################################################################################
+		// Step 9 -  Click on 'Next' on 'Packaging Inspection' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Next' on 'Packaging Inspection' page.";
+		strExpResult = "The 'Next' button should be clicked on 'Packaging Inspection' page.";
+		blnFlag=Page("pgePackagingCollection").Element("btnNext").Click(20);	
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Next' button is clicked on 'Packaging Inspection' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}
+		
+		// ########################################################################################################
+		// Step 10 -  Enter some invalid/junk characters in the 'Scan small bar code' text box Click on next button.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Scan small bar code' text box Click on next button.";
+		strExpResult = "Error message '"+strPouchErrorText+"' should be displayed.";	
+		blnFlag=scanTissueandVerifyErrorMsg("pgePackagingCollection",strSearchText,strPouchErrorText,"txtScanTissue_SmallBarCode","objTissue_Inspection","objUIMessageErrorSummary");
+		
+		waitForSync(2);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strPouchErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		// ########################################################################################################
+		// Step 11 -  Enter tissue in the 'Scan small bar code' text box click on next button.
+		// ########################################################################################################
+		strStepDesc = "Enter tissue in the 'Scan small bar code' text box click on next button.";
+		strExpResult = "Verify 'Scan pouch Bar Code' page is displayed";
+		blnFlag= scanTissueandVerify("pgePackagingCollection","txtScanTissue_SmallBarCode","objTissue_Inspection","objScanPouchBarCode");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Verify 'Scan pouch Bar Code' page is displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 12 -  Enter some invalid/junk characters in the Scan pouch bar code text box. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the  Scan pouch bar code  text box.";
+		strExpResult = "Error message '"+strPouchErrorText+"' should be displayed.";	
+		blnFlag=verifyErrorMessage("pgePackagingCollection","txtScanTissue_Inspection", strSearchText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strPouchErrorText);	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strPouchErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 -  Scan the tissue and verify if 'Scan Product Label Bar Code' is displayed on the page.
+		// ########################################################################################################
+		strStepDesc = "Scan the tissue and verify if 'Scan Product Label Bar Code' is displayed on the page.";
+		strExpResult = "Tissue should be scanned and 'Scan Product Label Bar Code' should be displayed on the page.";
+		blnFlag= scanTissueandVerify("pgePackagingCollection","txtScanTissue_Inspection","objPackageItemNumber","objScanProductLabel");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue is scanned and 'Scan Product Label Bar Code' is displayed on the page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 -  Enter some invalid/junk characters in the  'Scan Product Label'  text box. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the  'Scan Product Label'  text box";
+		strExpResult = "Error message '"+strPouchErrorText+"' should be displayed.";	
+		blnFlag=verifyErrorMessage("pgePackagingCollection","txtScanTissue_Inspection", strSearchText,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strPouchErrorText);	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strPouchErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 -  Enter Tissue ID in 'Scan Product Label' text box. and click on submit button. 
+		// ########################################################################################################
+		strStepDesc = "Enter Tissue ID in 'Scan Product Label' text box. and click on submit button.";
+		strExpResult = "Error message '"+strPouchErrorText+"' should be displayed.";	
+		blnFlag= scanTissueandVerify("pgePackagingCollection","txtScanTissue_Inspection","objPackageItemNumber","objPleaseVerifyRemainingItems");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue is scanned and 'Please Verify Remaining Items' is displayed on the page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 -  Click save and verify error messages
+		// ########################################################################################################
+		strStepDesc = "Click save and verify error messages";
+		strExpResult = "Multiple error messages '"+strSaveErrorText+"'are displayed successfully";	
+		blnFlag=verifyMultipleErrorMessages("pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strSaveErrorText);  
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strSaveErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		// ########################################################################################################
+		// Step 17 -  Check TUR Card and click save button
+		// ########################################################################################################
+		strStepDesc = "Check TUR Card and click save button";
+		strExpResult = "Error message '"+strTURCardErrorText+"' should be displayed.";	
+		blnFlag=chkAndVerifyMultipleErrorMessages("pgePackagingCollection","chkTURCard","pgeCommon","btnSave",strTURCardErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strTURCardErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 -  Check Back Label and click save button
+		// ########################################################################################################
+		strStepDesc = "Check Back Label and click save button";
+		strExpResult = "Error message '"+strLabelErrorText+"' should be displayed.";	
+		blnFlag=chkAndVerifyMultipleErrorMessages("pgePackagingCollection","chkBackLabel","pgeCommon","btnSave",strLabelErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strLabelErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		// ########################################################################################################
+		// Step 19 -  Check 'Instructions for Use' and click save button
+		// ########################################################################################################
+		strStepDesc = "Check 'Instructions for Use' and click save button";
+		strExpResult = "Error message '"+StrInsErrorText+"' should be displayed.";	
+		blnFlag=chkAndVerifyMultipleErrorMessages("pgePackagingCollection","chkInstructionsforUse","pgeCommon","btnSave",StrInsErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+StrInsErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 -  Check 'Stickers' and click save button
+		// ########################################################################################################
+		strStepDesc = "Check 'Stickers' and click save button";
+		strExpResult = "Error message '"+strStickerErrorText+"' should be displayed.";	
+		blnFlag=chkAndVerifyMultipleErrorMessages("pgePackagingCollection","chkStickers","pgeCommon","btnSave",strStickerErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strStickerErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 -  Check CMV card checkbox
+		// ########################################################################################################
+		strStepDesc = "Check 'CMV Card' checkbox";
+		strExpResult = "'CMV Card' checkbox is checked";	
+		blnFlag=Page("pgePackagingCollection").Element("chkCMVCard").Click(20);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'CMV Card' checkbox is checked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		// ########################################################################################################
+		// Step 22 -  Check 'CMV Card' and click save button
+		// ########################################################################################################
+		strStepDesc = "Check 'CMV Card' and click save button";
+		strExpResult = "Error message '"+strStickerErrorText+"' should be displayed.";	
+		blnFlag=clickAndVerify("pgeCommon","btnSave","pgeCommon","btnCommit");  
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strStickerErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}				
+						
+		// ########################################################################################################
+		// Step 23 -  Check fail  and verify 'Package Item Failure' page is displayed. 
+		// ########################################################################################################
+		strStepDesc = "Check fail  and verify 'Package Item Failure' page is displayed.";
+		strExpResult = "Package Item Failure page should be displayed.";	
+		blnFlag=clickAndVerify("pgePackagingCollection","chkFail","pgeCommon","btnSave");  
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Package Item Failure page is displayed successfully", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		// ########################################################################################################
+		// Step 24 -  Leave 'Reason for failure:' box blank and click on Save button.
+		// ########################################################################################################
+		strStepDesc = "Leave 'Reason for failure:' box blank and click on Save button.";
+		strExpResult = "Error message '"+strFailureErrorText+"' should be displayed.";	
+		blnFlag = verifyErrorMessage("pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strFailureErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strFailureErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 25 -  Click on Cancel button.
+		// ########################################################################################################
+		strStepDesc = "Click on Cancel button.";
+		strExpResult = "User navigated back to Inspection page.";	
+		blnFlag=clickAndVerify("pgeCommon","btnCancel","pgeCommon","btnCommit");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Inspection Page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 26 - User enters signature on the Canvas.
+		// ########################################################################################################
+		strStepDesc = "User enters signature on the Canvas.";
+		strExpResult = "The canvas is signed successfully.";	
+        blnFlag = canvasSignature(driver);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"The canvas is signed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 27 -   Click on commit button.
+		// ########################################################################################################
+		strStepDesc = "Click on commit button.";
+		strExpResult = "Error message '"+strSuccessfullText+"' should be displayed.";	
+		blnFlag=verifyErrorMessage("pgeCommon", "btnCommit", "pgeCommon", "objUIMessageInfoSummary", strSuccessfullText); 
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strSuccessfullText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+				
+		// ########################################################################################################
+		// Step 28 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

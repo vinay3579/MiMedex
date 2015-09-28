@@ -1,0 +1,355 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-267
+		// # Test Case Name: VerifyPackageInspectionFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that a the user can sign in and land on the "Package Inspection" landing page, select an assembly line,     // #    perform the 'Package Inspection' functionaliy and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// #				 User is on 'Packaging Inspection' page.
+		// #				 User is on 'Packaging Inspection' grid.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 09-03-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strDonorKey = Script.dicCommonValue.get("strDonorKey_PackagingCollection");
+		String strAssemblyLine = Script.dicCommonValue.get("strAssemblyLine");
+		String strInspectionUserName = Script.dicTestData.get("strInspectionUserName");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkPackagingInspection");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Packaging Inspection' link and verify 'Packaging Inspection' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging Inspection' link and verify 'Packaging Inspection' page is displayed.";
+		strExpResult = "'Packaging Inspection' page should be verified.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkPackagingInspection", "Packaging Inspection");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging Inspection' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Validate if the Package Assembly process has been completed successfully by checking the 'strAssemblyLine' in Common Sheet.
+		// ########################################################################################################
+		strStepDesc = "Validate if the Package Assembly process has been completed successfully by checking the 'strAssemblyLine' in Common Sheet.";
+		strExpResult = "The Package Assembly process should have been completed successfully and the assembly line 'strAssemblyLine' should not be empty.";
+		blnFlag=!strAssemblyLine.isEmpty();		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'strAssemblyLine' in Common Sheet is '"+strAssemblyLine+"' and Inspection process can now proceed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'strAssemblyLine' in Common Sheet is blank;Inspection process can not proceed since the Assembly  process has not been completed successfully.", "Fail");
+			return;
+		}
+				
+		// ########################################################################################################
+		// Step 6 -  Select an assembly line from the "Packaging Inspection" page.
+		// ########################################################################################################
+		strStepDesc = "Select assembly line from the 'Packaging Inspection' page.";
+		strExpResult = "The value '"+strAssemblyLine+"' should be selected from the Assembly line dropdown on 'Packaging Inspection' page.";
+		blnFlag=Page("pgePackagingCollection").Element("lstAssemblyLine_PackagingInspection").Select(strAssemblyLine);	
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The value '"+strAssemblyLine+"' is selected from the Assembly line dropdown on 'Packaging Inspection' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}	
+				
+		// ########################################################################################################
+		// Step 7 -  Click on 'Next' on 'Packaging Inspection' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Next' on 'Packaging Inspection' page.";
+		strExpResult = "The 'Next' button should be clicked on 'Packaging Inspection' page.";
+		blnFlag=Page("pgePackagingCollection").Element("btnNext").Click(20);	
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Next' button is clicked on 'Packaging Inspection' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}
+				
+		// ########################################################################################################
+		// Step 8 -  Verify if 'Packaging Inspection' grid is displayed on the page.
+		// ########################################################################################################
+		strStepDesc = "Verify if 'Package Inspection' grid is displayed on the page.";
+		strExpResult = "'Package Inspection' grid should be displayed on the page.";
+		blnFlag= verifyExactText("pgePackagingCollection", "objAssemblyPanelTitle", "Package Inspection"); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Package Inspection' grid is displayed on the page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Verify if the tissue in the grid contains the expected Donor Key that needs to be processed through inspection.
+		// ########################################################################################################
+		strStepDesc = "Verify if the tissue in the grid contains the expected Donor Key that needs to be processed through inspection.";
+		strExpResult = "The tissue grid should contain the expected Donor Key that needs to be processed through inspection("+strDonorKey+").";
+		blnFlag=verifyTextContains("pgePackagingCollection", "objTissue_Inspection", strDonorKey);        
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The tissue grid contains the expected Donor Key that needs to be processed through inspection("+strDonorKey+").", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 -  Scan the tissue and verify if 'Scan Pouch Bar Code' is displayed on the page.
+		// ########################################################################################################
+		strStepDesc = "Scan the tissue and verify if 'Scan Pouch Bar Code' is displayed on the page.";
+		strExpResult = "Tissue should be scanned and 'Scan Pouch Bar Code' should be displayed on the page.";
+		blnFlag= scanTissueandVerify("pgePackagingCollection","txtScanTissue_SmallBarCode","objTissue_Inspection","objScanPouchBarCode");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue is scanned and 'Scan Pouch Bar Code' is displayed on the page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 -  Verify if	'Patient Label' check box is in checked state.
+		// ########################################################################################################
+		strStepDesc = "Verify that 'Patient Label' check box is in checked state.";
+		strExpResult = "'Patient Label' checkbox should be in checked state.";
+		blnFlag= Page("pgePackagingCollection").Element("chkPatientLabel").isSelected();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Patient Label' checkbox is in checked state.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 -  Scan the tissue and verify if 'Scan Product Label Bar Code' is displayed on the page.
+		// ########################################################################################################
+		strStepDesc = "Scan the tissue and verify if 'Scan Product Label Bar Code' is displayed on the page.";
+		strExpResult = "Tissue should be scanned and 'Scan Product Label Bar Code' should be displayed on the page.";
+		blnFlag= scanTissueandVerify("pgePackagingCollection","txtScanTissue_Inspection","objPackageItemNumber","objScanProductLabel");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue is scanned and 'Scan Product Label Bar Code' is displayed on the page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 -  Verify if 'Pouch' check box is in checked state.
+		// ########################################################################################################
+		strStepDesc = "Verify that 'Pouch' check box is in checked state.";
+		strExpResult = "'Pouch' checkbox should be in checked state.";
+		blnFlag= Page("pgePackagingCollection").Element("chkPouch").isSelected();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Pouch' checkbox is in checked state.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 -  Scan the tissue and verify if 'Please Verify Remaining Items' is displayed on the page.
+		// ########################################################################################################
+		strStepDesc = "Scan the tissue and verify if 'Please Verify Remaining Items' is displayed on the page.";
+		strExpResult = "Tissue should be scanned and 'Please Verify Remaining Items' should be displayed on the page.";
+		blnFlag= scanTissueandVerify("pgePackagingCollection","txtScanTissue_Inspection","objPackageItemNumber","objPleaseVerifyRemainingItems");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue is scanned and 'Please Verify Remaining Items' is displayed on the page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 -  Verify if 'Product Label' check box is in checked state.
+		// ########################################################################################################
+		strStepDesc = "Verify that 'Product Label' check box is in checked state.";
+		strExpResult = "'Product Label' checkbox should be in checked state.";
+		blnFlag= Page("pgePackagingCollection").Element("chkProductLabel").isSelected();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Product Label' checkbox is in checked state.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 -  Check all the checkboxes on 'Packaging Inspection' page.
+		// ########################################################################################################
+		strStepDesc = "Check all the checkboxes on 'Packaging Inspection' page.";
+		strExpResult = "All the checkboxes in 'Packaging Inspection' page should be checked.";
+		blnFlag= selectPackageInspectionCheckboxes();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All the checkboxes in 'Packaging Inspection' page are checked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 -  Click on 'Save' button and verify that 'Inspected By' section should be displayed on "Packaging Inspection" page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify that 'Inspected By' section should be displayed on 'Packaging Inspection' page.";
+		strExpResult = "'Save' button should be clicked and 'Inspected By' section should be displayed on 'Packaging Inspection' page.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "pgePackagingCollection", "objInspectedBy");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Inspected By' section is displayed on 'Packaging Inspection' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 18 - 	Enter signature in the signature panel and sign the canvas.
+		//########################################################################################################
+		strStepDesc = "Enter signature in the signature panel and sign the canvas.";
+		strExpResult = "The Inspection 'Signature' ("+strInspectionUserName+") should be entered and the canvas pad should be signed.";
+		blnFlag=electronicSignaturePackaging(strInspectionUserName);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Inspection 'Signature' ("+strInspectionUserName+") is entered successfully and the canvas pad is signed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 19 - 	Click on 'Commit' button and verify if 'Commit' button disappears.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify if 'Commit' button disappears.";
+		strExpResult = "The 'Commit' button should be clicked, and 'Commit' button should disappear from view.";
+		blnFlag=clickAndVerifyNotExist("pgeCommon", "btnCommit", "pgeCommon", "btnCommit");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Commit' button is clicked, and 'Commit' button disappears from view successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 20 -  Verify if confirmation message is also displayed on page.
+		// ########################################################################################################
+		strStepDesc = "Verify if confirmation message is also displayed on page.";
+		strExpResult = "Confirmation message should be displayed on the page.";
+		blnFlag= verifyTextContains("pgePackagingCollection", "objMessage", "was moved successfully to Packaged Goods."); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Confirmation message is displayed on the page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+
+		// ########################################################################################################
+		// Step 21 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

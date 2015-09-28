@@ -1,0 +1,205 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-596
+		// # Test Case Name: VerifyReleaseScanButtonFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies the release scan button functionality on Release Processing page
+		// # and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Release Processing" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 03-09-2015
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strRefrigerator = Script.dicTestData.get("strRefrigerator");
+		String strScannedMessage = Script.dicTestData.get("strExpectedText");
+		String strProcessedMessage = Script.dicTestData.get("strProcessedText");
+		
+		//Test Data to be fetched for the current 'Release Processing' script from DB.
+		String strRecoveryId = Script.dicTestData.get("RecoveryKey");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Quality Assurance' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkRelease_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Release Processing' link and verify 'Release Processing' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Release Processing' link and verify 'Release Processing' page is displayed.";
+		strExpResult = "'Release Processing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRelease_Processing", "pgeRelease_Processing", "txtSerologyResult");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Release Processing' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - Click on Release Scan button on Release Processing page. 
+		//########################################################################################################
+		strStepDesc = "Click on Release Scan button on Release Processing page.";
+		strExpResult = "'Release Scan' button should be clicked and 'Release Scan' page should be displayed.";
+		blnFlag=clickAndVerify("pgeRelease_Processing", "btnReleaseScan", "Release Scan");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Release Scan' button is clicked and 'Release Scan' page is displayed sucessfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 6 - Fill entries, click 'Process Scans' button and validate confirmation message on 'Release Scan' page.
+		//########################################################################################################
+		strStepDesc = "Fill entries, click 'Process Scans' button and validate confirmation message on 'Release Scan' page.";
+		strExpResult = "Refrigerator '"+strRefrigerator+"' and Recovery Id '"+strRecoveryId+"' should be filled, 'Process Scans' button should be clicked and confirmation message should be validated on 'Release Scan' page.";
+		blnFlag = fillReleaseScanEntries("pgeReleaseScan", "txtRefrigerator", "txtScanList", "btnProcessScans", strRefrigerator, strRecoveryId, strScannedMessage);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Refrigerator '"+strRefrigerator+"' and Recovery Id '"+strRecoveryId+"' is filled , 'Process Scans' button is clicked and confirmation message is validated on 'Release Scan' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 
+		
+		//########################################################################################################
+		//Step 7 - Validate a row with status of 'Release OK' is displayed on 'Release Scan' page.
+		//########################################################################################################
+		strStepDesc = "Validate a row with status of 'Release OK' is displayed on 'Release Scan' page.";
+		strExpResult = "A row with status of 'Release OK' should be displayed on 'Release Scan' page.";
+		blnFlag=Page("pgeReleaseScan").Element("objReleaseOk").Exist();
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "A row with status of 'Release OK' is displayed on 'Release Scan' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+		//########################################################################################################
+		//Step 8 - 	Click on 'Commit' button and validate confirmation message on 'Release Scan' page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button and validate confirmation message on 'Release Scan' page.";
+		strExpResult = "'Commit' button should be clicked and confirmation message should be validated on 'Release Scan' page.";
+		blnFlag=clickAndVerifyConfirmationMessage("pgeReleaseScan","btnCommit","Commit",strProcessedMessage,"strRecoveryId",strRecoveryId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and confirmation message is validated on 'Release Scan' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 9 - Validate a row with status of 'Release OK' has been removed on 'Release Scan' page.
+		//########################################################################################################
+		strStepDesc = "Validate a row with 'Release OK' status has been removed from 'Release Scan' page.";
+		strExpResult = "Row with 'Release OK' status should be removed from 'Release Scan' page.";
+		blnFlag=verifyExactText("pgeReleaseScan","objNoRecordsFound","No records found.");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Row with 'Release OK' status is removed from 'Release Scan' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+
+		// ########################################################################################################
+		// Step 10 - Push this recovery Id to the 'Common' Sheet so that it can be used for further 'Release Sacn' scripts.
+		// ########################################################################################################
+		strStepDesc = "Push this recovery Id to the 'Common' Sheet so that it can be used for further 'Release Scan' scripts.";
+		strExpResult = "Recovery Id '"+strRecoveryId+"' should be pushed to the Common datasheet under 'strRecoveryId_ReleaseScan' for further use.";
+		blnFlag = sendValuetoCommonSheet("strRecoveryId_ReleaseScan",strRecoveryId);
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "Recovery Id '"+strRecoveryId+"' is pushed successfully to the Common datasheet under 'strRecoveryId_ReleaseScan' for further use.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+			
+		// ########################################################################################################
+		// Step 11 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

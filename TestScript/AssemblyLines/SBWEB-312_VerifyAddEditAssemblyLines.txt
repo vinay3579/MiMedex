@@ -1,0 +1,279 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-309
+		// # Test Case Name: VerifyAddEditAssemblyLines
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Assembly Lines' landing
+		// # page, add a new assembly line and edit the same and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Tissue Utilization" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 11-03-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strNewAssemblyLine = Script.dicTestData.get("strNewAssemblyLine");
+		String strEditedSmallBarCodeDeviceName = Script.dicTestData.get("strEditedSmallBarCodeDeviceName");
+		
+		// More test data
+		String strDeviceName_SmallBarCode = Script.dicTestData.get("strDeviceName_SmallBarCode");		
+		String strVerifyDeviceOnline_SmallBarCode = Script.dicTestData.get("strVerifyDeviceOnline_SmallBarCode");
+		String strIPAddress_SmallBarCode = Script.dicTestData.get("strIPAddress_SmallBarCode");
+		String strTimeout_SmallBarCode = Script.dicTestData.get("strTimeout_SmallBarCode");
+		String strDeviceName_ProdLabel = Script.dicTestData.get("strDeviceName_ProdLabel");
+		String strVerifyDeviceOnline_ProdLabel = Script.dicTestData.get("strVerifyDeviceOnline_ProdLabel");		
+		String strIPAddress_ProdLabel = Script.dicTestData.get("strIPAddress_ProdLabel");		
+		String strTimeout_ProdLabel = Script.dicTestData.get("strTimeout_ProdLabel");		
+		String strDeviceName_Custom = Script.dicTestData.get("strDeviceName_Custom");		
+		String strVerifyDeviceOnline_Custom = Script.dicTestData.get("strVerifyDeviceOnline_Custom");		
+		String strIPAddress_Custom = Script.dicTestData.get("strIPAddress_Custom");		
+		String strTimeout_Custom = Script.dicTestData.get("strTimeout_Custom");		
+		
+		// Get data from DB
+		String strTestLineDb = Script.dicTestData.get("LineName");		
+				
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkAssemblyLines");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Assembly Lines' link and verify 'Assembly Lines' landing page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Assembly Lines' link and verify 'Assembly Lines' landing page is displayed.";
+		strExpResult = "'Assembly Lines' landing page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkAssemblyLines", "Assembly Lines");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Assembly Lines' link is clicked and 'Assembly Lines' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Calculate a Line Name that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Line Name that does not exist in the application for further use.";
+		strExpResult = "A Line Name that does not exist in the application should be calculated and pushed to the Common Sheet under 'strNewAssemblyLine' for further use.";
+		blnFlag=calculateNewItem(strNewAssemblyLine, strTestLineDb, "strNewAssemblyLine"); 
+		if (blnFlag == true)
+		{
+			strNewAssemblyLine = Script.dicCommonValue.get("strNewAssemblyLine");
+			reporter.ReportStep(strStepDesc, strExpResult, "Line Name '"+strNewAssemblyLine+"' is pushed to the Common Sheet under 'strNewAssemblyLine'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'New Assembly Line' button and verify 'Add Assembly Line' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Assembly Line' button and verify 'Add Assembly Line' page is displayed.";
+		strExpResult = "'Add Assembly Line' landing page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssemblyLines", "btnNewAssemblyLine", "Add Assembly Line");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Assembly Line' button is clicked and 'Add Assembly Line' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter details in 'Add Assembly Line' page.
+		// ########################################################################################################
+		strStepDesc = "Enter details in 'Add Assembly Line' page.";
+		strExpResult = "All required details in the 'Add Assembly Line' should be filled.";
+		blnFlag=fillNewAssemblyLineForm(strNewAssemblyLine,strDeviceName_SmallBarCode,strVerifyDeviceOnline_SmallBarCode,strIPAddress_SmallBarCode,strTimeout_SmallBarCode,strDeviceName_ProdLabel,strVerifyDeviceOnline_ProdLabel,strIPAddress_ProdLabel,strTimeout_ProdLabel, strDeviceName_Custom,strVerifyDeviceOnline_Custom, strIPAddress_Custom, strTimeout_Custom); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All required details in the 'Add Assembly Line' page is filled successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Click on 'Save' button and verify 'Assembly Lines' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Assembly Lines' page is displayed.";
+		strExpResult = "'Assembly Lines' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "Assembly Lines");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Assembly Lines' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - 	Search for the added Assembly Line in the 'Assembly Lines' grid.
+		//########################################################################################################
+		strStepDesc = "Search for the added Assembly Line in the 'Assembly Lines' grid..";
+		strExpResult = "The added Assembly Line ("+strNewAssemblyLine+") should be displayed in the 'Assembly Lines' grid.";
+		blnFlag=verifySearch("pgeAssemblyLines","txtSearchLineName","lnkLine", strNewAssemblyLine);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Assembly Line ("+strNewAssemblyLine+") is displayed successfully in the search result in the 'Assembly Lines' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - 	Click on the added Line Name and verify if 'Edit Assembly Line' page is displayed successfully.
+		//########################################################################################################
+		strStepDesc = "Click on the added Line Name and verify if 'Edit Assembly Line' page is displayed successfully.";
+		strExpResult = "The added Assembly Line ("+strNewAssemblyLine+") should be clicked and 'Edit Assembly Line' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeAssemblyLines","lnkLine", "Edit Assembly Line");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Assembly Line ("+strNewAssemblyLine+") is clicked and 'Edit Assembly Line' page is displayed sucecssfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - 	Select the new Small Bar Code Device Name from the 'Name' field in the 'Edit Assembly Line' page.
+		//########################################################################################################
+		strStepDesc = "Select the new Small Bar Code Device Name from the 'Name' field in the 'Edit Assembly Line' page.";
+		strExpResult = "The new Small Bar Code Device Name ("+strEditedSmallBarCodeDeviceName+") should be selected from the 'Edit Assembly Line' page successfully.";
+		blnFlag=Page("pgeAssemblyLines").Element("lstDeviceName_SmallBarCode").Select(strEditedSmallBarCodeDeviceName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The new Small Bar Code Device Name ("+strEditedSmallBarCodeDeviceName+") should be selected from 'Name' field in 'Edit Assembly Line' page  successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Click on 'Save' button and verify 'Assembly Lines' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Assembly Lines' page is displayed.";
+		strExpResult = "'Assembly Lines' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "Assembly Lines");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Assembly Lines' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 14 - 	Search for the added Assembly Line in the 'Assembly Lines' grid.
+		//########################################################################################################
+		strStepDesc = "Search for the added Assembly Line in the 'Assembly Lines' grid.";
+		strExpResult = "The added Assembly Line ("+strNewAssemblyLine+") should be displayed in the 'Assembly Lines' grid.";
+		blnFlag=verifySearch("pgeAssemblyLines","txtSearchLineName","lnkLine", strNewAssemblyLine);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Assembly Line ("+strNewAssemblyLine+") is displayed successfully in the search result in the 'Assembly Lines' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 15 - 	Verify if the Small Bar Code edit is successful on 'Assembly Lines' page.
+		//########################################################################################################
+		strStepDesc = "Verify if the Small Bar Code edit is successful on 'Assembly Lines' page.";
+		strExpResult = "The edited Small Bar Code Device Name("+strEditedSmallBarCodeDeviceName+") should be displayed in the 'Assembly Lines' grid.";
+		blnFlag=verifyExactText("pgeAssemblyLines", "objSmallBarCodeDeviceName", strEditedSmallBarCodeDeviceName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Small Bar Code Device Name ("+strEditedSmallBarCodeDeviceName+") is displayed successfully in the search result in the 'Assembly Lines' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 16 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

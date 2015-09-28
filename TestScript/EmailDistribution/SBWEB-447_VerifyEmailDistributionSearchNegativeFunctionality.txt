@@ -1,0 +1,225 @@
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-447
+		// # Test Case Name: VerifyEmailDistributionSearchNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up ,reach to the 'Email Distribution' landing
+		// # page and verifies all the error messages then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Email Distribution" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 07-20-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkUsers");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Email Distribution' link and verify 'Email Distribution' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Email Distribution' link and verify 'Email Distribution' page is displayed.";
+		strExpResult = "'Email Distribution' page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkEmailDistribution", "Email Distribution");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Email Distribution' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Enter some invalid/junk characters in the 'Full Name' search box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Full Name' search box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		
+		blnFlag = verifySearchResults("pgeEmailDistribution", "Full Name", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Clear 'Full Name' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Full Name' search box and verify page refresh.";
+		strExpResult = "'Full Name' search box should be cleared and the page should be refreshed.";
+		
+		blnFlag = clearSearchField("pgeEmailDistribution", "Full Name");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Full Name' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter some invalid/junk characters in the 'Email' search box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Email' search box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		
+		blnFlag = verifySearchResults("pgeEmailDistribution", "Email", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 8 - Clear 'Email' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Email' search box and verify page refresh.";
+		strExpResult = "'Email' search box should be cleared and the page should be refreshed.";
+		
+		blnFlag = clearSearchField("pgeEmailDistribution", "Email");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Email' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ######################################################################################################################
+		// Step 9 - Click on 'Email Distribution By Application' tab on 'Email Distribution' page.
+		// ######################################################################################################################
+		strStepDesc = "Click on 'Email Distribution By Application' tab on 'Email Distribution' page.";
+		strExpResult = "'Email Distribution By Application' tab should be clicked.";
+		
+		blnFlag=clickAndVerify("pgeEmailDistribution","lnkEmailDistributionByApplication", "Email Distribution");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Email Distribution By Application' tab is clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+		// ########################################################################################################
+		// Step 10 - Enter some invalid/junk characters in the 'Application' search box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Application' search box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		
+		blnFlag = verifySearchResults("pgeEmailDistribution", "Application", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 11 - Clear 'Application' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Application' search box and verify page refresh.";
+		strExpResult = "'Application' search box should be cleared and the page should be refreshed.";
+		
+		blnFlag = clearSearchField("pgeEmailDistribution", "Application");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Application' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

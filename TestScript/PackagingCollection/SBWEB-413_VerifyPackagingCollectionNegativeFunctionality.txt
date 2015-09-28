@@ -1,0 +1,298 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-413
+		// # Test Case Name: VerifyPackagingCollectionNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies error messages on 'Packaging Collection' page.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// #                 MiMedx SBWeb URL is accessible to the user			
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Kamlesh Kumar
+		// # Created on: 05-04-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");
+		String strExpectedText3 = Script.dicTestData.get("strExpectedText3");
+		String strExpectedText4 = Script.dicTestData.get("strExpectedText4");
+		String strExpectedText5 = Script.dicTestData.get("strExpectedText5");
+		String strExpectedText6 = Script.dicTestData.get("strExpectedText6");
+		String strExpectedText7 = Script.dicTestData.get("strExpectedText7");
+		String strExpectedText8 = Script.dicTestData.get("strExpectedText8");
+		
+		//Test Data to be fetched for the current 'Packaging' script from the DB.
+		String strDonorKey= Script.dicTestData.get("DonorKey");
+			
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+					
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkDonorstoPackage");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.";
+		strExpResult = "'Donors to Package' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonorstoPackage", "Donors to Package");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donors to Package' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//#############################################################################################################
+		//Step 5 - 	Select a Donor ID with Quantity '2' and status 'New' and navigate to 'Packaging Collection' Page.
+		//#############################################################################################################
+		strStepDesc = "Select a Donor ID with Quantity '2' and status 'New' and navigate to 'Packaging Collection' Page.";
+		strExpResult = "Donor ID '"+strDonorKey+"' should be selected and Packaging Collection page should be displayed.";
+		blnFlag= SearchPackagingCollectionDonorKeyAndClick(strDonorKey);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Donor ID '"+strDonorKey+"' is selected and Packaging Collection page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//#######################################################################################################################
+		//Step 6 - 	Check all Materials Collected check-boxes except 'Product Carton' and verify message displayed.
+		//#######################################################################################################################
+		strStepDesc = "Check all Materials Collected check-boxes except 'Product Carton' and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText1+"' should be displayed.";
+		blnFlag= VerifyPackagingCollectionErrorMessages("pgePackagingCollection","btnCommit",strExpectedText1,"chkPouch","chkInstructionsforUse","chkTURCard","chkStickers","chkCMVCard","chkBackLabel");	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText1+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//#######################################################################################################################
+		//Step 7 - 	Check all Materials Collected except 'Pouch' and verify message displayed.
+		//#######################################################################################################################
+		strStepDesc = "Check all Materials Collected check-boxes except 'Pouch' and verify message displayed on clicking 'Commit' button.";
+		strExpResult = "Error Message '"+strExpectedText2+"' should be displayed.";
+		blnFlag= VerifyPackagingCollectionErrorMessages("pgePackagingCollection","btnCommit",strExpectedText2,"chkProductCarton","chkPouch");	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText2+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###############################################################################################################################
+		//Step 8 -Check all Materials Collected check-boxes except 'Instructions for Use' and verify message displayed.
+		//###############################################################################################################################
+		strStepDesc = "Check all Materials Collected check-boxes except 'Instructions for Use' and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText3+"' should be displayed.";
+		blnFlag= VerifyPackagingCollectionErrorMessages("pgePackagingCollection","btnCommit",strExpectedText3,"chkPouch","chkInstructionsforUse");	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText3+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###############################################################################################################################
+		//Step 9 - Check all Materials Collected check-boxes except 'TUR Card' and verify message displayed.
+		//###############################################################################################################################
+		strStepDesc = "Check all Materials Collected check-boxes except 'TUR Card' and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText4+"' should be displayed.";
+		blnFlag= VerifyPackagingCollectionErrorMessages("pgePackagingCollection","btnCommit",strExpectedText4,"chkInstructionsforUse","chkTURCard");	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText4+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###############################################################################################################################
+		//Step 10 - Check all Materials Collected check-boxes except 'Stickers' and verify message displayed.
+		//###############################################################################################################################
+		strStepDesc = "Check all Materials Collected check-boxes except 'Stickers' and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText5+"' should be displayed.";
+		blnFlag= VerifyPackagingCollectionErrorMessages("pgePackagingCollection","btnCommit",strExpectedText5,"chkTURCard","chkStickers");	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText5+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###############################################################################################################################
+		//Step 11 - Check all Materials Collected check-boxes except 'CMV Card' and verify message displayed.
+		//###############################################################################################################################
+		strStepDesc = "Check all Materials Collected check-boxes except 'CMV Card' and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText6+"' should be displayed.";
+		blnFlag= VerifyPackagingCollectionErrorMessages("pgePackagingCollection","btnCommit",strExpectedText6,"chkStickers","chkCMVCard");	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText6+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###############################################################################################################################
+		//Step 12 - Check all Materials Collected check-boxes except 'Back Label' and verify message displayed.
+		//###############################################################################################################################
+		strStepDesc = "Check all Materials Collected check-boxes except 'Back Label' and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText7+"' should be displayed.";
+		blnFlag= VerifyPackagingCollectionErrorMessages("pgePackagingCollection","btnCommit",strExpectedText7,"chkCMVCard","chkBackLabel");	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText7+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###############################################################################################################################
+		//Step 13 - Check all Materials Collected and verify message displayed.
+		//###############################################################################################################################
+		strStepDesc = "Check all Materials Collected and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText7+"' should be displayed.";
+		blnFlag= VerifyPackagingCollectionErrorMessages("pgePackagingCollection","btnCommit",strExpectedText8,"chkBackLabel");	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText8+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 14 - Check all Materials Collected,Add signatures and click on Commit button.
+		//########################################################################################################
+		strStepDesc = "Check all Materials Collected,Add signatures and click on Commit button.";
+		strExpResult = "The Packaging Collection page should be filled with required entries.";
+		blnFlag = canvasSignature(driver);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Packaging Collection page is filled with required entries.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###############################################################################################################################
+		//Step 15 - Click on 'Commit' button and verify if the entries are saved by validating if 'Commit' button does not exist anymore.
+		//################################################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify if the entries are saved by validating if 'Commit' button does not exist anymore.";
+		strExpResult = "The 'Commit' button should be clicked and the entries saved. 'Commit' button should not exist anymore.";
+		blnFlag=clickAndVerifyNotExist("pgeCommon", "btnCommit", "pgeCommon", "btnCommit");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Commit' button is clicked and the entries are saved. 'Commit' button does not exist anymore.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 - Click on 'Return' button.
+		//########################################################################################################
+		strStepDesc = "Click on 'Return' button.";
+		strExpResult = "User should be redirected on 'Packaging Collection' page.";
+		blnFlag=clickAndVerify("pgeCommon", "btnReturn", "Packaging Collection");	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User is redirected on 'Packaging Collection' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

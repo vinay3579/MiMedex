@@ -1,0 +1,334 @@
+        // ########################################################################################################
+		// # Test Case ID: SBWEB-518
+		// # Test Case Name: VerifyEditProductsNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up ,reach to the ' Edit Product' landing
+		// # page and verifies all the error messages then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on " Edit Product" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Kamlesh Kumar
+		// # Created on: 07-16-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+		String strSearchText = Script.dicTestData.get("strSearchText");	
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");	
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");
+		String strExpectedText3 = Script.dicTestData.get("strExpectedText3");
+		String strMaxLength = Script.dicTestData.get("strMaxLength");
+		String strInputText = Script.dicTestData.get("strInputText");
+		String strMaxLengthApplication = Script.dicTestData.get("strMaxLengthApplication");
+		String strExceptionPackageBarcode = Script.dicTestData.get("strExceptionPackageBarcode");
+		String strExceptionProductLabel = Script.dicTestData.get("strExceptionProductLabel");
+		String strExceptionSmallBarCode = Script.dicTestData.get("strExceptionSmallBarCode");
+		String strExceptionCustomLabel = Script.dicTestData.get("strExceptionCustomLabel");
+		String strExceptionFamily = Script.dicTestData.get("strExceptionFamily");
+		String strExceptionBranding = Script.dicTestData.get("strExceptionBranding");
+		String strExceptionUPN = Script.dicTestData.get("strExceptionUPN");
+		String strExceptionApplication = Script.dicTestData.get("strExceptionApplication");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkUsers");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Products' link and verify 'Products' landing page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Products' link under the 'Resources' option in the left side navigation area.";
+		strExpResult = "'Products' landing page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkProducts", "Products");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Products' link is clicked and 'Products' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Click on any Product ID and verify if 'Edit Product' page is displayed successfully.
+		//########################################################################################################
+		strStepDesc = "Click on any Product ID and verify if 'Edit Product' page is displayed successfully.";
+		strExpResult = "'Edit Product' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeProducts","lnkProductName", "Edit Product");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Edit Product' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+	/*	// ########################################################################################################
+		// Step 6 -  Delete the Name and click save.
+		// ########################################################################################################
+		strStepDesc = " Delete the Name and click save.";
+		strExpResult = "Error message '"+strExpectedText2+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeProducts","txtProductName", "" ,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText2);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strExpectedText2+"' is displayed successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter invalid/junk values in 'Dimensions' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter any invalid value in 'Dimensions' field and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText3+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeProducts","txtDimensions",strSearchText,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary", strExpectedText3);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText3+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	*/	
+		
+		// ########################################################################################################
+		// Step 8 - Enter invalid/junk values in 'Archive Samples' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter any invalid value in 'Archive Samples' field and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeProducts","txtDimensions","2.0x3.0cm","txtArchiveSamples",strSearchText,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary", strExpectedText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter invalid/junk values in 'Residual moisture Samples' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter any invalid value in 'Residual moisture Samples' field and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText1+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeProducts","txtArchiveSamples","1","txtResidualMoistureSamples",strSearchText,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary", strExpectedText1);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText1+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+		// ########################################################################################################
+		// Step 10 - Enter more than maximum allowed Characters in 'PackageBarcode' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed Characters in 'PackageBarcode' field and verify message displayed.";
+		strExpResult = "Exception '"+strExceptionPackageBarcode+"' should be displayed.";
+		
+		blnFlag= verifyMaxCharacErrorMessage("pgeProducts","txtResidualMoistureSamples","1","txtPackageBarcode",strInputText,strMaxLength,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary",strExceptionPackageBarcode);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionPackageBarcode+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter more than maximum allowed Characters in 'ProductLabel' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed Characters in 'ProductLabel' field and verify message displayed.";
+		strExpResult = "Exception '"+strExceptionProductLabel+"' should be displayed.";
+		
+		blnFlag= verifyMaxCharacErrorMessage("pgeProducts","txtPackageBarcode","","txtProductLabel",strInputText,strMaxLength,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary",strExceptionProductLabel);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionProductLabel+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter more than maximum allowed Characters in 'SmallBarCode' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed Characters in 'SmallBarCode' field and verify message displayed.";
+		strExpResult = "Exception '"+strExceptionSmallBarCode+"' should be displayed.";
+		
+		blnFlag= verifyMaxCharacErrorMessage("pgeProducts","txtProductLabel","","txtSmallBarCode",strInputText,strMaxLength,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary",strExceptionSmallBarCode);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionSmallBarCode+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+			
+		// ########################################################################################################
+		// Step 13 - Enter more than maximum allowed Characters in 'CustomLabel' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed Characters in 'CustomLabel' field and verify message displayed.";
+		strExpResult = "Exception '"+strExceptionCustomLabel+"' should be displayed.";
+		
+		blnFlag= verifyMaxCharacErrorMessage("pgeProducts","txtSmallBarCode","","txtCustomLabel",strInputText,strMaxLength,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary",strExceptionCustomLabel);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionCustomLabel+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Enter more than maximum allowed Characters in 'Family' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed Characters in 'Family' field and verify message displayed.";
+		strExpResult = "Exception '"+strExceptionFamily+"' should be displayed.";
+		
+		blnFlag= verifyMaxCharacErrorMessage("pgeProducts","txtCustomLabel","","txtFamily",strInputText,strMaxLength,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary",strExceptionFamily);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionFamily+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Enter more than maximum allowed Characters in 'Branding' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed Characters in 'Branding' field and verify message displayed.";
+		strExpResult = "Exception '"+strExceptionBranding+"' should be displayed.";
+		
+		blnFlag= verifyMaxCharacErrorMessage("pgeProducts","txtFamily","","txtBranding",strInputText,strMaxLength,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary",strExceptionBranding);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionBranding+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Enter more than maximum allowed Characters in 'UPN' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed Characters in 'UPN' field and verify message displayed.";
+		strExpResult = "Exception '"+strExceptionUPN+"' should be displayed.";
+		
+		blnFlag= verifyMaxCharacErrorMessage("pgeProducts","txtBranding","","txtUPN",strInputText,strMaxLength,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary",strExceptionUPN);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionUPN+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Enter more than maximum allowed Characters in 'Application' field and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter more than maximum allowed Characters in 'Application' field and verify message displayed.";
+		strExpResult = "Exception '"+strExceptionApplication+"' should be displayed.";
+		
+		blnFlag= verifyMaxCharacErrorMessage("pgeProducts","txtUPN","","txtApplication",strInputText,strMaxLengthApplication,"pgeProducts","btnSave","pgeCommon","objUIMessageErrorSummary",strExceptionApplication);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionApplication+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

@@ -1,0 +1,199 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-524
+		// # Test Case Name: VerifyRecoveryGroupsNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'Recovery Groups' negative functionality in 'New Groups' page and
+		// # then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: Recovery Group without any name should be renamed. 
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: 
+		// # Created on: 04-14-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL = Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strGroupExistsError = Script.dicTestData.get("strGroupExistsError");
+		String strGroupName = Script.dicTestData.get("strGroupName");		
+
+		//Fetch the latest Recovery Group ID with no name from DB.
+		String strDBRecoveryGroupId = Script.dicTestData.get("RecoveryGroupId");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc,strExpResult, "SBWEB application url: '" + strURL + "' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Recovery' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkRecoveryGroups");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Recovery Groups' link and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery Groups' link and verify 'Recovery Groups' landing page is displayed.";
+		strExpResult = "'Recovery Groups' landing page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines","lnkRecoveryGroups", "Group");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery Groups' link is clicked and 'Recovery Groups' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		
+		// ########################################################################################################
+		// Step 5 - Search and rename the 'Recovery Group' without any name, if it exists.
+		// ########################################################################################################
+		strStepDesc = "Search and rename the 'Recovery Group' without any name, if it exists.";
+		strExpResult = "Recovery group without any name should be renamed, if existing.";
+		blnFlag = searchAndRename("pgeRecoveryGroups", "txtGroupId", strDBRecoveryGroupId, "lnkRecoveryGroupId", "pgeRecoveryGroups", "txtGroupName", "pgeRecoveryGroups", "btnSave", strGroupName);
+				
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Recovery Group without any name renamed successfully or it does not exist.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'New Group' button and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Group' button and verify 'New Group' landing page is displayed.";
+		strExpResult = "'New Group' landing page should be displayed.";
+		blnFlag = clickAndVerify("pgeRecoveryGroups","btnNewGroup", "New Group");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Group' button is clicked and 'New Group' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Click on 'Save' button and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Group' landing page is displayed.";
+		strExpResult = "'Group' landing page should be displayed.";
+		blnFlag = clickAndVerify("pgeRecoveryGroups","btnSave", "Group");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Group' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'New Group' button and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Group' button and verify 'New Group' landing page is displayed.";
+		strExpResult = "'New Group' landing page should be displayed.";
+		blnFlag = clickAndVerify("pgeRecoveryGroups","btnNewGroup", "New Group");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Group' button is clicked and 'New Group' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Click on 'Save' button and verify the error message. 
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify '" + strGroupExistsError + "' message.";
+		strExpResult = "'" + strGroupExistsError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyErrorMessage("pgeRecoveryGroups", "txtGroupName", "", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strGroupExistsError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strGroupExistsError + "' message is successfully displayed on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+		// ########################################################################################################
+		// Step 10 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

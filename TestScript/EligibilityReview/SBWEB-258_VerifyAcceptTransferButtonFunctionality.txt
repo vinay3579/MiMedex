@@ -1,0 +1,225 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-258
+		// # Test Case Name: VerifyAcceptTransferButtonFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies 'Accept' and 'Transfer' button functionality on 'Recovered Tissue' page 
+		// # under 'Eligibility Review' and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Release Processing" landing page.
+		// #				 User is on "Recovered Tissue [Recovery ID]" page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 08-06-2014
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strReleaseComment = Script.dicTestData.get("strReleaseComment");
+		String lstRefrigerator = Script.dicTestData.get("lstRefrigerator");
+		
+		// Get Tissue Recovery Id from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_EligibilityReview");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkRelease_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Release Processing' link and verify 'Release Processing' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Release Processing' link and verify 'Release Processing' page.";
+		strExpResult = "'Release Processing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRelease_Processing", "pgeRelease_Processing", "txtSerologyResult");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Release Processing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Select specified back months from 'Month Back' drop down on 'Release Processing' page.
+		// ########################################################################################################
+		strStepDesc = "Select specified back months from 'Month Back' drop down on 'Release Processing' page.";
+		strExpResult = "Specified back month should be selected in 'Month Back' drop down.";
+		blnFlag=backMonthSelection("3");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Specified back month is selected in 'Month Back' drop down.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - Verify that if search functionality working properly on Release Processing page.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'Release Processing' page.";
+		strExpResult = "Searched result should be displayed in 'Release Processing' grid.";
+		blnFlag=verifySearch("pgeRelease_Processing","txtRecoveryId","lnkRecoveryId",strRecoveryId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in 'Release Processing' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Click on specified Recovery Id link on Release Processing page. 
+		//########################################################################################################
+		strStepDesc = "Click on specified 'Recovery Id' link on 'Release Processing' page";
+		strExpResult = "Recovery Id link '"+strRecoveryId+"' should be clicked on 'Release Processing' page.";
+		blnFlag=clickLink(strRecoveryId, "Recovered Tissue");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery Id' link '"+strRecoveryId+"' clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 8 - 	Click on 'Accept' button on Recovered Tissue page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Accept' button on 'Recovered Tissue' page";
+		strExpResult = "'Accept' button should be clicked and 'Accept and Release the Tissue for Processing' window should be displayed.";
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "btnAccept", "pgeRecovered_Tissue", "objAcceptReleaseWindow");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Accept' button clicked and 'Accept and Release the Tissue for Processing' window displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - Fill entries in 'Accept and Release the Tissue for Processing' window and click on 'Commit' button. 
+		//########################################################################################################
+		strStepDesc = "Fill entries in 'Accept and Release the Tissue for Processing' window and click on 'Commit' button.";
+		strExpResult = "Entries should be filled and 'Release OK' status should be displayed.";
+		blnFlag=fillEntriesAcceptAndRelease(strReleaseComment, strUserName, strPassword);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Entries filled and 'Release OK' status displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 10 - Click on 'Transfer' button on Recovered Tissue page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Transfer' button on 'Recovered Tissue' page. ";
+		strExpResult = "'Transfer' button should be clicked and 'Transfer the Tissue' window should be displayed.";
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "btnTransfer", "pgeRecovered_Tissue", "objTransferTissueWindow");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Transfer' button clicked succesfully and 'Transfer the Tissue' window displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 11 - Fill entries in 'Transfer the Tissue' window and click on 'Transfer' button. 
+		//########################################################################################################
+		strStepDesc = "Fill entries in 'Transfer the Tissue' window and click on 'Transfer' button.";
+		strExpResult = "Entries should be filled and 'Released' status should be displayed.";
+		blnFlag=fillEntriesTransferTissue(lstRefrigerator);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Entries filled and 'Released' status displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

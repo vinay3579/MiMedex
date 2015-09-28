@@ -1,0 +1,434 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-358
+		// # Test Case Name: VerifyAddEditFacilityFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Facility' landing
+		// # page, add a new Facility ID and edit the same and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Facilities" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Kamlesh Yadav
+		// # Created on: 12-15-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strFacilityID = "";
+		String strEditedFacilityName = Script.dicTestData.get("strEditedFacilityName");
+		
+		// More test data
+		String strFacilityName = Script.dicTestData.get("strFacilityName");		
+		String strTelephone = Script.dicTestData.get("strTelephone");
+		String strCity = Script.dicTestData.get("strCity");
+		String strState = Script.dicTestData.get("strState");
+		String strZipCode = Script.dicTestData.get("strZipCode");	
+        
+        // Test Data to be fetched for the current 'Facilities' script from DB
+		String strCustomerDb = Script.dicTestData.get("CustomerName").toUpperCase();
+		String strCustomerDb2 = Script.dicTestData.get("CustomerName2").toUpperCase();
+					
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link on left side navigation area.";
+		strExpResult = "'Resources' section should be expanded.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkFacilities");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link is expanded successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Facilities' link and verify 'Facility' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Facilities' link under the 'Resources' option in the left side navigation area.";
+		strExpResult = "'Facility' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkFacilities", "Facility");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Facilities' link is clicked and 'Facility' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on 'New Facility' button on "Facility" page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Facility' button on 'Facility' page.";
+		strExpResult = "'Add Facility' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeFacility", "btnNewFacility", "Human Resources");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Facility' button is clicked and 'Human Resources' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Enter all valid details on the "Add Facility- Human Resources" page.
+		// ########################################################################################################
+		strStepDesc = "Enter all valid details on the 'Add Facility- Human Resources' page.";
+		strExpResult = "All required details in the 'Add Facility- Human Resources' should be filled.";
+		blnFlag=fillAddFacilityForm(strFacilityName,strTelephone,strCity,strState,strZipCode);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All required details in the 'Add Facilities-Human Resources' page is filled successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Click on 'Save' button and verify 'Facility' page with created 'Facility'.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Facility' page with created 'Facility'.";
+		strExpResult = "'Facility' page with created 'Facility' should be displayed successfully";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", strFacilityName+" Details");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and Facility' page with Facility Name: '" + strFacilityName+ "' is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Click on 'Add Customer' Button and verify 'Manage Facility Customer' dialog-box.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Customer' Button and verify 'Manage Facility Customer' dialog-box";
+		strExpResult = "'Manage Facility Customer' dialog-box should display.";
+		blnFlag=clickAndVerify("pgeFacility", "btnAddCustomer", "pgeFacility","lstFacilityCustomer");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Customer' button is clicked and 'Manage Facility Customer' dialog-box is successfully displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+      //Step 9 - 	Select Customer from 'Manage Facility customer' drop down.
+      //########################################################################################################
+		strStepDesc = "Select a Customer from 'Manage Facility customer' drop down.";
+		strExpResult = "The customer("+strCustomerDb+") should be selected successfully.";
+		blnFlag=Page("pgeFacility").Element("lstFacilityCustomer").SelectPartialText(strCustomerDb);
+		//blnFlag=Page("pgeFacility").Element("lstFacilityCustomer").Select(strCustomerDb);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The customer ("+strCustomerDb+") is successfully selected from the 'Manage Facility Customer' drop-down", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		
+	  //##########################################################################################################
+      //Step 10 - 	Click on 'Save' button on the 'Manage Facility Customer' drop-down after selecting a customer.
+      //##########################################################################################################
+		strStepDesc = "Click on 'Save' button on the 'Manage Facility Customer' drop-down after selecting a customer.";
+		strExpResult = "'Save' button should be clicked after selecting the customer from the 'Manage Facility Customer' drop-down.";
+		blnFlag=clickAndVerify("pgeFacility","btnSave",strFacilityName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is successfully clicked after selecting the customer from the 'Manage Facility Customer' drop-down", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		//#############################################################################################################################
+      //Step 11 - 	Verify added Customer should display under 'Add Customer-Edit Facilities' details page for selected facility.
+      //#############################################################################################################################
+		strStepDesc = "Verify added Customer should display under 'Add Customer-Edit Facilities' details page for selected facility.";
+		strExpResult = "The selected Customer ("+strCustomerDb+") should be displayed under 'Add Customer-Edit Facilities' details page for selected facility.";
+		blnFlag=verifyPartialText("pgeFacility", "objCustomerName",strCustomerDb);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The customer ("+strCustomerDb+") is added successfully under 'Add Customer-Edit Facilities' details page for selected facility.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - 	Click on 'Add Customer' Button and verify 'Manage Facility Customer' dialog-box for the second customer to be added.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Customer' Button and verify 'Manage Facility Customer' dialog-box for the second customer to be added.";
+		strExpResult = "'Manage Facility Customer' dialog-box should display.";
+		blnFlag=clickAndVerify("pgeFacility", "btnAddCustomer", "pgeFacility","lstFacilityCustomer");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Customer' button is clicked and 'Manage Facility Customer' dialog-box is successfully displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+      //Step 13 - 	Select second Customer from 'Manage Facility customer' drop down.
+      //########################################################################################################
+		strStepDesc = "Select second Customer from 'Manage Facility customer' drop down.";
+		strExpResult = "The customer("+strCustomerDb2+") should be selected successfully.";
+		blnFlag=Page("pgeFacility").Element("lstFacilityCustomer").SelectPartialText(strCustomerDb2);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The customer ("+strCustomerDb2+") is successfully selected from the 'Manage Facility Customer' drop-down", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		
+	  //##########################################################################################################
+      //Step 14 - 	Click on 'Save' button on the 'Manage Facility Customer' drop-down after selecting the second customer.
+      //##########################################################################################################
+		strStepDesc = "Click on 'Save' button on the 'Manage Facility Customer' drop-down after selecting the second customer.";
+		strExpResult = "'Save' button should be clicked after selecting the second customer from the 'Manage Facility Customer' drop-down.";
+		blnFlag=clickAndVerify("pgeFacility","btnSave",strFacilityName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is successfully clicked after selecting the second customer from the 'Manage Facility Customer' drop-down", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		//#############################################################################################################################
+      //Step 15 - 	Verify added second Customer should display under 'Add Customer-Edit Facilities' details page for selected facility.
+      //#############################################################################################################################
+		strStepDesc = "Verify added second Customer should display under 'Add Customer-Edit Facilities' details page for selected facility.";
+		strExpResult = "The selected second  Customer ("+strCustomerDb2+") should be displayed under 'Add Customer-Edit Facilities' details page for selected facility.";
+		blnFlag=verifyPartialText("pgeFacility", "objCustomerName",strCustomerDb2);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The customer ("+strCustomerDb2+") is added successfully under 'Add Customer-Edit Facilities' details page for selected facility.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//#############################################################################################################################
+      //Step 16 - 	Click 'Delete' for the second added customer and verify delete is successful.
+      //#############################################################################################################################
+		strStepDesc = "Click 'Delete' for the second added customer and verify if the delete is successful.";
+		strExpResult = "'Delete' for the second added customer ("+strCustomerDb2+") should be clicked and the delete functionality verification should be successful.";
+		blnFlag=clickAndVerifyNotExist("pgeFacility", "lnkDelete_SecondRow","pgeFacility", "lnkDelete_SecondRow");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Delete' for the second added customer ("+strCustomerDb2+") is clicked and the delete functionality verification is successful.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 17 - Fetch the added Facility ID
+		//########################################################################################################
+		strStepDesc = "Fetch the added Facility ID from the 'Facility' Page";
+		strExpResult = "The added Facility ID should be fetched from the newly created Facility.";
+		blnFlag=fetchFacilityID();
+		if (blnFlag == true)
+		{
+		    strFacilityID = Script.dicCommonValue.get("FacilityID");
+			reporter.ReportStep(strStepDesc, strExpResult, "The added facility ID: '" + strFacilityID+ "' is fetched successfully from the newly created Facility.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 18 - Click on 'Return' button after creating the facility.
+		//########################################################################################################
+		strStepDesc = "Click on 'Return' button";
+		strExpResult = "'Return' button should be clicked and 'Facility' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnReturn", "Facility");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked and 'Facility' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 19 - Search for the added Facility ID in the 'Facilities' field.
+		//########################################################################################################
+		strStepDesc = "Search for the added Facility ID in the 'Facilities' field.";
+		strExpResult = "The added Facility ID ("+strFacilityID+") should be displayed in the 'Facilities' grid.";
+		blnFlag=verifySearch("pgeFacility","txtSearchFacilityID","lnkFacilityID", strFacilityID);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Facility ID: '" + strFacilityID+ "' is displayed successfully in the search result in the 'Facilities' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 20 - 	Click on the created Facility ID and verify if 'Edit Facility' page is displayed successfully.
+		//########################################################################################################
+		strStepDesc = "Click on the added Facility ID and verify if 'Edit Facility' page is displayed successfully.";
+		strExpResult = "The added Facility ID ("+strFacilityID+") should be clicked and 'Edit Facility' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeFacility","lnkFacilityID",strFacilityName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Facility ID: '" + strFacilityID+ "' is clicked and 'Edit Facility' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 21 - 	Edit the Facility Name in the 'Facility Name' field for the added Facility.
+		//########################################################################################################
+		strStepDesc = "Edit the Facility Name in the 'Facility Name' field for the added Facility.";
+		strExpResult = "The new Facility Name ("+strEditedFacilityName+") should be entered successfully.";
+		blnFlag=Page("pgeFacility").Element("txtFacilityName").Type(strEditedFacilityName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The new Facility Name: '" + strEditedFacilityName+ "' is entered in the 'Name' field in 'Edit Facility' page  successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// #############################################################################################################
+		// Step 22 - Click on 'Save' button and Verify 'Facility' landing page.
+		// #############################################################################################################
+		strStepDesc = "Click on 'Save' button and Verify 'Facility' page.";
+		strExpResult = "'Save' button should be clicked and 'Facility' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave","Facility");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Save' button is clicked and 'Facility' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+	    //########################################################################################################
+		//Step 23 - Search for the added Facility ID in the 'Facilities' field.
+		//########################################################################################################
+		strStepDesc = "Search for the added Facility ID in the 'Facilities' field.";
+		strExpResult = "The added Facility ID ("+strFacilityID+") should be displayed in the 'Facilities' grid.";
+		blnFlag=verifySearch("pgeFacility","txtSearchFacilityID","lnkFacilityID", strFacilityID);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Facility ID: '" + strFacilityID+ "' is displayed successfully in the search result in the 'Facilities' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+	  //#############################################################################################################################
+      //Step 24 - 	Verify 'Facility Name' edit is successful.
+      //#############################################################################################################################
+		strStepDesc = "Verify 'Facility Name' edit is successful.";
+		strExpResult = "The Facility Name edit with name "+strEditedFacilityName+") should be displayed in the 'Facilities' grid.";
+		blnFlag=verifyPartialText("pgeFacility", "objFacilityName",strEditedFacilityName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Facility Name Edit with Facility name: '" + strEditedFacilityName+ "' is successful on 'Edit Facility' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 25 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

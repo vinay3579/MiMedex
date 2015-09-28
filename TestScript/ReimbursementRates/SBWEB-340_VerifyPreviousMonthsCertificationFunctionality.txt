@@ -1,0 +1,213 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-340
+		// # Test Case Name: VerifyPreviousMonthsCertificationFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Reimbursement Rates landing
+		// # page, select a previous month, verify Certifications tab data and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 12-17-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		
+		// Getting eligible data from the DB
+		String strRecoveryFacilityName = Script.dicTestData.get("RecoveryFacilityName");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc,strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Recovery link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkReimbursementRates");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Reimbursement Rates' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Reimbursement Rates' link and verify 'Reimbursement Rates' page is displayed.";
+		strExpResult = "'Reimbursement Rates' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkReimbursementRates", "Reimbursement Rates");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, " 'Reimbursement Rates' link is clicked and 'Reimbursement Rates' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Navigate to previous month and select Certification tab.
+		// ########################################################################################################
+		strStepDesc = "Navigate to previous month and select Certification tab.";
+		strExpResult = "'Certification' tab with the previous month details should be displayed.";
+		blnFlag=goToPreviousMonthTab("Certification");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Certification' tab with the previous month details is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Verify existance of 'Generate Email Reports' button.
+		// ########################################################################################################
+		strStepDesc = "Verify existance of 'Generate Email Reports' button.";
+		strExpResult = "'Generate Email Reports' button should be present.";
+		blnFlag = Page("pgeReimbursementRates").Element("btnGenerateEMailReports").Exist();
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Generate Email Reports' is present.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 7 - Navigate to Hospital Payments sub-tab.
+		// ########################################################################################################
+		strStepDesc = "Navigate to Hospital Payments sub-tab.";
+		strExpResult = "Navigate to Hospital Payments sub-tab.";
+		blnFlag=clickSubTab("Hospital Payments");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Hospital Payments' sub-tab is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Verify that the Hospital Payments sub-tab contains the expected data.
+		// ########################################################################################################
+		strStepDesc = "Verify that the Hospital Payments sub-tab contains the expected data.";
+		strExpResult = "Hospital Payments sub-tab should contain the expected data ("+strRecoveryFacilityName+").";
+		blnFlag = verifyTextContains("pgeReimbursementRates", "objHospitalPaymentsGrid", strRecoveryFacilityName);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Hospital Payments sub-tab contains the expected data ("+strRecoveryFacilityName+").", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Navigate to Group Payments sub-tab.
+		// ########################################################################################################
+		strStepDesc = "Navigate to Group Payments sub-tab.";
+		strExpResult = "Navigate to Group Payments sub-tab.";
+		blnFlag=clickSubTab("Group Payments");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Group Payments' sub-tab is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Verify existance of Manager/Group heading.
+		// ########################################################################################################
+		strStepDesc = "Verify existance of Manager/Group heading.";
+		strExpResult = "Manager/Group heading existance should be verified successfully.";
+		blnFlag=Page("pgeReimbursementRates").Element("objManagerGrp").Exist();
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Manager/Group heading existance is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+
+		// ########################################################################################################
+		// Step 11 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

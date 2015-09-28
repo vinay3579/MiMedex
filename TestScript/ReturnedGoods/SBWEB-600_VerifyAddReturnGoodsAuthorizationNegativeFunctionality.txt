@@ -1,0 +1,306 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-600
+		// # Test Case Name: VerifyAddReturnGoodsAuthorizationNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies 'Add Return Goods Authorization' negative functionality in 'Orders' page and then 
+		// # successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Kamlesh Yadav
+		// # Created on: 04-24-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");
+		String strMaxCharTemplate = Script.dicTestData.get("strMaxCharTemplate");
+		String strMaxLengthContact = Script.dicTestData.get("strMaxLengthContact");
+		String strExceptionContact = Script.dicTestData.get("strExceptionContact");
+		String strMaxLengthReturnReason = Script.dicTestData.get("strMaxLengthReturnReason");
+		String strExceptionReturnReason = Script.dicTestData.get("strExceptionReturnReason");
+		
+		//Variable used in the script
+		String strCustomer= "";
+				
+		//Test Data to be fetched for the current 'Returned Goods' script from the DB.
+		String strCustomerName = Script.dicTestData.get("CustomerName");
+		String strQADLink = Script.dicTestData.get("QADLink");			
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '" + strURL + "' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName + "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Orders' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkShipping");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Returned Goods' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Returned Goods' link and verify 'Returned Goods' page is displayed.";
+		strExpResult = "'Returned Goods' page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines","lnkReturnedGoods", "Returned Goods");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Returned Goods' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on 'New Authorization' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Authorization' button and verify navigated page.";
+		strExpResult = "'New Authorization' button should be clicked and 'Add Return Goods Authorization' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","btnNewAuthorization", "Add Return Goods Authorization");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Authorization' button is clicked and 'Add Return Goods Authorization' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Click on Save button without filling any details and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Click on Save button without filling any details and verify message displayed.";
+		strExpResult = "'" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifyMultipleErrorMessages("pgeReturnedGoods","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Message '" + strExpectedText + "' is displayed successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Select customer from the 'Customer' list box.
+		// ########################################################################################################
+		strStepDesc = "Select customer from the 'Customer' list box.";
+		strCustomer = strCustomerName+"("+strQADLink+")";
+		strExpResult = "'"+strCustomer+"' should be selected from 'Customer' list box.";
+		blnFlag=Page("pgeReturnedGoods").Element("lstCustomer").SelectPartialText(strCustomer);		
+		waitForSync(4);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strCustomer+"' is selected from 'Customer' list box successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter more than 500 characters in 'Return Reason' field and verify displayed message on clicking 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 500 characters in 'Return Reason' field and verify displayed message on clicking 'Save' button.";
+		strExpResult = "Exception Error Message '" + strExceptionReturnReason + "' should be displayed.";	
+		blnFlag=verifyMaxCharacErrorMessage("pgeReturnedGoods","txtReturnReason",strMaxCharTemplate,strMaxLengthReturnReason,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExceptionReturnReason);
+			
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception error message ("+strExceptionReturnReason+") is displayed successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		// ########################################################################################################
+		// Step 9 - Click on 'Return' button to navigate back to 'Returned Goods' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button to navigate back to 'Returned Goods' page.";
+		strExpResult = "'Returned Goods' page should be displayed.";	
+		
+		blnFlag = clickAndVerify("pgeCommon","btnReturn", "Returned Goods");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Returned Goods' page is displayed successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click on 'New Authorization' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Authorization' button and verify navigated page.";
+		strExpResult = "'New Authorization' button should be clicked and 'Add Return Goods Authorization' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","btnNewAuthorization", "Add Return Goods Authorization");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Authorization' button is clicked and 'Add Return Goods Authorization' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter more than 45 characters in 'Contact' field and verify displayed message on clicking 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 45 characters in 'Contact' field and verify displayed message on clicking 'Save' button.";
+		strExpResult = "Exception Error Message '" + strExceptionContact + "' should be displayed.";	
+		
+		blnFlag=verifyMaxCharacErrorMessage("pgeReturnedGoods","txtReturnReason","","txtContact",strMaxCharTemplate,strMaxLengthContact,"pgeCommon","btnSave","pgeCommon" , "objUIMessageErrorSummary", strExceptionContact);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception error message ("+strExceptionContact+") is displayed successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Click on 'Return' button to navigate back to 'Returned Goods' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button to navigate back to 'Returned Goods' page.";
+		strExpResult = "'Returned Goods' page should be displayed.";	
+		blnFlag = clickAndVerify("pgeCommon","btnReturn", "Returned Goods");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Returned Goods' page is displayed successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Click on 'New Authorization' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Authorization' button and verify navigated page.";
+		strExpResult = "'New Authorization' button should be clicked and 'Add Return Goods Authorization' page should be verified.";
+		blnFlag = clickAndVerify("pgeReturnedGoods","btnNewAuthorization", "Add Return Goods Authorization");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Authorization' button is clicked and 'Add Return Goods Authorization' page is verified successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Enter some invalid/junk characters in Restocking Fee and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in Restocking Fee and verify message displayed.";
+		strExpResult = "Invalid/junk characters should be entered in 'Restocking Fee' field and message: '"+strExpectedText1+"' should be displayed.";
+		blnFlag = clearAllFieldAndVerifyErrorMessage("pgeReturnedGoods","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText1,"pgeReturnedGoods", "txtRestockingFee",strSearchText,"txtContact");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters is entered in 'Restocking Fee' field and message: '"+strExpectedText1+"' is displayed successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Enter some invalid/junk characters in 'Date' field and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in 'Date' field and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Date' field and message '" + strExpectedText2 + "' should be displayed.";
+		blnFlag= clearAllFieldAndVerifyErrorMessage("pgeReturnedGoods","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText2,"pgeReturnedGoods", "txtDate",strSearchText,"txtRestockingFee") ;
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters is entered in the 'Date' field and message '" + strExpectedText2 + "' is displayed successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

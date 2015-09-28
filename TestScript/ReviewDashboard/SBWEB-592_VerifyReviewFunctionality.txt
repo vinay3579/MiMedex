@@ -1,0 +1,398 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-592
+		// # Test Case Name: VerifyReviewFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the review can sign up and reach to the Review Dashboard landing 
+		// #  page, review Injectable Specifications/Product Specifications/Package Prefixes and Sterilization Vendor Prefixes and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Review Dashboard" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 03-16-2015
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strVendor = Script.dicTestData.get("strVendor");		
+		String strPrefixVendor = Script.dicTestData.get("strPrefixVendor");		
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Manufacturing link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Manufacturing' link given on left navigation area.";
+		strExpResult = "'Manufacturing' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkManufacturing", "pgeAssembly_Lines", "lnkReviewDashboard");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Manufacturing' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Review Dashboard' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Review Dashboard' link and verify navigated page.";
+		strExpResult = "'Review Dashboard' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkReviewDashboard", "Review Dashboard");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Review Dashboard' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 5 - Enter 'Initials' for 'Injectable Specifications' on 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter 'Initials' for 'Injectable Specifications' on 'Review Dashboard' page.";
+		strExpResult = "'Initials' for 'Injectable Specifications' on 'Review Dashboard' page with username '"+strUserName+"' and signature should be entered.";
+		blnFlag= electronicSignature("pgeReviewDashboard","txtReviewSignature",strUserName,"objReviewCanvasPad");
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Initials' for 'Injectable Specifications' on 'Review Dashboard' page with username '"+strUserName+"' and signature is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		}				
+		
+		//########################################################################################################
+		//Step 6 - 	Click on 'Review' button for 'Injectable Specifications' in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Review' button for 'Injectable Specifications' in 'Review Dashboard' page.";
+		strExpResult = "'Review' button for 'Injectable Specifications' in 'Review Dashboard' page should be clicked.";
+		blnFlag=Page("pgeReviewDashboard").Element("btnReview").Click(20);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Review' button for 'Injectable Specifications' in 'Review Dashboard' page is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+
+		//########################################################################################################
+		//Step 7 - 	Verify the 'Last Reviewed'/'Last Reviewed By' green section for 'Injectable Specifications' updated in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the 'Last Reviewed'/'Last Reviewed By' green section for 'Injectable Specifications' updated in 'Review Dashboard' page.";
+		strExpResult = "The 'Last Reviewed'/'Last Reviewed By' green section for 'Injectable Specifications' should be updated correctly in 'Review Dashboard' page.";
+		blnFlag=verifyTableReviewDashboard("pgeReviewDashboard","objInjectableSpecReviewed","objInjectableSpecReviewedBy","green");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Last Reviewed'/'Last Reviewed By' section for 'Injectable Specifications' is updated correctly in 'Review Dashboard' page. The background color is green.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}		
+
+		//########################################################################################################
+		//Step 8 - 	Click on 'Product Specifications' tab.
+		//########################################################################################################
+		strStepDesc = "Click on 'Product Specifications' tab.";
+		strExpResult = "'Product Specifications' tab should be clicked successfully.";
+		blnFlag=clickAndVerify("pgeReviewDashboard","lnkProductSpecifications", "pgeReviewDashboard","txtSOP");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Product Specifications' tab is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}	
+
+		//########################################################################################################
+		//Step 9 - Enter 'Initials' for 'Product Specifications' on 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter 'Initials' for 'Product Specifications' on 'Review Dashboard' page.";
+		strExpResult = "'Initials' for 'Product Specifications' on 'Review Dashboard' page with username '"+strUserName+"' and signature should be entered.";
+		blnFlag= electronicSignature("pgeReviewDashboard","txtReviewSignature",strUserName,"objReviewCanvasPad");
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Initials' for 'Product Specifications' on 'Review Dashboard' page with username '"+strUserName+"' and signature is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		}				
+		
+		//########################################################################################################
+		//Step 10 - 	Click on 'Review' button for 'Product Specifications' in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Review' button for 'Product Specifications' in 'Review Dashboard' page.";
+		strExpResult = "'Review' button for 'Product Specifications' in 'Review Dashboard' page should be clicked.";
+		blnFlag=Page("pgeReviewDashboard").Element("btnReview").Click(20);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Review' button for 'Product Specifications' in 'Review Dashboard' page is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+
+		//########################################################################################################
+		//Step 11 - 	Verify the 'Last Reviewed'/'Last Reviewed By' green section for 'Product Specifications' updated in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the 'Last Reviewed'/'Last Reviewed By' green section for 'Product Specifications' updated in 'Review Dashboard' page.";
+		strExpResult = "The 'Last Reviewed'/'Last Reviewed By' green section for 'Product Specifications' should be updated correctly in 'Review Dashboard' page.";
+		blnFlag=verifyTableReviewDashboard("pgeReviewDashboard","objProdSpecLastReviewed","objProdSpecLastReviewedBy","green");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Last Reviewed'/'Last Reviewed By' section for 'Product Specifications' is updated correctly in 'Review Dashboard' page. The background color is green.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}		
+		
+		//########################################################################################################
+		//Step 12 - 	Click on 'Package Prefixes' tab.
+		//########################################################################################################
+		strStepDesc = "Click on 'Package Prefixes' tab.";
+		strExpResult = "'Package Prefixes' tab should be clicked successfully.";
+		blnFlag=clickAndVerify("pgeReviewDashboard","lnkPackagePrefixes", "pgeReviewDashboard","txtPrefix");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Package Prefixes' tab is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}	
+
+		//########################################################################################################
+		//Step 13 - Enter 'Initials' for 'Package Prefixes' on 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter 'Initials' for 'Package Prefixes' on 'Review Dashboard' page.";
+		strExpResult = "'Initials' for 'Package Prefixes' on 'Review Dashboard' page with username '"+strUserName+"' and signature should be entered.";
+		blnFlag= electronicSignature("pgeReviewDashboard","txtReviewSignature",strUserName,"objReviewCanvasPad");
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Initials' for 'Package Prefixes' on 'Review Dashboard' page with username '"+strUserName+"' and signature is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		}				
+		
+		//########################################################################################################
+		//Step 14 - 	Click on 'Review' button for 'Package Prefixes' in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Review' button for 'Package Prefixes' in 'Review Dashboard' page.";
+		strExpResult = "'Review' button for 'Package Prefixes' in 'Review Dashboard' page should be clicked.";
+		blnFlag=Page("pgeReviewDashboard").Element("btnReview").Click(20);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Review' button for 'Package Prefixes' in 'Review Dashboard' page is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+
+		//########################################################################################################
+		//Step 15 - 	Verify the 'Last Reviewed'/'Last Reviewed By' green section for 'Package Prefixes' updated in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the 'Last Reviewed'/'Last Reviewed By' green section for 'Package Prefixes' updated in 'Review Dashboard' page.";
+		strExpResult = "The 'Last Reviewed'/'Last Reviewed By' green section for 'Package Prefixes' should be updated correctly in 'Review Dashboard' page.";
+		blnFlag=verifyTableReviewDashboard("pgeReviewDashboard","objPackagePrefixesLastReviewed","objPackagePrefixesLastReviewedBy","green");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Last Reviewed'/'Last Reviewed By' section for 'Package Prefixes' is updated correctly in 'Review Dashboard' page. The background color is green.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+		
+		//########################################################################################################
+		//Step 16 - 	Click on 'Sterilization Vendor Prefixes' tab.
+		//########################################################################################################
+		strStepDesc = "Click on 'Sterilization Vendor Prefixes' tab.";
+		strExpResult = "'Sterilization Vendor Prefixes' tab should be clicked successfully.";
+		blnFlag=clickAndVerify("pgeReviewDashboard","lnkSterilizationVendorPrefixes", "pgeReviewDashboard","txtVendor");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sterilization Vendor Prefixes' tab is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}	
+
+		//########################################################################################################
+		//Step 17 - Enter 'Initials' for 'Sterilization Vendor Prefixes' on 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter 'Initials' for 'Sterilization Vendor Prefixes' on 'Review Dashboard' page.";
+		strExpResult = "'Initials' for 'Sterilization Vendor Prefixes' on 'Review Dashboard' page with username '"+strUserName+"' and signature should be entered.";
+		blnFlag= electronicSignature("pgeReviewDashboard","txtReviewSignature",strUserName,"objReviewCanvasPad");
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Initials' for 'Sterilization Vendor Prefixes' on 'Review Dashboard' page with username '"+strUserName+"' and signature is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		}				
+		
+		//########################################################################################################
+		//Step 18 - 	Click on 'Review' button for 'Sterilization Vendor Prefixes' in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Review' button for 'Sterilization Vendor Prefixes' in 'Review Dashboard' page.";
+		strExpResult = "'Review' button for 'Sterilization Vendor Prefixes' in 'Review Dashboard' page should be clicked.";
+		blnFlag=Page("pgeReviewDashboard").Element("btnReview").Click(20);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Review' button for 'Sterilization Vendor Prefixes' in 'Review Dashboard' page is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+
+		//########################################################################################################
+		//Step 19 - 	Verify the 'Last Reviewed'/'Last Reviewed By' green section for 'Sterilization Vendor Prefixes' updated in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the 'Last Reviewed'/'Last Reviewed By' green section for 'Sterilization Vendor Prefixes' updated in 'Review Dashboard' page.";
+		strExpResult = "The 'Last Reviewed'/'Last Reviewed By' green section for 'Sterilization Vendor Prefixes' should be updated correctly in 'Review Dashboard' page.";
+		blnFlag=verifyTableReviewDashboard("pgeReviewDashboard","objSterilizationVendorLastReviewed","objSterilizationVendorLastReviewedBy","green");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Last Reviewed'/'Last Reviewed By' section for 'Sterilization Vendor Prefixes' is updated correctly in 'Review Dashboard' page. The background color is green.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 20 - 	Enter Vendor in Vendor field in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter Vendor in Vendor field in 'Review Dashboard' page.";
+		strExpResult = "Vendor ("+strVendor+") in Vendor field in 'Review Dashboard' page should be entered.";
+		blnFlag=Page("pgeReviewDashboard").Element("txtVendor").Type(strVendor);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Vendor ("+strVendor+") in Vendor field in 'Review Dashboard' page is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 21 - 	Enter Prefix in 'Prefix' field in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter Prefix in 'Prefix' field in 'Review Dashboard' page.";
+		strExpResult = "Prefix ("+strPrefixVendor+") in 'Prefix' field in 'Review Dashboard' page should be entered.";
+		blnFlag=Page("pgeReviewDashboard").Element("txtPrefix_SterilizationVendor").Type(strPrefixVendor);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Prefix ("+strPrefixVendor+") in 'Prefix' field in 'Review Dashboard' page is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}			
+
+		//########################################################################################################
+		//Step 22 - 	Click on 'Add' button in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add' button in 'Review Dashboard' page.";
+		strExpResult = "'Add' button in 'Review Dashboard' page should be clicked.";
+		blnFlag=Page("pgeReviewDashboard").Element("btnAdd").Click(20);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add' button in 'Review Dashboard' page is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+
+		//########################################################################################################
+		//Step 23 - 	Verify the 'Last Updated'/'Last updated By' red section for Sterilization Vendor Prefixes updated in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the 'Last Updated'/'Last updated By' red section for Sterilization Vendor Prefixes updated in 'Review Dashboard' page.";
+		strExpResult = "The 'Last Updated'/'Last updated By' red section for Sterilization Vendor Prefixes should be updated correctly in 'Review Dashboard' page.";
+		blnFlag=verifyTableReviewDashboard("pgeReviewDashboard","objSterilizationVendorLastUpdated","objSterilizationVendorLastUpdatedBy","red");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Last Updated'/'Last updated By' section for Sterilization Vendor Prefixes is updated correctly in 'Review Dashboard' page. The background color is red.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}		
+		
+		// ########################################################################################################
+		// Step 24 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

@@ -1,0 +1,285 @@
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-552
+		// # Test Case Name: VerifyAddNewUserPageNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up ,reach to the 'Users' landing
+		// # page and  new user negative functionality then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Users" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-05-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+		String strLoginName = Script.dicTestData.get("strLoginName");
+
+		// More test data 
+		String strFullName = Script.dicTestData.get("strFullName");
+		String strEmail = Script.dicTestData.get("strEmail");
+		String strMaxCharTemplate = Script.dicTestData.get("strMaxCharTemplate");
+		String strMaxLengthUserName = Script.dicTestData.get("strMaxLengthUserName");
+		String strExceptionUserName = Script.dicTestData.get("strExceptionUserName");	
+		String strExceptionAccessLevel = Script.dicTestData.get("strExceptionAccessLevel");	
+		String strMaxLengthFullName = Script.dicTestData.get("strMaxLengthFullName");
+		String strExceptionFullName = Script.dicTestData.get("strExceptionFullName");
+        String strMaxLengthEmail = Script.dicTestData.get("strMaxLengthEmail");
+		String strExceptionEmail = Script.dicTestData.get("strExceptionEmail");	
+		String strConfMessage = Script.dicTestData.get("strConfMessage");	
+        String strErrorMessage = Script.dicTestData.get("strErrorMessage");
+        String strUserError = "";	 			
+						
+		//Test Data to be fetched for the current 'Users' script from DB.
+		String strDbUserName = Script.dicTestData.get("UserName");
+								
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkUsers");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Users' link and verify 'Users' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Users' link and verify 'Users' page is displayed.";
+		strExpResult = "'Users' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkUsers", "Users");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Users' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on 'New User' button and verify 'Add New User' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New User' button and verify 'Add New User' page is displayed.";
+		strExpResult = "'New User' page should be displayed.";
+		blnFlag=clickAndVerify("pgeUsers", "btnNewUser", "Add New User");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New User' button is clicked and 'Add New User' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on Save button without entering any records.
+		// ########################################################################################################
+		strStepDesc = "Click on Save button without entering any records.";
+		strExpResult = "Record gets saved successfully.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "Edit User");		
+		//blnFlag = verifyErrorMessage("pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strUserError); 
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Record gets saved successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+	    // ########################################################################################################
+		// Step 7 - Try to save with Existing name and click on save button.
+		// ########################################################################################################
+		strStepDesc = "Try to save with Existing name and click on save button.";
+		strUserError = "Duplicate entry '"+strUserName+"' for key 'UXUserName'";
+		strExpResult = "Exception '"+strUserError+"' should be displayed.";;
+	
+		blnFlag = verifyErrorMessage("pgeUsers","txtNewUserName", strUserName ,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strUserError);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Exception '"+strUserError+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+
+		// ########################################################################################################
+		// Step 8 -Enter Max character in 'UserName' field and click on Save button.
+		// ########################################################################################################
+		strStepDesc = "Enter Max character in 'UserName' field and click on Save button.";
+		strExpResult = "Exception '"+strExceptionUserName+"' should be displayed.";
+		blnFlag=verifyMaxCharacErrorMessage("pgeUsers","txtNewUserName","","txtNewUserName",strMaxCharTemplate,strMaxLengthUserName,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary", strExceptionUserName); 
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionUserName+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 -Enter Max character in 'Access Level' field and click on Save button.
+		// ########################################################################################################
+		strStepDesc = "Enter Max character in 'Access Level' field and click on Save button.";
+		strExpResult = "Exception '"+strExceptionAccessLevel+"' should be displayed.";
+		blnFlag=verifyMaxCharacErrorMessage("pgeUsers","txtNewUserName","Test","txtAccessLevel",strMaxCharTemplate,strMaxLengthEmail,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary", strExceptionAccessLevel); 
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionAccessLevel+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 -Enter Max character in 'Full Name' field and click on Save button.
+		// ########################################################################################################
+		strStepDesc = "Enter Max character in 'Full Name' field and click on Save button.";
+		strExpResult = "Exception '"+strExceptionFullName+"' should be displayed.";
+		blnFlag=verifyMaxCharacErrorMessage("pgeUsers","txtAccessLevel","","txtFullName",strMaxCharTemplate,strMaxLengthFullName,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary", strExceptionFullName); 
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionFullName+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 -Enter Max character in 'Email' field and click on Save button.
+		// ########################################################################################################
+		strStepDesc = "Enter Max character in 'Email' field and click on Save button.";
+		strExpResult = "Exception '"+strExceptionEmail+"' should be displayed.";
+		blnFlag=verifyMaxCharacErrorMessage("pgeUsers","txtFullName","","txtEmail",strMaxCharTemplate,strMaxLengthEmail,"pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary", strExceptionEmail); 
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Exception '"+strExceptionEmail+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+		// ########################################################################################################
+		// Step 12 -Click on 'Change Password', leaving both fields blank, and hitting on Save button. 
+		// ########################################################################################################
+		strStepDesc = "Click on 'Change Password', leaving both fields blank, and hitting on Save button";
+		strExpResult = "Error Message '"+strErrorMessage+"' should be displayed.";
+		blnFlag=clickChangePasswordAndSaveButton(strErrorMessage);
+	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strErrorMessage+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+ 		
+		//########################################################################################################
+		//Step 13 - Calculate a User that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a User that does not exist in the application for further use.";
+		strExpResult = "A User that does not exist in the application should be calculated for further use.";
+		blnFlag=calculateNewItem(strLoginName, strDbUserName)   ; 
+		if (blnFlag == true)
+		{
+			strLoginName = Script.dicCommonValue.get("strCalculatedItem");    
+			reporter.ReportStep(strStepDesc, strExpResult, "New User '"+strLoginName+"' is calculated for further use.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 14 -Enter values in all fields and click on Save button.
+		// ########################################################################################################
+		strStepDesc = "Enter values in all fields and click on Save button.";
+		strExpResult = "All the details should be saved and 'Users' page should be displayed.";
+		blnFlag=fillEntriesForAllFieldAddNewUser(strLoginName, strFullName,strEmail); 
+	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"All the details are saved and 'Users' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 15 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

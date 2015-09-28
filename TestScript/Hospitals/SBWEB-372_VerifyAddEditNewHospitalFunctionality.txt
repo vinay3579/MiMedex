@@ -1,0 +1,297 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-372
+		// # Test Case Name: VerifyAddEditHospitalsFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Hospitals' landing
+		// # page, add a new hospital and edit the same and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Hospitals" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 11-26-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+
+		// More test data 
+		String strHospitalName = Script.dicTestData.get("strHospitalName");
+		String strRecoveryPrefix = Script.dicTestData.get("strRecoveryPrefix");
+		String strEmail = Script.dicTestData.get("strEmail");
+		String strFacilityRate = Script.dicTestData.get("strFacilityRate");
+		String strGroupRate = Script.dicTestData.get("strGroupRate");
+		String strRejectRule = Script.dicTestData.get("strRejectRule");
+		String strAutoUpdate = Script.dicTestData.get("strAutoUpdate");
+		String strEditFacilityRate = Script.dicTestData.get("strEditFacilityRate");
+		
+		//Test Data to be fetched for the current 'Hospitals' script from DB.
+		String strDBHospitalName = Script.dicTestData.get("RecoveryFacilityName");
+		String strDBRecoveryPrefix = Script.dicTestData.get("RecoveryFacilityCode");
+
+		// Define variables used in script
+		String strNewHospital="";
+		String strNewRecoveryPrefix="";
+						
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Recovery' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkHospitals");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Hospitals link and verify 'Hospitals' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Hospitals link and verify 'Hospitals' page is displayed.";
+		strExpResult = "'Hospitals' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkHospitals", "pgeHospitals", "btnNewHospital");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Hospitals' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 		
+		//########################################################################################################
+		//Step 5 - Calculate a Hospital Name and Prefix that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Hospital Name and Prefix that does not exist in the application for further use.";
+		strExpResult = "A Hospital Name and Prefix that does not exist in the application should be calculated for further use.";
+		blnFlag=calculateHospitalNameAndPrefix(strHospitalName, strDBHospitalName, strRecoveryPrefix, strDBRecoveryPrefix); 
+		if (blnFlag == true)
+		{
+			strNewHospital = Script.dicCommonValue.get("strHospitalName");    
+			strNewRecoveryPrefix = Script.dicCommonValue.get("strRecoveryPrefix");
+			reporter.ReportStep(strStepDesc, strExpResult, "New Hospital Name '"+strNewHospital+"' and Prefix '"+strNewRecoveryPrefix+"' is calculated for further use.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 6 - Click on 'New Hospital' button and verify 'New Hospital' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Hospital' button and verify 'New Hospital' page is displayed.";
+		strExpResult = "'New Hospital' page should be displayed.";
+		blnFlag=clickAndVerify("pgeHospitals", "btnNewHospital", "Add Hospital");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Hospital' button is clicked and 'Add Hospital' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter details in 'New Hospital' page.
+		// ########################################################################################################
+		strStepDesc = "Enter details in 'New Hospital' page.";
+		strExpResult = "All required details in the 'New Hospital' should be filled.";
+		blnFlag=fillNewHospitalForm(strNewHospital, strNewRecoveryPrefix, strEmail, strFacilityRate, strGroupRate, strRejectRule, strAutoUpdate);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All required details in the 'New Hospital' page is filled successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'Save' button and verify 'Add Hospital' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Hospitals' page is displayed.";
+		strExpResult = "'Hospitals' page should be displayed.";
+		blnFlag=clickAndVerify("pgeHospitals", "btnSave", "Hospitals");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Hospitals' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - Search for the added Hospital in the 'Hospitals' grid.
+		//########################################################################################################
+		strStepDesc = "Search for the added Hospital in the 'Hospitals' grid.";
+		strExpResult = "The added Hospital ("+strNewHospital+") should be displayed in the 'Hospitals' grid.";
+		blnFlag=verifySearch("pgeHospitals","txtName","lnkName", strNewHospital);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Hospital ("+strNewHospital+") is displayed successfully in the search result in the 'Hospitals' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 10 - Click on the added Hospital Name and verify if 'Edit Hospital' page is displayed successfully.
+		//########################################################################################################
+		strStepDesc = "Click on the added Hospital Name and verify if 'Edit Hospital' page is displayed successfully.";
+		strExpResult = "The added Hospital ("+strNewHospital+") should be clicked and 'Edit Hospital' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeHospitals","lnkName", "Edit Hospital");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Hospital ("+strNewHospital+") is clicked and 'Edit Hospital' page is displayed sucecssfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 11 - Edit facility rate on 'Edit Hospital' page.
+		// ########################################################################################################
+		strStepDesc = "Edit facility rate on 'Edit Hospital' page.";
+		strExpResult = "New facility rate ("+strEditFacilityRate+") should be entered in 'Facility Rate' field on 'Edit Hospital' page successfully.";
+		blnFlag=Page("pgeHospitals").Element("txtFacilityRate").Type(strEditFacilityRate);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "New facility rate ("+strEditFacilityRate+") entered in 'Facility Rate' field on 'Edit Hospital' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Click on 'Save' button and verify 'Edit Hospital' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Edit Hospital' page is displayed.";
+		strExpResult = "'Edit Hospital' page should be displayed.";
+		blnFlag=clickAndVerify("pgeHospitals", "btnSave", "Edit Hospital");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Edit Hospital' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 13 - Click on 'Return' button and verify 'Hospitals' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify 'Hospitals' page is displayed.";
+		strExpResult = "'Hospitals' page should be displayed.";
+		blnFlag=clickAndVerify("pgeHospitals", "btnReturn", "Hospitals");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked and 'Hospitals' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Search for the edited Hospital in the 'Hospitals' grid.
+		// ########################################################################################################
+		strStepDesc = "Search for the edited Hospital in the 'Hospitals' grid.";
+		strExpResult = "The edited Hospital ("+strNewHospital+") should be displayed in the 'Hospitals' grid.";
+		blnFlag=verifySearch("pgeHospitals","txtName","lnkName", strNewHospital);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Hospital ("+strNewHospital+") is displayed successfully in the search result in the 'Hospitals' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Verify if the Facility Rate edit is successful on 'Hospitals' page.
+		// ########################################################################################################
+		strStepDesc = "Verify if the Facility Rate edit is successful on 'Hospitals' page.";
+		strExpResult = "The edited Facility Rate("+strEditFacilityRate+") should be displayed in the 'Hospitals' grid.";
+		blnFlag=verifyExactText("pgeHospitals", "objFacilityRate", strEditFacilityRate);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Facility Rate ("+strEditFacilityRate+") is displayed successfully in the search result in the 'Hospitals' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 16 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

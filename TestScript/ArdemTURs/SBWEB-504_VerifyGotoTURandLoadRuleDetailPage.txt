@@ -1,0 +1,206 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-504
+		// # Test Case Name: VerifyGotoTURandLoadRuleDetailPage
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Ardem TURs landing 
+		// #  page search some tissue id and verify Goto TUR Load Rule detail page then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Ardem TURs" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 02-13-2015
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+				
+		//Test Data to be fetched for the current 'Ardem TURs' script from DB.
+		String strTissueId = Script.dicTestData.get("TissueId");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Tissue Utilization link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue Utilization' link given on left navigation area.";
+		strExpResult = "'Tissue Utilization' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkTissueUtilization", "pgeAssembly_Lines", "lnkArdemTURs");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Utilization' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Ardem TURs' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Ardem TURs' link and verify navigated page.";
+		strExpResult = "'Ardem TUR File Utility' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkArdemTURs", "Ardem TUR File Utility");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Ardem TUR File Utility' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 		
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly on 'Ardem TUR File Utility' page.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'Ardem TUR File Utility' page.";
+		strExpResult = "Searched tissue id '"+strTissueId+"' should be displayed in the 'Ardem TUR File Utility' grid.";
+		blnFlag=verifySearch("pgeArdemTUR","txtTissueId","objTissueId",strTissueId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched tissue id '"+strTissueId+"' is displayed in search grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+ 		//########################################################################################################
+		//Step 6 - 	Click on Goto TUR link on 'Ardem TUR File Utility' page.
+		//########################################################################################################
+		String strExpPage=strTissueId +" Details";
+		strStepDesc = "Click on 'Goto TUR' link on 'Ardem TUR File Utility' page.";
+		strExpResult = "'Goto TUR' link should be clicked and '"+strExpPage+"' page should be displayed.";
+		blnFlag=clickAndVerify("pgeArdemTUR","lnkGotoTUR", strExpPage);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Goto TUR' link clicked and '"+strExpPage+"' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+		// ########################################################################################################
+		// Step 7 - Click return button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Return' button and verify navigated page.";
+		strExpResult = "'Ardem TUR File Utility' page should be displayed.";
+		blnFlag=clickAndVerify("pgeArdemTUR","btnReturn", "Ardem TUR File Utility");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Ardem TUR File Utility' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 		
+		//########################################################################################################
+		//Step 8 - 	Search tissue id in 'Ardem TUR File Utility' grid.
+		//########################################################################################################
+		strStepDesc = "Search tissue id in 'Ardem TUR File Utility' grid.";
+		strExpResult = "Searched tissue id '"+strTissueId+"' should be displayed in 'Ardem TUR File Utility' grid.";
+		blnFlag=verifySearch("pgeArdemTUR","txtTissueId","objTissueId",strTissueId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched tissue id '"+strTissueId+"' is displayed in search grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Click on Load Rule link on 'Ardem TUR File Utility' page.
+		//########################################################################################################
+		strStepDesc = "Click on Load Rule link on 'Ardem TUR File Utility' page.";
+		strExpResult = "Load Rule link should be clicked and '"+strTissueId+"' page should be displayed.";
+		blnFlag=clickAndVerify("pgeArdemTUR","lnkLoadRule", strTissueId);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Load Rule link clicked and '"+strTissueId+"' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click return button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Return' button and verify navigated page.";
+		strExpResult = "'Ardem TUR File Utility' page should be displayed.";
+		blnFlag=clickAndVerify("pgeArdemTUR","btnReturn", "Ardem TUR File Utility");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Ardem TUR File Utility' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 11 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

@@ -1,0 +1,184 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-538
+		// # Test Case Name: VerifyAddHospitalsNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'Hospitals' negative functionality in 'Add Hospital' page
+		// # and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Hospitals" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: 
+		// # Created on: 04-20-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL = Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+
+		// More test data 
+		String strHospitalName = Script.dicTestData.get("strHospitalName");
+		String strRandomInputText = Script.dicTestData.get("strRandomInputText");
+		String strHospitalNameRequiredError = Script.dicTestData.get("strHospitalNameRequiredError");
+		String strRecoveryPrefixRequiredError = Script.dicTestData.get("strRecoveryPrefixRequiredError");
+		String strRecoveryPrefixMaxCharError = Script.dicTestData.get("strRecoveryPrefixMaxCharError");
+						
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Recovery' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkHospitals");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Hospitals' link and verify 'Hospitals' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Hospitals' link and verify 'Hospitals' page is displayed.";
+		strExpResult = "'Hospitals' page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines", "lnkHospitals", "pgeHospitals", "btnNewHospital");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Hospitals' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 		
+		// ########################################################################################################
+		// Step 5 - Click on 'New Hospital' button and verify 'New Hospital' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Hospital' button and verify 'New Hospital' page is displayed.";
+		strExpResult = "'New Hospital' page should be displayed.";
+		blnFlag = clickAndVerify("pgeHospitals", "btnNewHospital", "Add Hospital");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Hospital' button is clicked and 'Add Hospital' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Click 'Save' button without entering any record and verify the error message. 
+		// ########################################################################################################
+		strStepDesc = "Click 'Save' button without entering any record and verify the error message '" + strHospitalNameRequiredError + "' is displayed.";
+		strExpResult = "'" + strHospitalNameRequiredError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyErrorMessage("pgeHospitals", "txtHospitalName", "", "pgeHospitals", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strHospitalNameRequiredError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strHospitalNameRequiredError + "' message is successfully displayed on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 7 - Enter 'Hospital Name', click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter 'Hospital Name', click on 'Save' button and verify error message '" + strRecoveryPrefixRequiredError + "' is displayed.";
+		strExpResult = "'" + strRecoveryPrefixRequiredError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyErrorMessage("pgeHospitals", "txtHospitalName", strHospitalName, "pgeHospitals", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strRecoveryPrefixRequiredError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strRecoveryPrefixRequiredError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter more than 2 characters in 'Recovery Prefix' field, click on 'Save' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Enter more than 2 characters in 'Recovery Prefix' field, click on 'Save' button and verify error message '" + strRecoveryPrefixMaxCharError + "' is displayed.";
+		strExpResult = "'" + strRecoveryPrefixMaxCharError + "' message should be displayed on clicking 'Save' button.";
+		blnFlag = verifyMaxCharacErrorMessage("pgeHospitals", "txtHospitalName", strHospitalName, "txtPrefix", strRandomInputText, "3", "pgeHospitals", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strRecoveryPrefixMaxCharError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strRecoveryPrefixMaxCharError + "' message is displayed successfully on clicking 'Save' button.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

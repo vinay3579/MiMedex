@@ -1,0 +1,222 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-302
+		// # Test Case Name: VerifyProcessScanFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Returned Goods 
+		// # landing page, filter for an RGA #, perform 'Process Scans' functionality, Commit and log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Returned Goods" page.
+		// #				 New authorization functionality is completed successfully.	
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 09-26-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		
+		// Get RGA # from the Common datasheet.
+		String strRGA = Script.dicCommonValue.get("strRGA");
+		
+		//Test Data to be fetched for the current 'Returned Goods' script from the DB.		
+		String strTissue = Script.dicTestData.get("TissueId");
+		// strTissue = "AS44-20121502-008";
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Orders link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkShipping");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Returned Goods' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Returned Goods' link and verify 'Returned Goods' page is displayed.";
+		strExpResult = "'Returned Goods' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkReturnedGoods", "Returned Goods");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Returned Goods' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Verify that search functionality works properly in 'Returned Goods' grid.
+		//########################################################################################################
+		strStepDesc = "Verify that search functionality works properly in 'Returned Goods' grid.";
+		strExpResult = "Search functionality should work properly in 'Returned Goods' grid in the RGA # field with value '"+strRGA+"'.";
+		blnFlag=verifySearch("pgeReturnedGoods","txtRGA","lnkRGA", strRGA);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality works properly in 'Returned Goods' grid in the RGA # field with value '"+strRGA+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on the filtered RGA # link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on the filtered RGA # link and verify navigated page.";
+		strExpResult = "'"+strRGA+"' link should be clicked and 'Returned Goods' page should be verified.";
+		blnFlag=clickAndVerify("pgeReturnedGoods","lnkRGA", "Returned Goods");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strRGA+"' link is clicked and 'Returned Goods' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		// ########################################################################################################
+		// Step 7 - Enter tissue in the free-form text box.
+		// ########################################################################################################
+		strStepDesc = "Enter tissue in the free-form text box.";
+		strExpResult = "The Tissue ID '"+strTissue+"' should be entered in the free-form text box.";
+		blnFlag=Page("pgeReturnedGoods").Element("txtscanList").Type(strTissue);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Tissue ID '"+strTissue+"' is entered in the free-form text box successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'Process Scans' button.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process Scans' button.";
+		strExpResult = "The 'Process Scans' button should be clicked.";
+		blnFlag=Page("pgeReturnedGoods").Element("btnProcessScans").Click(20);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Process Scans' button has been clicked successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Verify if the Tissue is updated in the grid.
+		// ########################################################################################################
+		strStepDesc = "Verify if the Tissue is updated in the grid.";
+		strExpResult = "The Tissue ID '"+strTissue+"' should be updated in the grid.";
+		blnFlag=verifyExactText("pgeReturnedGoods", "lnkTissue", strTissue);   
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Tissue ID '"+strTissue+"' has been updated in the grid successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click on 'Commit' button.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button.";
+		strExpResult = "The 'Commit' button should be clicked.";
+		blnFlag=Page("pgeCommon").Element("btnCommit").Click(20);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Commit' button has been clicked successfully.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Verify if 'Commit Complete' messsage is displayed in the Message header.
+		// ########################################################################################################
+		strStepDesc = "Verify if 'Commit Complete' messsage is displayed in the Message header.";
+		strExpResult = "The 'Commit complete.' message should be displayed in the Message header.";
+		blnFlag=verifyExactText("pgeReturnedGoods", "objMessageSummary", "Commit complete.");   
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Commit complete.' message is displayed successfully in the Message header.", "Pass");	
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+
+		// ########################################################################################################
+		// Step 12 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

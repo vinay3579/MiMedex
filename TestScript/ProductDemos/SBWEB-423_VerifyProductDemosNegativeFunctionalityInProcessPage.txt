@@ -1,0 +1,248 @@
+// ########################################################################################################
+		// # Test Case ID: SBWEB-423
+		// # Test Case Name: VerifyProductDemosNegativeFunctionalityInProcessPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up ,reach to the 'Product Demos' landing
+		// # page and verifies all the error messages then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Product Demos" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 06-25-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+		String strSearchText = Script.dicTestData.get("strSearchText");	
+		String strTissueCode = Script.dicTestData.get("strTissueCode");	
+		String strCustomer = Script.dicTestData.get("strCustomer");	
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");	
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");	
+		String strExpectedText3 = Script.dicTestData.get("strExpectedText3");	
+		String strExpectedText4 = Script.dicTestData.get("strExpectedText4");	
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Process' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkProductDemos");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Product Demos' link and verify 'Product Demos' landing page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Product Demos' link and verify 'Product Demos' landing page is displayed.";
+		strExpResult = "'Product Demos' landing page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkProductDemos", "Product Demos");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Product Demos' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Click on the Process Scans button without entering anything and verify message displayed.
+		//########################################################################################################
+		strStepDesc = "Click on the Process Scans button without entering anything and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeProductDemos","btnProcessScans","pgeCommon","objUIMessageErrorSummary", strExpectedText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Select only a Customer from 'Customer' list.
+		//########################################################################################################
+		strStepDesc = "Select only a Customer from 'Customer' list.";
+		strExpResult = "Customer '"+strCustomer+"' should be selected from 'Customer' list.";
+		
+		blnFlag = Page("pgeProductDemos").Element("lstCustomer").Select(strCustomer);
+		if (blnFlag == true)
+		{
+			waitForSync(10);
+			reporter.ReportStep(strStepDesc, strExpResult,"Customer '"+strCustomer+"' is selected from 'Customer' list successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	De-select selected value from 'Customer Address' list.
+		//########################################################################################################
+		strStepDesc = "De-select selected value from 'Customer Address' list.";
+		strExpResult = "Selected value should be de-selected from 'Customer Address' list.";
+
+		blnFlag = Page("pgeProductDemos").Element("lstAddress").Select("---");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Selected value is successfully de-selected from 'Customer Address' list.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - Click on 'Process Scans' button and verify message displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Process Scans' button and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText1+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeProductDemos","btnProcessScans","pgeCommon","objUIMessageErrorSummary", strExpectedText1);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText1+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Select a Customer Address from 'Customer Address' list.
+		//########################################################################################################
+		strStepDesc = "Select a Customer Address from 'Customer Address' list.";
+		strExpResult = "Customer Address'"+strCustomer+"' should be selected from 'Customer Address' list.";
+
+		blnFlag = Page("pgeProductDemos").Element("lstAddress").Select(strCustomer);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Customer Address'"+strCustomer+"' is successfully selected from 'Customer Address' list.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+		//########################################################################################################
+		//Step 10 - Click on 'Process Scans' button and verify message displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Process Scans' button and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText2+"' should be displayed.";
+		
+		blnFlag=verifyErrorMessage("pgeProductDemos","btnProcessScans","pgeCommon","objUIMessageErrorSummary", strExpectedText2);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText2+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter some invalid/junk characters in the 'Scanned Barcodes' box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Scanned Barcodes' box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText3+"' should be displayed.";
+		
+		blnFlag= verifyErrorMessage("pgeProductDemos","txtScanList",strSearchText,"btnProcessScans","pgeCommon","objUIMessageErrorSummary", strExpectedText3);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText3+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter a tissue which is not valid for product demos in the 'Scanned Barcodes' box and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter a tissue which is not valid for product demos in the 'Scanned Barcodes' box and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText4+"' should be displayed.";
+		
+		blnFlag= verifyErrorMessage("pgeProductDemos","txtScanList",strTissueCode,"btnProcessScans","pgeCommon","objUIMessageErrorSummary", strExpectedText4);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText4+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+		// ########################################################################################################
+		// Step 13 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

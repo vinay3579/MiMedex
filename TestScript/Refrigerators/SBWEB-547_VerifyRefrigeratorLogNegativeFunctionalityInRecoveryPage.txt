@@ -1,0 +1,354 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-547
+		// # Test Case Name: VerifyRefrigeratorLogNegativeFunctionalityInRecoveryPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies 'Refrigerator Log' page negative functionality in 
+		// # 'Recovery' page.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 06-11-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL = Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strRefrigerator = Script.dicTestData.get("strRefrigerator");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc,strExpResult, "SBWEB application url: '" + strURL + "' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Recovery link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkRefrigerators");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Refrigerators' link and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Refrigerators' link and verify 'Refrigerators' landing page is displayed.";
+		strExpResult = "'Refrigerators' landing page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines","lnkRefrigerators", "Refrigerators");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, " 'Refrigerators' link is clicked and 'Refrigerators' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Click on any one of the 'Show Log' link and verify 'Refrigerator Log' page is displayed.
+		//########################################################################################################
+		strStepDesc = "Click on any one of the 'Show Log' link and verify 'Refrigerator Log' page is displayed.";
+		strExpResult = "'Refrigerator Log' page should be displayed.";
+		blnFlag=clickRefrigeratorShowLogLink(strRefrigerator,"Refrigerator Log:"+" "+strRefrigerator);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Refrigerator Log' page for Refrigerator:'"+strRefrigerator+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Enter some invalid/junk characters in the 'Recovery ID' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Recovery ID' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Recovery ID' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeRefrigerators","Recovery ID",strSearchText,"pgeCommon","objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Recovery ID' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Clear 'Recovery ID' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Recovery ID' search box and verify page refresh.";
+		strExpResult = "'Recovery ID' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeRefrigerators", "Recovery ID");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery ID' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter some invalid/junk characters in the 'Tissue Type' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Tissue Type' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Tissue Type' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeRefrigerators","Tissue Type",strSearchText,"pgeCommon","objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Tissue Type' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Clear 'Tissue Type' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Tissue Type' search box and verify page refresh.";
+		strExpResult = "'Tissue Type' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeRefrigerators", "Tissue Type");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Type' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter some invalid/junk characters in the 'Status' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Status' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Status' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeRefrigerators","Status",strSearchText,"pgeCommon","objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Status' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Clear 'Status' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Status' search box and verify page refresh.";
+		strExpResult = "'Status' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeRefrigerators", "Status");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Status' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter some invalid/junk characters in the 'Placed By' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Placed By' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Placed By' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeRefrigerators","Placed By",strSearchText,"pgeCommon","objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Placed By' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Clear 'Placed By' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Placed By' search box and verify page refresh.";
+		strExpResult = "'Placed By' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeRefrigerators", "Placed By");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Placed By' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Enter some invalid/junk characters in the 'Time In' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Time In' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Time In' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeRefrigerators","Time In",strSearchText,"pgeCommon","objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Time In' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Clear 'Time In' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Time In' search box and verify page refresh.";
+		strExpResult = "'Time In' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeRefrigerators", "Time In");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Time In' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Enter some invalid/junk characters in the 'Removed By' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Removed By' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Removed By' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeRefrigerators","Removed By",strSearchText,"pgeCommon","objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Removed By' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Clear 'Removed By' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Removed By' search box and verify page refresh.";
+		strExpResult = "'Removed By' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeRefrigerators", "Removed By");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Removed By' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Enter some invalid/junk characters in the 'Time Out' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Time Out' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Time Out' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeRefrigerators","Time Out",strSearchText,"pgeCommon","objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Time Out' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Clear 'Time Out' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Time Out' search box and verify page refresh.";
+		strExpResult = "'Time Out' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeRefrigerators", "Time Out");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Time Out' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

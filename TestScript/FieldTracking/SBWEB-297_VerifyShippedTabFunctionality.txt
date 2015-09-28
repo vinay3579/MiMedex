@@ -1,0 +1,262 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-297
+		// # Test Case Name: VerifyShippedTabFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies shipped tab functionality on 'Field tracking' page and then
+		// #  successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Field Tracking" landing page.
+		// # 				 User is on 'Shipped' tab.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 09-25-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		
+		String strPatientId = Script.dicTestData.get("strPatientId");
+		String strFirstName = Script.dicTestData.get("strFirstName");
+		String strLastName = Script.dicTestData.get("strLastName");
+		String strBirthDate = Script.dicTestData.get("strBirthDate");
+		String strGender = Script.dicTestData.get("strGender");
+		String strSurgeonFirst = Script.dicTestData.get("strSurgeonFirst");
+		String strSurgeonLast = Script.dicTestData.get("strSurgeonLast");
+		String strProcedureType = Script.dicTestData.get("strProcedureType");
+		String strImplantDate = Script.dicTestData.get("strImplantDate");
+		
+		//Test Data to be fetched for the current 'Field Tracking' script from DB.
+		String strTissueId = Script.dicTestData.get("TissueId");
+		String strCustomerName = Script.dicTestData.get("CustomerName");
+		String strAgentName = Script.dicTestData.get("AgentName");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Remote Access link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Remote Access' link given on left navigation area.";
+		strExpResult = "'Remote Access' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRemoteAccess", "pgeAssembly_Lines", "lnkFieldTracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Remote Access' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Field Tracking' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Field Tracking' link and verify navigated page.";
+		strExpResult = "'Field Tracking' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkFieldTracking", "Field Tracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Field Tracking' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click 'Shipped' tab on Field Tracking page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Shipped' tab on Field Tracking page.";
+		strExpResult = "'Shipped' tab should be clicked.";
+		blnFlag=clickTab("pgeFieldTracking","tabShipped", "Shipped");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Shipped' tab clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Enter agent name in 'Agent' input box.
+		// ########################################################################################################
+		strStepDesc = "Enter agent name in 'Agent' input box.";
+		strExpResult = "Agent name '"+strAgentName+"' should be entered and page should be refreshed.";
+		blnFlag=enterAgentName(strAgentName);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Agent name '"+strAgentName+"' entered and page refreshes successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Verify that if search functionality working properly on Field Tracking page.
+		//########################################################################################################
+		strStepDesc = "Verify that if search functionality working properly on Field Tracking page.";
+		strExpResult = "Searched tissue '"+strTissueId+"' should be displayed in 'Shipped' grid.";
+		blnFlag=verifySearch("pgeFieldTracking","txtTissue","lnkTissue",strTissueId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched tissue '"+strTissueId+"' displayed in 'Shipped' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Click on specified tissue id on 'Field Tracking' page.
+		//########################################################################################################
+		strStepDesc = "Click on specified tissue id on 'Field Tracking' page.";
+		strExpResult = "'Tissue Utilization' grid should be displayed on navigated page.";
+		blnFlag=clickAndVerify("pgeFieldTracking", "lnkTissue", "pgeFieldTracking", "objTissueUtilization");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Utilization' grid displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Fill details in tissue utilization grid on 'Field Tracking' page.
+		//########################################################################################################
+		strStepDesc = "Fill details in tissue utilization grid on 'Field Tracking' page.";
+		strExpResult = "Details should be filled in tissue utilization grid on 'Field Tracking' page.";
+		blnFlag=fillTissueUtilizationGrid(strPatientId, strFirstName, strLastName, strBirthDate, strGender, strSurgeonFirst, strSurgeonLast, strProcedureType, strImplantDate);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' successfully fills all the details in tissue utilization grid on 'Field Tracking' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - Click on return button on 'Field Tracking' page.
+		//########################################################################################################
+		strStepDesc = "Click on return button on 'Field Tracking' page.";
+		strExpResult = "'Return' button should be clicked.";
+		blnFlag=clickAndVerify("pgeFieldTracking","btnReturn", "Field Tracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - User searches processed tissue in 'Tissue' filter in 'Shipped' grid.
+		//########################################################################################################
+		strStepDesc = "User searches processed tissue in 'Tissue' filter in 'Shipped' grid.";
+		strExpResult = "Tissue '"+strTissueId+"' should not be displayed in 'Shipped' grid.";
+		blnFlag=verifyRecordNotExist("pgeFieldTracking","objEmptyTable",strTissueId);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue '"+strTissueId+"' not displayed in 'Shipped' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		// ########################################################################################################
+		// Step 12 - Push this tissue id to the 'Common' Sheet so that it can be used for further 'Field Tracking' scripts.
+		// ########################################################################################################
+		strStepDesc = "Push this tissue id to the 'Common' Sheet so that it can be used for further 'Field Tracking' scripts.";
+		strExpResult = "Tissue Id '"+strTissueId+"' should be pushed to the Common datasheet under 'strTissueId_FieldTracking' for further use.";
+		blnFlag = sendValuetoCommonSheet("strTissueId_FieldTracking",strTissueId);
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue Id '"+strTissueId+"' is pushed successfully to the Common datasheet under 'strTissueId_FieldTracking' for further use.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 13 - Push this customer name to the 'Common' Sheet so that it can be used for further 'Field Tracking' scripts.
+		// ########################################################################################################
+		strStepDesc = "Push this customer name to the 'Common' Sheet so that it can be used for further 'Field Tracking' scripts.";
+		strExpResult = "Customer '"+strCustomerName+"' should be pushed to the Common datasheet under 'strCustomerName_FieldTracking' for further use.";
+		blnFlag = sendValuetoCommonSheet("strCustomerName_FieldTracking",strCustomerName);
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "Customer '"+strCustomerName+"' is pushed successfully to the Common datasheet under 'strCustomerName_FieldTracking' for further use.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		// ########################################################################################################
+		// Step 14 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

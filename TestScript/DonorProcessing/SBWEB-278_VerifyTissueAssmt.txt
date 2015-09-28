@@ -1,0 +1,344 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-278
+		// # Test Case Name: VerifyTissueAssmt
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies the 'Tissue Assmt' button functionality on "Donor Tissues" page.
+		// # ------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Donor Tissues" page.
+		// # 		         Start Process button has already been clicked on the Donor Tissue Page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 08-06-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strAmnionHeight = Script.dicTestData.get("strAmnionHeight");
+		String strAmnionWidth = Script.dicTestData.get("strAmnionWidth");
+		String strChorionHeight = Script.dicTestData.get("strChorionHeight");
+		String strChorionWidth = Script.dicTestData.get("strChorionWidth");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strAssessmentExpectedText = Script.dicTestData.get("strAssessmentExpectedText");
+		
+		// Get Tissue Recovery ID, Donor Key from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_DonorProcessing");
+		String strDonorKey= Script.dicCommonValue.get("strDonorKey_DonorProcessing");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 3 - Click on Process link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkDonor_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Donor Processing link and verify 'Donor List' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Donor Processing link and verify 'Donor List' page is displayed.";
+		strExpResult = "'Donor List' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonor_Processing", "Donor List");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor List' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - Verify that if search functionality working properly in Donor List grid.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly in Donor List grid.";
+		strExpResult = "Searched result should be displayed in the 'Donor List' grid.";
+		blnFlag=verifySearch("pgeDonor_List","txtRecoveryId_DonorList","objRecoveryID", strRecoveryId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Donor List grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.
+		//########################################################################################################
+		strStepDesc = "Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.";
+		strExpResult = "The donor ID corresponding to Recovery ID "+strRecoveryId+" should be clicked and 'Donor Tissues' page should be verified successfully.";
+		blnFlag = clickandVerifyDonorIDLink(strRecoveryId, "Donor Tissues");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The donor ID corresponding to Recovery ID "+strRecoveryId+" is clicked and 'Donor Tissues' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 -  Click on 'Tissue Assmt' button on "Donor Tissues" page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Tissue Assmt' button on 'Donor Tissues' page.";
+		strExpResult = "'Tissue Assmt' button is clicked and 'Raw Tissue Assessment' page should be displayed successfully.";		
+		blnFlag=clickAndVerify("pgeDonorProcessing", "btnTissueAssmt", "pgeRawTissueAssessment", "objRawTissueAssessmentHeader");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Assmt' button is clicked and 'Raw Tissue Assessment' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - Provide height and width details, click on 'Add Amnion' button and verify Amnion added.
+		//########################################################################################################
+		strStepDesc = "Provide height and width details, click on 'Add Amnion' button and verify Amnion added.";
+		strExpResult = "The Amnion should be added successfully.";		
+		blnFlag=addAmnionorChorion("Amnion", strAmnionHeight, strAmnionWidth);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Amnion has been added successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - Provide height and width details, click on 'Add Chorion' button and verify Chorion added.
+		//########################################################################################################
+		strStepDesc = "Provide height and width details, click on 'Add Chorion' button and verify Chorion added.";
+		strExpResult = "The Chorion should be added successfully.";		
+		blnFlag=addAmnionorChorion("Chorion", strChorionHeight, strChorionWidth);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Chorion has been added successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - Delete Amnion entry from the grid.
+		//########################################################################################################
+		strStepDesc = "Delete Amnion entry from the grid.";
+		strExpResult = "The Amnion should be deleted successfully.";		
+		blnFlag=deleteAmnionorChorion("Amnion");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Amnion has been deleted successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - Delete Chorion entry from the grid.
+		//########################################################################################################
+		strStepDesc = "Delete Chorion entry from the grid.";
+		strExpResult = "The Chorion should be deleted successfully.";		
+		blnFlag=deleteAmnionorChorion("Chorion");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Chorion has been deleted successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - Fill the Tissue Assessment form.
+		//########################################################################################################
+		strStepDesc = "Fill the Tissue Assessment form.";
+		strExpResult = "The Tissue Assessment form should be filled successfully.";		
+		blnFlag=fillRawTissueAssmt(strAmnionHeight, strAmnionWidth, strChorionHeight, strChorionWidth);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Tissue Assessment form has been filled successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 13 - Sign the 'Performed By' canvas for 'Commit' functionality.
+		//########################################################################################################
+		strStepDesc = "Sign the 'Performed By' canvas for 'Commit' functionality.";
+		strExpResult = "The 'Performed By' canvas for 'Commit' functionality should be signed successfully.";		
+		blnFlag= canvasSignature("pgeRawTissueAssessment", "objCanvas") ;
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Performed By' canvas for 'Commit' functionality is signed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		//########################################################################################################
+		//Step 14 - Click on 'Commit' button and verify that 'Commit' button is no longer displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify that 'Commit' button is no longer displayed.";
+		strExpResult = "'Commit' button should be clicked and 'Commit' button should no longer be displayed.";		
+		blnFlag= clickAndVerifyNotExist("pgeCommon", "btnCommit", "pgeCommon", "btnCommit");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and 'Commit' button is no longer displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+		
+		//########################################################################################################
+		//Step 15 - Verify 'Print Nalgene Labels' on 'Raw Tissue Assessment' page.
+		//########################################################################################################
+		strStepDesc = "Verify 'Print Nalgene Labels' on 'Raw Tissue Assessment' page.";
+		strExpResult = "'Print Nalgene Labels' PDF should be verified for the keywords '"+strDonorKey+","+strExpectedText+"'.";
+		blnFlag= clickPrintNalgeneLabelsLink(strDonorKey, strExpectedText);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Nalgene Link' has been clicked and the PDF has been verified for the keywords '"+strDonorKey+","+strExpectedText+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 - Close the 'Print Nalgene Labels' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Print Nalgene Labels' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Print Nalgene Labels' PDF should be closed successfully.";
+		blnFlag=closePDF("Raw Tissue Assessment");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Nalgene Labels' PDF has been closed successfully and the navigated page has been verified for the title 'Raw Tissue Assessment'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 17 - Verify 'Print Assessment Form' on 'Raw Tissue Assessment' page.
+		//########################################################################################################
+		strStepDesc = "Verify 'Print Assessment Form' on 'Raw Tissue Assessment' page.";
+		strExpResult = "'Print Assessment Form' PDF should be verified for the keywords '"+strDonorKey+","+strAssessmentExpectedText+"'.";
+		blnFlag= clickPrintAssessment(strDonorKey, strAssessmentExpectedText);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Assessment Form' has been clicked and the PDF has been verified for the keywords '"+strDonorKey+","+strAssessmentExpectedText+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 18 - Close the 'Print Assessment Form' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Print Assessment Form' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Print Assessment Form' PDF should be closed successfully.";
+		blnFlag=closePDF("Raw Tissue Assessment");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Assessment Form' PDF has been closed successfully and the navigated page has been verified for the title 'Raw Tissue Assessment'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 19 - Click on 'Return' button and verify Donor Tissues page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify Donor Tissues page.";
+		strExpResult = "The 'Return' button should be clicked and 'Donor Tissues' page should be displayed.";
+		blnFlag=clickAndVerify("pgeRawTissueAssessment", "btnReturn", "pgeDonorProcessing", "objDonorTissuesHeader");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Return' button is clicked and 'Donor Tissues' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+									
+		// ########################################################################################################
+		// Step 20 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		

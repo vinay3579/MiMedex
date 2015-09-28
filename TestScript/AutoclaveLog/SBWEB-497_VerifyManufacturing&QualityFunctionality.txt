@@ -1,0 +1,191 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-497
+		// # Test Case Name: VerifyManufacturing&QualityFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Autoclave Log landing 
+		// #  page,pick the Load number from previous script, insert 'Manufacturing and Quality Review' signatures, commit and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Autoclave Log" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 02-26-2015
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strManufacturingInitial = Script.dicTestData.get("strManufacturingInitial");
+		String strQualityInitial = Script.dicTestData.get("strQualityInitial");
+			
+		//Test Data to be fetched for the current 'Autoclave Log' script from Common Sheet.
+		String strLoadNumber = Script.dicCommonValue.get("strLoadNumber");	
+				
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strManufacturingInitial, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strManufacturingInitial+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Manufacturing link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Manufacturing' link given on left navigation area.";
+		strExpResult = "'Manufacturing' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkManufacturing", "pgeAssembly_Lines", "lnkAutoclaveLog");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Manufacturing' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Autoclave Log' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Autoclave Log' link and verify navigated page.";
+		strExpResult = "'Autoclave Log' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkAutoclaveLog", "Autoclave Log");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Search for an eligible autoclave Load number on Autoclave Log page.
+		//########################################################################################################
+		strStepDesc = "Search for an eligible autoclave Load number on Autoclave Log page.";
+		strExpResult = "Searched load number '"+strLoadNumber+"' should be displayed in the 'Autoclave Log' grid.";
+		blnFlag=verifySearch("pgeAutoclaveLog","txtLoadNumber","lnkLoadNumber",strLoadNumber);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumber+"' is displayed in the 'Autoclave Log' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 6 - 	Click on the 'Load number' that is searched on the grid and verify navigated page.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Load number' that is searched on the grid and verify navigated page.";
+		strExpResult = "Searched load number '"+strLoadNumber+"' should be clicked and 'Edit Autoclave Log' page should be verified.";
+		blnFlag=clickAndVerify("pgeAutoclaveLog","lnkLoadNumber","Edit Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumber+"' is clicked and 'Edit Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 		
+
+		//########################################################################################################
+		//Step 7 - Enter 'Initials' for Manufacturing Review on 'Edit Autoclave Log' page.
+		//########################################################################################################
+		strStepDesc = "Enter 'Initials' for Manufacturing Review on 'Edit Autoclave Log' page.";
+		strExpResult = "'Initials' for Manufacturing Review on 'Edit Autoclave Log' page with username '"+strManufacturingInitial+"' and signature should be entered.";
+		blnFlag= electronicSignature("pgeEditAutoclaveLog","txtInitials",strManufacturingInitial,"objManufacturingSign");
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Initials' for Manufacturing Review on 'Edit Autoclave Log' page with username '"+strManufacturingInitial+"' and signature is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 
+
+		//########################################################################################################
+		//Step 8 - Enter 'Initials' for Quality Review on 'Edit Autoclave Log' page.
+		//########################################################################################################
+		strStepDesc = "Enter 'Initials' for Quality Review on 'Edit Autoclave Log' page.";
+		strExpResult = "'Initials' for Quality Review on 'Edit Autoclave Log' page with username '"+strQualityInitial+"' and signature should be entered.";
+		blnFlag= electronicSignature("pgeEditAutoclaveLog","txtQualityInitials",strQualityInitial,"objQualitySign");
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Initials' for Quality Review on 'Edit Autoclave Log' page with username '"+strQualityInitial+"' and signature is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 
+		
+ 		// ########################################################################################################
+		// Step 9 - Click on 'Commit' button and verify presence of 'Print Report' button.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify presence of 'Print Report' button.";
+		strExpResult = "'Commit' button should be clicked and 'Print Report' button should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon","btnCommit", "pgeEditAutoclaveLog", "btnPrintReport");
+		if (blnFlag == true) 
+		{
+			waitForSync(5);
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and 'Print Report' button is displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+		
+		// ########################################################################################################
+		// Step 10 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

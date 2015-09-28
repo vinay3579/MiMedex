@@ -1,0 +1,182 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-377
+		// # Test Case Name: VerifyProbeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies the selected refrigerator entry on Probe Configuration page 
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Probe Configuration" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 11-25-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strRefrigerator = Script.dicTestData.get("strRefrigerator");
+		String strImage = Script.dicTestData.get("strImage");
+		
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc,strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Recovery link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'IT Support' link given on left navigation area.";
+		strExpResult = "'IT Support' link should be clicked.";
+		//blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkProbeConfiguration");
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkITSupport", "pgeAssembly_Lines", "lnkProbeConfiguration");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'IT Support' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Probe Configuration' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Probe Configuration' link and verify 'Probe Configuration' page is displayed.";
+		strExpResult = "'Probe Configuration' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkProbeConfiguration", "pgeProbeConfiguration", "drpProbeName");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Probe Configuration' link is clicked and 'Probe Configuration' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Select any refrigerator from 'Probe Name' drop down list on "Probe Configuration" page.
+		// ########################################################################################################
+		strStepDesc = "Select refrigerator '"+strRefrigerator+"' from 'Probe Name' drop down list on 'Probe Configuration' page.";
+		strExpResult = "Refrigerator should be selected from 'Probe Name' drop down list on 'Probe Configuration' page.";
+		blnFlag = Page("pgeProbeConfiguration").Element("drpProbeName").Select(strRefrigerator);
+		waitForPageRefresh();
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Selected refrigerator '"+strRefrigerator+"' is displayed on 'Probe Configuration' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Validate selected refrigerator entry in 'Probe Name' under 'SB Web Configuration' grid.
+		// ########################################################################################################
+		strStepDesc = "Validate selected refrigerator entry in 'Probe Name' under 'SB Web Configuration' grid.";
+		strExpResult = "Refrigerator should be displayed in 'Probe Name' field under 'SB Web Configuration' grid.";
+		blnFlag=verifyExactText("pgeProbeConfiguration", "objProbeName_SBWEB", strRefrigerator);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Refrigerator '"+strRefrigerator+"' is displayed in 'Probe Name' field under 'SB Web Configuration' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Validate selected refrigerator entry in 'Probe Name' under 'Probe Configuration' grid.
+		// ########################################################################################################
+		strStepDesc = "Validate selected refrigerator entry in 'Probe Name' under 'Probe Configuration' grid.";
+		strExpResult = "Refrigerator should be displayed in 'Probe Name' field under 'Probe Configuration' grid.";
+		blnFlag=verifyTextContains("pgeProbeConfiguration", "objProbeName", strRefrigerator);
+				
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Refrigerator '"+strRefrigerator+"' is displayed in 'Probe Name' field under 'Probe Configuration' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		
+		// ########################################################################################################
+		// Step 8 - Validate green tick mark for selected refrigerator on 'Probe Configuration' page.
+		// ########################################################################################################
+		strStepDesc = "Validate green tick mark for selected refrigerator on 'Probe Configuration' page.";
+		strExpResult = "Green tick mark should be displayed for selected refrigerator on 'Probe Configuration' page.";
+		blnFlag=validateGreenTickMark(strImage);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Green tick mark is displayed for selected refrigerator on 'Probe Configuration' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 9 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

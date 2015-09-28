@@ -1,0 +1,261 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-279
+		// # Test Case Name: VerifyHoldAmnionChorion
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'Hold Amnion' and 'Hold Chorion' button functionality on "Donor Tissues" page.
+		// # ------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Donor Tissues" page  with completed Tissue Assessment.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 08-06-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strRefrigerator = Script.dicTestData.get("strRefrigerator");
+		String strFullName = Script.dicCommonValue.get("strFullName");
+		// Get Tissue Recovery ID from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_DonorProcessing");
+			
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Process link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkDonor_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Donor Processing link and verify 'Donor List' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Donor Processing link and verify 'Donor List' page is displayed.";
+		strExpResult = "'Donor List' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonor_Processing", "Donor List");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor List' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly in Donor List grid.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly in Donor List grid.";
+		strExpResult = "Searched result should be displayed in the 'Donor List' grid.";
+		blnFlag=verifySearch("pgeDonor_List","txtRecoveryId_DonorList","objRecoveryID", strRecoveryId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Donor List grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.
+		//########################################################################################################
+		strStepDesc = "Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.";
+		strExpResult = "The donor ID corresponding to Recovery ID "+strRecoveryId+" should be clicked and 'Donor Tissues' page should be verified successfully.";
+		blnFlag = clickandVerifyDonorIDLink(strRecoveryId, "Donor Tissues");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The donor ID corresponding to Recovery ID "+strRecoveryId+" is clicked and 'Donor Tissues' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Click on 'Hold Amnion' button and verify popup.
+		//########################################################################################################
+		strStepDesc = "Click on 'Hold Amnion' button and verify popup.";
+		strExpResult = "The 'Hold Amnion' button should be clicked and popup should be displayed.";		
+		blnFlag=clickAndVerifyVisible("pgeDonorProcessing", "btnHoldAmnion", "pgeDonorProcessing", "lstRefrigerator");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Hold Amnion' button is clicked and popup display is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Fill all valid values in the popup.
+		//########################################################################################################
+		strStepDesc = "The 'Hold Amnion' popup should be filled with valid values.";
+		strExpResult = "The 'Hold Amnion' popup should be filled with valid values.";		
+		blnFlag=fillAmnionChorionPopup(strRefrigerator);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Hold Amnion' popup is successfully filled with valid values.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Click on 'Commit' button and verify presence of 'Release Amnion' button.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify presence of 'Release Amnion' button.";
+		strExpResult = "'Commit' button should be clicked and 'Release Amnion' button should be verified.";		
+		blnFlag=clickAndVerifyVisible("pgeDonorProcessing", "btnCommit", "pgeDonorProcessing", "btnReleaseAmnion");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and 'Release Amnion' button is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - 	Verify refrigerator log with updated values for Amnion.
+		//########################################################################################################
+		strStepDesc = "Verify refrigerator log with updated values for Amnion.";
+		strExpResult = "The refrigerator log should be updated with values entered.";		
+		blnFlag=verifyHoldReleaseRefrigeratorLog("Amnion", "Hold", strRecoveryId, strRefrigerator, strFullName);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The updates on the refrigerator log have been verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - 	Click on 'Hold Chorion' button and verify popup.
+		//########################################################################################################
+		strStepDesc = "Click on 'Hold Chorion' button and verify popup.";
+		strExpResult = "'Hold Chorion' button should be clicked and popup should be displayed.";		
+		blnFlag=clickAndVerifyVisible("pgeDonorProcessing", "btnHoldChorion", "pgeDonorProcessing", "lstRefrigerator");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Hold Chorion' button is clicked and popup display is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - 	Fill all valid values in the 'Hold Chorion' popup.
+		//########################################################################################################
+		strStepDesc = "The 'Hold Chorion' popup should be filled with valid values.";
+		strExpResult = "The 'Hold Chorion' popup should be filled with valid values.";		
+		blnFlag=fillAmnionChorionPopup(strRefrigerator);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Hold Chorion' popup is filled successfully with valid values.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 13 - 	Click on 'Commit' button and verify presence of 'Release Chorion' button.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify presence of 'Release Chorion' button.";
+		strExpResult = "'Commit' button should be clicked and 'Release Chorion' button should be verified.";		
+		blnFlag=clickAndVerifyVisible("pgeDonorProcessing", "btnCommit", "pgeDonorProcessing", "btnReleaseChorion");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and 'Release Chorion' button is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 14 - 	Verify refrigerator log with updated values for Chorion.
+		//########################################################################################################
+		strStepDesc = "Verify refrigerator log with updated values for Chorion.";
+		strExpResult = "The refrigerator log should be updated with values entered.";		
+		blnFlag=verifyHoldReleaseRefrigeratorLog("Chorion", "Hold", strRecoveryId, strRefrigerator, strFullName);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The updates on the refrigerator log have been verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

@@ -1,0 +1,187 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-251
+		// # Test Case Name: VerifyStartProcessFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies the start button functionality on Release Processing page
+		// # and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Release Processing" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 07-17-2014
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		
+		//Test Data to be fetched for the current 'Release Processing' script from DB.
+		String strRecoveryId = Script.dicTestData.get("RecoveryKey");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Quality Assurance' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkRelease_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Release Processing' link and verify 'Release Processing' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Release Processing' link and verify 'Release Processing' page is displayed.";
+		strExpResult = "'Release Processing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRelease_Processing", "pgeRelease_Processing", "txtSerologyResult");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Release Processing' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Select specified back months from 'Month Back' drop down on 'Release Processing' page.
+		// ########################################################################################################
+		strStepDesc = "Select specified back months from 'Month Back' drop down on 'Release Processing' page.";
+		strExpResult = "Specified back month should be selected in 'Month Back' drop down.";
+		blnFlag=backMonthSelection("6");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Specified back month is selected in 'Month Back' drop down.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - Verify that if search functionality working properly on Release Processing page.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'Release Processing' page.";
+		strExpResult = "Searched result should be displayed in 'Release Processing' grid.";
+		blnFlag=verifySearch("pgeRelease_Processing","txtRecoveryId","lnkRecoveryId",strRecoveryId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Release Processing grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+			
+		//########################################################################################################
+		//Step 7 - 	Click on specified Recovery Id link on Release Processing page. 
+		//########################################################################################################
+		strStepDesc = "Click on specified 'Recovery Id' link on 'Release Processing' page.";
+		strExpResult = "Recovery Id link '"+strRecoveryId+"' should be clicked on 'Release Processing' page.";
+		blnFlag=clickLink(strRecoveryId,"Recovered Tissue");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Recovery Id link '"+strRecoveryId+"' clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+
+		//########################################################################################################
+		//Step 8 - 	Click on Start Process button on Recovered Tissue page. 
+		//########################################################################################################
+		strStepDesc = "Click on 'Start Process' button on 'Recovered Tissue' page.";
+		strExpResult = "'Start Process' button should be clicked on 'Recovered Tissue' page.";
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "btnStartProcess", "pgeRecovered_Tissue", "btnSave");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Start Process' button clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		// ########################################################################################################
+		// Step 9 - Push this recovery Id to the 'Common' Sheet so that it can be used for further 'Release Processing' scripts.
+		// ########################################################################################################
+		strStepDesc = "Push this recovery Id to the 'Common' Sheet so that it can be used for further 'Release Processing' scripts.";
+		strExpResult = "Recovery Id '"+strRecoveryId+"' should be pushed to the Common datasheet under 'strRecoveryId_ReleaseProcessing' for further use.";
+		blnFlag = sendValuetoCommonSheet("strRecoveryId_ReleaseProcessing",strRecoveryId);
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "Recovery Id '"+strRecoveryId+"' is pushed successfully to the Common datasheet under 'strRecoveryId_ReleaseProcessing' for further use.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+			
+		// ########################################################################################################
+		// Step 10 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

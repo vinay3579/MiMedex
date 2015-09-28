@@ -1,0 +1,4 @@
+
+call Reverse_FF_settings.vbs
+call Reverse_Chrome_Settings.bat
+call Reverse_IE_Settings.bat

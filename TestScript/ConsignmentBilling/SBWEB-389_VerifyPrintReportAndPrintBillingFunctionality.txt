@@ -1,0 +1,219 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-389
+		// # Test Case Name: VerifyPrintReportAndPrintBillingFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Consignment Billing 
+		// # landing page and search some purchase order on the page then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Consignment Billing" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 11-28-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		
+		//Test Data to be fetched for the current 'Consignment Billing' script from DB.
+		String strPurchaseOrder = Script.dicTestData.get("PurchaseOrder");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Orders link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkConsignmentBilling");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Consignment Billing' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Consignment Billing' link and verify navigated page.";
+		strExpResult = "'Consignment Billing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkConsignmentBilling", "Consignment Billing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Consignment Billing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click 'Processed' tab on Consignment Billing page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Processed' tab on 'Consignment Billing' page.";
+		strExpResult = "'Processed' tab should be clicked.";
+		blnFlag=clickTab("pgeConsignmentBilling","tabProcessed", "Processed");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Processed' tab clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 6 -  Verify that if search functionality working properly on 'Consignment Billing' page.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'Consignment Billing' page.";
+		strExpResult = "Searched result ("+strPurchaseOrder+") should be displayed in the 'Consignment Billing' grid.";
+		blnFlag=verifySearch("pgeConsignmentBilling","txtPurchaseOrder","lnkPurchaseOrder",strPurchaseOrder);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched purchase order ("+strPurchaseOrder+") displayed in 'Processed' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Click on 'Print Report' link on 'Consignment Billing' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Print Report' link on 'Consignment Billing' page.";
+		strExpResult = "'Print Report' link should be clicked and the PDF should be verified for the keywords '"+strExpectedText+","+strPurchaseOrder+"'.";
+		blnFlag=clickPrintReportLink("pgeConsignmentBilling","lnkPrintReport", strPurchaseOrder, strExpectedText);
+		
+		if (blnFlag == true)
+		{
+			String expText=Script.dicTestData.get("ExpectedText");
+			reporter.ReportStep(strStepDesc, strExpResult, "'Print Report' link has been clicked and the PDF has been verified for the keywords '"+expText+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 8 - 	Close the 'CONSIGNMENT BILLING FORM' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'CONSIGNMENT BILLING FORM' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'CONSIGNMENT BILLING FORM' PDF should be closed and the navigated page should be verified for the title 'Consignment Billing'.";
+		blnFlag=closePDF("Consignment Billing");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'CONSIGNMENT BILLING FORM' PDF has been closed successfully and the navigated page has been verified for the title 'Consignment Billing'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Click on 'Print Billing' button and verify opened window.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Print Billing' button and verify opened window.";
+		strExpResult = "'Processed Consignment Billing Orders' window should be opened.";
+		blnFlag=clickAndVerify("pgeConsignmentBilling","btnPrintBilling","pgeConsignmentBilling","objUtilWindow");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Processed Consignment Billing Orders' window is opened successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - Verify that if search functionality working properly on 'Processed Consignment Billing Orders' window.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'Processed Consignment Billing Orders' window.";
+		strExpResult = "Searched result ("+strPurchaseOrder+") should be displayed in the 'Processed Consignment Billing Orders' grid.";
+		blnFlag=verifySearch("pgeConsignmentBilling","txtPurchaseOrder_UtilWindow","objPurchaseOrder_UtilWindow",strPurchaseOrder);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched purchase order ("+strPurchaseOrder+") displayed in 'Processed Consignment Billing Orders' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Click on 'Close' button in opened window and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Close' button in opened window and verify navigated page.";
+		strExpResult = "'Consignment Billing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeConsignmentBilling","btnClose_UtilWindow", "Consignment Billing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Consignment Billing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+					
+		// ########################################################################################################
+		// Step 12 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

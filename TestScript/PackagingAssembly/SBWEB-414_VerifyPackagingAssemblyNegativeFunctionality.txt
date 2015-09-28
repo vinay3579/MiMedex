@@ -1,0 +1,394 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-414
+		// # Test Case Name: VerifyPackagingAssemblyNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: Verify 'Packaging Assembly' negative functionality in 'Packaging' page.		// # 
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Donors to Package" page.
+		// #				 User is on "Packaging Assembly" page.			
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Sharma
+		// # Created on: 05-19-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicCommonValue.get("strUserName");
+		String strUserNameReviewer = Script.dicTestData.get("strUserNameReviewer");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strDonorText = Script.dicTestData.get("strDonorText");
+		String strPersonErrorText = Script.dicTestData.get("strPersonErrorText");
+		String strBlankTissueErrorText = Script.dicTestData.get("strBlankTissueErrorText");
+		String strDBTissueErrorText = Script.dicTestData.get("strDBTissueErrorText");
+		String strSignatureErrorText = Script.dicTestData.get("strSignatureErrorText");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strTissue = Script.dicTestData.get("strTissue");
+		String strAssemblyLine = Script.dicTestData.get("strAssemblyLine");
+			
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+					
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkDonorstoPackage");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.";
+		strExpResult = "'Donors to Package' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonorstoPackage", "Donors to Package");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donors to Package' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly in Donors to Package grid.
+		//########################################################################################################
+		strStepDesc = "Verify that search functionality works properly in Donors to Package grid.";
+		strExpResult = "Searched result should be displayed in the 'Donors to Package' grid.";
+		blnFlag=verifySearch("pgeDonorstoPackage","txtStatusSearch","objStatusResult", strDonorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality is working properly in Donors to Package grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		
+		//########################################################################################################
+		//Step 6 - 	Click on searched Donor key and verify if navigated to 'Packaging Assembly' page.
+		//########################################################################################################
+		strStepDesc = "Click on searched Donor key and verify if navigated to 'Packaging Assembly' page.";
+		strExpResult = "The searched Donor Key is clicked and the 'Packaging Assembly' page should be verified.";
+		blnFlag=clickAndVerify("pgeDonorstoPackage", "lnkDonorID", "Packaging Assembly");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The searched Donor Key is clicked and the 'Packaging Assembly' page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Enter the data on 'Packaging Assembly' page.
+		//########################################################################################################
+		strStepDesc = "Enter the data on 'Packaging Assembly' page";
+		strExpResult = "The page should be populated";		
+		blnFlag= fillPackagingPageErrorCondition(strAssemblyLine);	
+		waitForSync(10);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging Assembly' page is populated successfully", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - Select Assembly 'Test Line' from drop down ,leave signature and click on next button.
+		//########################################################################################################
+		strStepDesc = "Select Assembly 'Test Line' from drop down and click on next button.";
+		strExpResult = "Error message '"+strSignatureErrorText+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgePackagingCollection","btnNext", "pgeCommon" ,"objUIMessageErrorSummary",strSignatureErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strSignatureErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - User enters signature on the Canvas.
+		// ########################################################################################################
+		strStepDesc = "User enters signature on the Canvas.";
+		strExpResult = "The canvas is signed successfully.";	
+        blnFlag = canvasSignature(driver);
+		waitForSync(10);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"The canvas is signed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - Click on next button.
+		//########################################################################################################
+		strStepDesc = "Click on next button after selecting 'Assembly Line' and adding 'Canvas Signature'";
+		strExpResult = "Error message '"+strPersonErrorText+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgePackagingCollection","btnNext", "pgeCommon" ,"objUIMessageErrorSummary",strPersonErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strPersonErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11	 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 13 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserNameReviewer, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserNameReviewer+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+					
+		// ########################################################################################################
+		// Step 16 - Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.";
+		strExpResult = "'Donors to Package' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonorstoPackage", "Donors to Package");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donors to Package' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 17 - 	Verify that if search functionality working properly in Donors to Package grid.
+		//########################################################################################################
+		strStepDesc = "Verify that search functionality works properly in Donors to Package grid.";
+		strExpResult = "Searched result should be displayed in the 'Donors to Package' grid.";
+		blnFlag=verifySearch("pgeDonorstoPackage","txtStatusSearch","objStatusResult", strDonorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality is working properly in Donors to Package grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		//########################################################################################################
+		//Step 18 - 	Click on searched Donor key and verify if navigated to 'Packaging Assembly' page.
+		//########################################################################################################
+		strStepDesc = "Click on searched Donor key and verify if navigated to 'Packaging Assembly' page.";
+		strExpResult = "The searched Donor Key is clicked and the 'Packaging Assembly' page should be verified.";
+		blnFlag=clickAndVerify("pgeDonorstoPackage", "lnkDonorID", "Packaging Assembly");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The searched Donor Key is clicked and the 'Packaging Assembly' page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		//########################################################################################################
+		//Step 19 - Fill the required entries in  "Packaging Assembly" page.
+		//########################################################################################################
+		strStepDesc = "Fill the required entries in  'Packaging Assembly' page.";
+		strExpResult = "The Packaging Assembly page should be filled with required entries.";
+		blnFlag= fillPackagingPageErrorCondition(strAssemblyLine);	
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Packaging Assembly page is filled with required entries.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - User enters signature on the Canvas.
+		// ########################################################################################################
+		strStepDesc = "User enters signature on the Canvas.";
+		strExpResult = "The canvas is signed successfully.";	
+        blnFlag = canvasSignature(driver);
+		waitForSync(10);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"The canvas is signed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		
+		//########################################################################################################
+		//Step 21 - 	Click on 'Next' button and verify if 'Scan Tissue to be Package' grid is displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Next' button and verify if 'Scan Tissue to be Package' grid is displayed.";
+		strExpResult = "The 'Next' button should be clicked and 'Scan Tissue to be Package' grid should be displayed.";
+		blnFlag=clickAndVerify("pgePackagingCollection", "btnNext", "pgePackagingCollection", "objScanTissuestobePackage");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Next' button is clicked and 'Scan Tissue to be Package' grid is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 22 - Leave Scan tissue to be package text box blank and press enter.
+		//########################################################################################################
+		strStepDesc = "Leave Scan tissue to be package text box blank and press enter.";
+		strExpResult = "Error message '"+strBlankTissueErrorText+"' should be displayed.";		
+		blnFlag=scanTissueandVerifyErrorMsg("pgePackagingCollection","",strBlankTissueErrorText,"txtScanTissue_Assembly","objTissue_Assembly","objUIMessageErrorSummary");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strBlankTissueErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 23 - Enter some invalid/junk characters in the 'Scan tissue to be package' text box.
+		//########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Scan tissue to be package' text box.";
+		strExpResult = "Error message '"+strDBTissueErrorText+"' should be displayed.";		
+		blnFlag=scanTissueandVerifyErrorMsg("pgePackagingCollection",strSearchText,strDBTissueErrorText,"txtScanTissue_Assembly","objTissue_Assembly","objUIMessageErrorSummary");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strDBTissueErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		//########################################################################################################
+		//Step 24 - Enter more than 500 characters in Scan tissue to be package.
+		//########################################################################################################
+		strStepDesc = "Enter more than 500 characters in Scan tissue to be package.";
+		strExpResult = "Error message '"+strDBTissueErrorText+"' should be displayed.";		
+		blnFlag=scanTissueandVerifyErrorMsg("pgePackagingCollection",strTissue,strDBTissueErrorText,"txtScanTissue_Assembly","objTissue_Assembly","objUIMessageErrorSummary");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strDBTissueErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		// ########################################################################################################
+		// Step 25	 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

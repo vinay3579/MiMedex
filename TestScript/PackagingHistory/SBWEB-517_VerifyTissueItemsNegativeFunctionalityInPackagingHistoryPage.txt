@@ -1,0 +1,454 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-517
+		// # Test Case Name: VerifyTissueItemsNegativeFunctionalityInPackagingHistoryPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: Verify 'Tissue Items' negative functionality in 'Packaging History' page.            
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-26-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");				
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+		String strExpectedTextHCT = Script.dicTestData.get("strExpectedTextHCT");	
+		String strInspectionUserName = Script.dicTestData.get("strInspectionUserName");
+		String strMRBQuarErrorText = Script.dicTestData.get("strMRBQuarErrorText");	
+		String strPreSterQuarErrorText = Script.dicTestData.get("strPreSterQuarErrorText");	
+		String strSterErrorText = Script.dicTestData.get("strSterErrorText");	
+		String strPostSterQuarErrorText = Script.dicTestData.get("strPostSterQuarErrorText");	
+		String strTownParkErrorText = Script.dicTestData.get("strTownParkErrorText");	
+		String strWestOakErrorText = Script.dicTestData.get("strWestOakErrorText");
+		String strReleasedProdStorErrorText = Script.dicTestData.get("strReleasedProdStorErrorText");
+		String strProdDevandDemoErrorText = Script.dicTestData.get("strProdDevandDemoErrorText");
+		String strVisualInspErrorText = Script.dicTestData.get("strVisualInspErrorText");		
+		String strDonorKey = Script.dicCommonValue.get("strDonorKey_Negative");	
+		
+		//Getting AssemblyLineName from the DB
+		String strAssemblyLine = Script.dicTestData.get("LineName");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkPackagedDonors");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 4 - Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Donors to Package' link and verify 'Donors to Package' page is displayed.";
+		strExpResult = "'Donors to Package' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonorstoPackage", "Donors to Package");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donors to Package' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5- Take a donor product through to Inspection which has only  1 tissue.
+		// ########################################################################################################
+		strStepDesc = "Take a donor product through to Inspection which has only  1 tissue.";
+		strExpResult = "Tissue should be moved to Inspection successfully.";
+		blnFlag=completeTissueInspection(strUserName,strInspectionUserName,strPassword,strAssemblyLine);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue moved to Inspection successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		// ########################################################################################################
+		// Step 6 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ##################################################################################################################################
+		// Step 7 - Complete 'Packaging Inspection' flow for the donor product with only 1 tissue to populate it on 'Packaging History' page.
+		// ##################################################################################################################################
+		strStepDesc = "Complete 'Packaging Inspection' flow for the donor product with only 1 tissue to populate it on 'Packaging History' page.";
+		strExpResult = "'Packaging Inspection' flow for the donor product with only 1 tissue should be completed to allow it to populate on 'Packaging History' page.";
+		blnFlag=completePackagingInspectionFlow(strAssemblyLine,strInspectionUserName);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging Inspection' flow for the donor product with only 1 tissue is completed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'Packaging History' link and verify 'Packaged History' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging History' link and verify 'Packaging History' page is displayed.";
+		strExpResult = "'Packaging History' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkPackagingHistory", "Packaging History");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging History' link is clicked and 'Packaging History' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+        
+		//########################################################################################################
+		//Step 9 - 	Search for the required Donor Key in the search grid on Packaged History page.
+		//########################################################################################################
+		strStepDesc = "Search for the required Donor Key in the search grid on Packaged History page.";
+		strExpResult = "Searched result should be displayed in the 'Packaged History' grid.";
+		blnFlag=verifySearch("pgePackagingHistory","txtDonor","lnkDonor", strDonorKey);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Packaged History grid in the Donor field with value '"+strDonorKey+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click on Donor link and verify the navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on Donor link and verify the navigated page.";
+		strExpResult = "Donor link should be clicked and the navigated page should be verified.";
+		blnFlag=clickAndVerify("pgePackagingHistory", "lnkDonor", "pgeAddTissue", "btnTransfertoNewLocation");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Donor link is clicked and the navigated page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Click on the 'Transfer to New Location' button and verify the navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on the 'Transfer to New Location' button and verify the navigated page.";
+		strExpResult = "'Transfer to New Location' button should be clicked and the navigated page should be verified.";
+		blnFlag = clickAndVerify("pgeAddTissue","btnTransfertoNewLocation","Inventory Transfer");		
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "'Transfer to New Location' button is clicked and the navigated page is verified successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 12 - 	Change the New Location drop down value to 'Packaging' and Click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the New Location drop down value to 'Packaging' and Click on save button.";	
+		strExpResult = "'Packaging' should be selected from the 'New Location' dropdown and changes should be saved.";				
+		blnFlag=selectValueClickButtonAndNavigate("pgeAddTissue","lstNewLocation","Packaging","btnSaveInventoryTransfer","Inventory Transfer");
+
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Packaging' is selected from the 'New Location' dropdown and changes saved successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 13 - 	change the New Location drop down value 'Archive Sample' Click on save button.
+		//########################################################################################################
+		strStepDesc = "change the New Location drop down value 'Archive Sample' Click on save button.";	
+		strExpResult = "Error message '"+strExpectedText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Archive Samples", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strExpectedText, "", "");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 14 - 	Change the Packaging drop down value as 'Residual Moisture Sample' and click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as 'Residual Moisture Sample' and click on save button.";	
+		strExpResult = "Error message '"+strExpectedTextHCT+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Residual Moisture Samples", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strExpectedTextHCT, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strExpectedTextHCT+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 15 -  Change the Packaging drop down value as 'Product Development and Demos ' and click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as 'Product Development and Demos ' and click on save button.";	
+		strExpResult = "Error message '"+strProdDevandDemoErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Product Development and Demos", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strProdDevandDemoErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strProdDevandDemoErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 -  Change the Packaging drop down value as ' visual Inspection' and click on save button. 
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as ' visual Inspection' and click on save button.";	
+		strExpResult = "Error message '"+strVisualInspErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Visual Inspection", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strVisualInspErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strVisualInspErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 17 - Change the Packaging drop down value as 'Pre Sterilization Quarantine ' and click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as 'Pre Sterilization Quarantine ' and click on save button.";			
+		strExpResult = "Error message containing '"+strPreSterQuarErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Pre Sterilization Quarantine", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strPreSterQuarErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message containing'"+strPreSterQuarErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 18 - Change the Packaging drop down value as ' Sterilization ' and click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as ' Sterilization ' and click on save button.";	
+		strExpResult = "Error message '"+strSterErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Sterilization", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strSterErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strSterErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 19 - Change the Packaging drop down value as 'Post Sterilization Quarantine ' and click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as 'Post Sterilization Quarantine ' and click on save button.";	
+		strExpResult = "Error message containing '"+strPostSterQuarErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Post Sterilization Quarantine", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strPostSterQuarErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message containing '"+strPostSterQuarErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 20 - Change the Packaging drop down value as 'Post Sterilization Quarantine - TownPark ' and click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as 'Post Sterilization Quarantine - TownPark ' and click on save button.";	
+		strExpResult = "Error message containing'"+strTownParkErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Post Sterilization Quarantine - TownPark", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strTownParkErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message containing'"+strTownParkErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 21 -Change the Packaging drop down value as 'Post Sterilization Quarantine - West Oak ' and click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as 'Post Sterilization Quarantine - West Oak ' and click on save button.";	
+		strExpResult = "Error message containing '"+strWestOakErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Post Sterilization Quarantine - West Oak", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strWestOakErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message containing '"+strWestOakErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 22 - Change the Packaging drop down value as 'Released Product Storage ' and click on save button.
+		//########################################################################################################
+		strStepDesc = " Change the Packaging drop down value as 'Released Product Storage ' and click on save button.";	
+		strExpResult = "Error message '"+strReleasedProdStorErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Released Product Storage", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strReleasedProdStorErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strReleasedProdStorErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 23 - Change the Packaging drop down value as 'Ireland finished goods' and click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as 'Ireland finished goods' and click on save button.";	
+		strExpResult = "Error message '"+strReleasedProdStorErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Ireland Finished Goods", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strReleasedProdStorErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strReleasedProdStorErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 24 -  Change the Packaging drop down value as ' Italy finished goods' and click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as ' Italy finished goods' and click on save button.";	
+		strExpResult = "Error message '"+strReleasedProdStorErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Italy Finished Goods", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strReleasedProdStorErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strReleasedProdStorErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 25 -  Change the Packaging drop down value as 'Staged Tissue ' and click on save button.
+		//########################################################################################################
+		strStepDesc = "Change the Packaging drop down value as 'Staged Tissue ' and click on save button.";	
+		strExpResult = "Error message '"+strReleasedProdStorErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Staged Tissue", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strReleasedProdStorErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strReleasedProdStorErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 26 -   Change the Packaging drop down value as 'Clinical Trial ' and click on save button.
+		//########################################################################################################
+		strStepDesc = " Change the Packaging drop down value as 'Clinical Trial ' and click on save button.";	
+		strExpResult = "Error message '"+strReleasedProdStorErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeAddTissue", "lstNewLocation", "Clinical Trial", "pgeCommon", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strReleasedProdStorErrorText, "", "");
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strReleasedProdStorErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 27 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

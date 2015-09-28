@@ -1,0 +1,249 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-534
+		// # Test Case Name: VerifyCSectionSchedulesNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies 'C-Section Schedule' negative functionality in C-Section Schedule 
+		// # 'Details' page and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "C-Section Schedule" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: 
+		// # Created on: 04-22-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL = Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strHospital = Script.dicTestData.get("strHospital");
+		String strPhysician = Script.dicTestData.get("strPhysician");
+		String strNote = Script.dicTestData.get("strNote");
+		String strDate = Script.dicTestData.get("strDate");
+		String strInvalidText = Script.dicTestData.get("strInvalidText");
+		String strInvalidDateError = Script.dicTestData.get("strInvalidDateError");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Recovery' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkC_Section_Schedule");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'C-Section Schedule' link and verify 'C-Section Schedule' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'C-Section Schedule link' and verify 'C-Section Schedule' page is displayed.";
+		strExpResult = "'C-Section Schedule' page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines", "lnkC_Section_Schedule", "pgeCSectionSchedule", "btnSchedule");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'C-Section Schedule' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 	 
+	 	// ########################################################################################################
+		// Step 5 - Click on 'Schedule' button on 'C-Section Schedule' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Schedule' button on 'C-Section Schedule' page.";
+		strExpResult = "'Schedule' grid should be displayed on 'C-Section Schedule' page.";
+		blnFlag = clickAndVerify("pgeCSectionSchedule", "btnSchedule", "pgeCSectionSchedule", "objScheduleGrid");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Schedule' grid displayed on 'C-Section Schedule' page sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Enter some invalid/junk characters in 'Hospital Name' field and verify 'Add' button is disabled.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in 'Hospital Name' field and verify 'Add' button is disabled.";
+		strExpResult = "'Add' button should be disabled on entering invalid/junk characters in 'Hospital Name' field.";
+		blnFlag = verifyAddDisabledOnCSectionScheduleEntry("pgeCSectionSchedule", "txtHospital", strInvalidText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add' button is disabled on entering invalid/junk characters in 'Hospital Name' field.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter some invalid/junk characters in 'Physician Name' field and verify 'Add' button is disabled.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in 'Physician Name' field and verify 'Add' button is disabled.";
+		strExpResult = "'Add' button should be disabled on entering invalid/junk characters in 'Physician Name' field.";
+		blnFlag = verifyAddDisabledOnCSectionScheduleEntry("pgeCSectionSchedule", "txtPhysician", strInvalidText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add' button is disabled on entering invalid/junk characters in 'Physician Name' field.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+	
+		// ########################################################################################################
+		// Step 8 - Enter some invalid/junk characters in 'Note' field and verify 'Add' button is disabled.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in 'Note' field and verify 'Add' button is disabled.";
+		strExpResult = "'Add' button should be disabled on entering invalid/junk characters in 'Note' field.";
+		blnFlag = verifyAddDisabledOnCSectionScheduleEntry("pgeCSectionSchedule", "txtNote", strInvalidText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add' button is disabled on entering invalid/junk characters in 'Note' field.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Fill C-Section Schedule entries on 'C-Section Schedule' page.
+		// ########################################################################################################
+		strStepDesc = "Fill C-Section Schedule entries on 'C-Section Schedule' page.";
+		strExpResult = "Entries should be filled on 'C-Section Schedule' page.";
+		blnFlag = fillCSectionScheduleEntries(strHospital,strPhysician,strNote);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Entries filled on 'C-Section Schedule' page sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter some invalid/junk characters in 'Procedure Date' field.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in 'Procedure Date' field.";
+		strExpResult = "Invalid/junk characters should be entered in 'Procedure Date' field.";
+		blnFlag = enterCSectionProcedureDate(strDate);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters successfully entered in 'Procedure Date' field.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click Add button.
+		// ########################################################################################################
+		strStepDesc = "Click Add button.";
+		strExpResult = "Add button should be clicked.";
+		blnFlag = Page("pgeCSectionSchedule").Element("btnAdd").Click(20);
+		waitForSync(10);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Add button is successfully clicked .", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Verify the displayed error message.
+		// ########################################################################################################
+		strStepDesc = "Verify the displayed error message'" + strInvalidDateError + "'.";
+		strExpResult = "'" + strInvalidDateError + "' error message should be displayed.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strInvalidDateError);
+		waitForSync(10);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strInvalidDateError + "' error message is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

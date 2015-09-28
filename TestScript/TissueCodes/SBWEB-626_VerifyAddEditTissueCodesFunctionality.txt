@@ -1,0 +1,327 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-626
+		// # Test Case Name: VerifyAddEditTissueCodesFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Tissue Codes' landing
+		// # page, add a new Tissue Code and edit the same and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Tissue Codes" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 03-19-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strTissueCode = Script.dicTestData.get("strTissueCode");
+		String strActive = Script.dicTestData.get("strActive");
+		String strForDevelopment = Script.dicTestData.get("strForDevelopment");
+		String strUOM = Script.dicTestData.get("strUOM");
+		String strX = Script.dicTestData.get("strX");
+		String strY = Script.dicTestData.get("strY");
+		String strZ = Script.dicTestData.get("strZ");
+		String strSpecification = Script.dicTestData.get("strSpecification");
+		String strArchiveSamples = Script.dicTestData.get("strArchiveSamples");
+		String strResidualMoistureSamples = Script.dicTestData.get("strResidualMoistureSamples");
+		String strCustomLabel = Script.dicTestData.get("strCustomLabel");
+		String strMaxValue = Script.dicTestData.get("strMaxValue");
+		String strMinValue = Script.dicTestData.get("strMinValue");
+		String strEditedSpecification = Script.dicTestData.get("strEditedSpecification");
+		String strVendor = Script.dicTestData.get("strVendor");	
+		
+		// Test Data to be fetched for the current 'Products' script from DB
+		String strTissueCodeDb = Script.dicTestData.get("TissueCode");
+		
+		// Variable used in script
+		String strNewTissueCode = "" ;
+		
+				
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link on left side navigation area.";
+		strExpResult = "'Resources' section should be expanded.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkTissueCodes");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link is expanded successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Tissue Codes' link and verify 'Tissue Codes' landing page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Tissue Codes' link under the 'Resources' option in the left side navigation area.";
+		strExpResult = "'Tissue Codes' landing page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkTissueCodes", "Tissue Codes");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Codes' link is clicked and 'Tissue Codes' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Calculate a Tissue code that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Tissue code that does not exist in the application for further use.";
+		strExpResult = "A Tissue code that does not exist in the application should be calculated for further use.";
+		blnFlag=calculateNewItem(strTissueCode, strTissueCodeDb); 
+		if (blnFlag == true)
+		{
+			strNewTissueCode = Script.dicCommonValue.get("strCalculatedItem");
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue Code '"+strNewTissueCode+"' is calculated for further use.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'New Tissue Code' button on "Tissue Codes" page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Tissue Code' button on 'Tissue Codes' page.";
+		strExpResult = "'Add Tissue Code' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeTissueCodes", "btnNewTissueCode", "Add Tissue Code");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Tissue Code' button is clicked and 'Add Tissue Code' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Fill the 'Add Tissue Code' page.
+		// ########################################################################################################
+		strStepDesc = "Fill the 'Add Tissue Code' page.";
+		strExpResult = "The 'Add Tissue' page should be filled successfully.";
+		blnFlag=fillAddTissueCode(strNewTissueCode,strActive, strForDevelopment, strUOM, strX, strY, strZ, strSpecification, strArchiveSamples, strResidualMoistureSamples, strCustomLabel, strMaxValue, strMinValue);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Add Tissue' page is filled successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}		
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'Save' button and verify if 'Tissue Codes' page is displayed successfully.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify if 'Tissue Codes' page is displayed successfully.";
+		strExpResult = "'Save' button should be clicked and 'Tissue Codes' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "Tissue Codes");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Tissue Codes' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - Search for the added Tissue code in the grid.
+		//########################################################################################################
+		strStepDesc = "Search for the added Tissue code in the grid.";
+		strExpResult = "The added Tissue code ("+strNewTissueCode+") should be available in the 'Tissue' grid.";
+		blnFlag=verifySearch("pgeTissueCodes","txtTissueCode","lnkTissueCode", strNewTissueCode);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Tissue code("+strNewTissueCode+") is displayed successfully in the search result in the 'Tissue' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - 	Click on the added Tissue code and verify if 'Edit Tissue Code' page is displayed successfully.
+		//########################################################################################################
+		strStepDesc = "Click on the added Tissue code and verify if 'Edit Tissue Code' page is displayed successfully.";
+		strExpResult = "The added Tissue code ("+strNewTissueCode+") should be clicked and 'Edit Tissue Code' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeTissueCodes","lnkTissueCode", "Edit Tissue Code");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Tissue code("+strNewTissueCode+") is clicked and 'Edit Tissue Code' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - 	Change the Specification value in the 'Specification' field.
+		//########################################################################################################
+		strStepDesc = "Change the Specification value in the 'Specification' field.";
+		strExpResult = "The new Specification value ("+strEditedSpecification+") should be entered in the 'Specification' field successfully.";
+		blnFlag=Page("pgeAddEditTissueCode").Element("txtSpecification").Type(strEditedSpecification);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The new Specification value ("+strEditedSpecification+") should be entered in the 'Specification' field in 'Edit Tissue Code' page  successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - 	Select one of the Vendor checkboxes to associate the Tissue Code with a vendor.
+		//########################################################################################################
+		strStepDesc = "Select one of the Vendor checkboxes '"+strVendor+"' to associate the Tissue Code with a vendor.";
+		strExpResult = "The checkbox '"+strVendor+"' should be selected to associate the Tissue Code with a vendor successfully.";
+		blnFlag=clickVerifyCheckboxVendor(strVendor,"Click");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The checkbox '"+strVendor+"' is selected to associate the Tissue Code with a vendor successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Click on 'Save' button and verify 'Tissue Codes' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Tissue Codes' page is displayed.";
+		strExpResult = "'Save' button should be clicked  and 'Tissue Codes' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "Tissue Codes");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Tissue Codes' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 14 - 	Search for the edited Tissue Code in the Search grid.
+		//########################################################################################################
+		strStepDesc = "Search for the edited Tissue Code in the Search grid.";
+		strExpResult = "The edited Tissue Code ("+strNewTissueCode+") should be displayed in the search grid.";
+		blnFlag=verifySearch("pgeTissueCodes","txtTissueCode","lnkTissueCode", strNewTissueCode);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Tissue Code ("+strNewTissueCode+") is displayed successfully in the search result in the search grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 15 - 	Verify if the Specification edit is successful on 'Tissue Codes' page.
+		//########################################################################################################
+		strStepDesc = "Verify if the Specification edit is successful on 'Tissue Codes' page.";
+		strExpResult = "The edited Specification("+strEditedSpecification+") should be displayed in the 'Tissue Codes' grid.";
+		blnFlag=verifyExactText("pgeTissueCodes", "objSpecification", strEditedSpecification);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Specification ("+strEditedSpecification+") is displayed successfully in the search result in the 'Tissue Codes' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 - 	Click on the Tissue code and verify if 'Edit Tissue Code' page is displayed successfully.
+		//########################################################################################################
+		strStepDesc = "Click on the Tissue code and verify if 'Edit Tissue Code' page is displayed successfully.";
+		strExpResult = "The Tissue code ("+strNewTissueCode+") should be clicked and 'Edit Tissue Code' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeTissueCodes","lnkTissueCode", "Edit Tissue Code");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Tissue code("+strNewTissueCode+") is clicked and 'Edit Tissue Code' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 17 - 	Verify if the Vendor checkboxe mentioned is selected on the 'Edit Tissue Code' page.
+		//########################################################################################################
+		strStepDesc = "Verify if the Vendor checkboxe mentioned '"+strVendor+"' is selected on the 'Edit Tissue Code' page.";
+		strExpResult = "The Vendor checkbox '"+strVendor+"' should be selected on the 'Edit Tissue Code' page.";
+		blnFlag=clickVerifyCheckboxVendor(strVendor,"Verify");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Vendor checkbox '"+strVendor+"' is selected on the 'Edit Tissue Code' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 18 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	

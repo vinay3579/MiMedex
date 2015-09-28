@@ -1,0 +1,195 @@
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-584
+		// # Test Case Name: VerifyEmailDistributionEditUserNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up ,reach to the 'Email Distribution - Edit User' landing
+		// # page and verifies all the error messages then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Email Distribution - Edit User" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 06-29-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+		String strSelectedUser = Script.dicTestData.get("strSelectedUser");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkUsers");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Email Distribution' link and verify 'Email Distribution' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Email Distribution' link and verify 'Email Distribution' page is displayed.";
+		strExpResult = "'Email Distribution' page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkEmailDistribution", "Email Distribution");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Email Distribution' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Select any name under 'Full Name' column and verify 'Email Distribution - Edit User' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Select any name under 'Full Name' column and verify 'Email Distribution - Edit User' page is displayed.";
+		strExpResult = "'Email Distribution - Edit User' page should be displayed.";
+		
+		blnFlag=clickAndVerify("pgeEmailDistribution", "lnkFullName", "Email Distribution - Edit User");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Email Distribution - Edit User' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Clear Full Name and and verify message displayed on clicking 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "Clear Full Name and and verify message displayed on clicking 'Save' button.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		
+		blnFlag= verifyErrorMessage("pgeEmailDistribution","txtFullName","","pgeCommon","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedText);
+		//Full name is required to modify email distribution.
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Select any user from 'Available Users' and add it to 'Selected Users'.
+		// ########################################################################################################
+		strStepDesc = "Select any user from 'Available Users' and add it to 'Selected Users'.";
+		strExpResult = "A user should be added from 'Available Users' to 'Selected Users' grid.";
+		
+		blnFlag= addOrRemoveListItem("pgeEmailDistribution","lstAvailableUsers","lstSelectedUsers","btnAddSelectedUser",strSelectedUser);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"A user is added from 'Available Users' to 'Selected Users' grid successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+		// ######################################################################################################################
+		// Step 8 - Enter some invalid/junk characters in the 'Available Users' search box and verify data from grid disappears.
+		// ######################################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Available Users' search box and verify data from grid disappears.";
+		strExpResult = "Data from 'Available Users' grid should disappear.";
+		
+		blnFlag= verifyGridDataDisappearsOnAddRemoveItems("pgeEmailDistribution",strSearchText,"txtAvailableUsers","lstAvailableUsers");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Data from 'Available Users' grid disappears successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+		// ######################################################################################################################
+		// Step 9 - Enter some invalid/junk characters in the 'Selected Users' search box and verify data from grid disappears.
+		// ######################################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Selected Users' search box and verify data from grid disappears.";
+		strExpResult = "Data from 'Selected Users' grid should disappear.";
+		
+		blnFlag= verifyGridDataDisappearsOnAddRemoveItems("pgeEmailDistribution",strSearchText,"txtSelectedUsers","lstSelectedUsers");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Data from 'Selected Users' grid disappears successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+		// ########################################################################################################
+		// Step 10 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

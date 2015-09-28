@@ -1,0 +1,324 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-421
+		// # Test Case Name: VerifyLocationInventoryNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Location Inventory' landing
+		// # page, verifies all the error messages and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Inventory" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 06-17-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strTissueCode = Script.dicTestData.get("strTissueCode");	
+		String strSelectAction = Script.dicTestData.get("strSelectAction");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");
+		String strExpectedText3 = Script.dicTestData.get("strExpectedText3");
+
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Process' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link on left side navigation area.";
+		strExpResult = "'Process' section should be expanded.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkLocationInventory");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' section expanded successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Location Inventory' link and verify 'Inventory' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Location Inventory' link under the 'Process' option in the left side navigation area.";
+		strExpResult = "'Inventory' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkLocationInventory", "Inventory");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Location Inventory' link is clicked and 'Inventory' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on 'Reconcile' link on 'Inventory' page and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Reconcile' link on 'Inventory' page and verify navigated page.";
+		strExpResult = "'Validate Inventory at Archive Samples' page should display.";
+		blnFlag=clickAndVerify("pgeInventoryLocation","lnkReconcileArchiveSamples","Validate Inventory at Archive Samples");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Reconcile' button is clicked and 'Validate Inventory at Archive Samples' page is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		/* // ##################################################################################################################
+		// Step 6 - Click on ‘Process Scans' button without entering any value in the scan area and verify message displayed.
+		// ##################################################################################################################
+		strStepDesc = "Click on ‘Process Scans' button without entering any value in the scan area and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeInventoryLocation","btnProcessScans","pgeCommon","objUIMessageErrorSummary",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText+"' is displayed successfully.";, "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		 */
+		// ##################################################################################################################
+		// Step 7 - Click on ‘Reconcile' button without entering any value in the scan area and verify message displayed.
+		// ##################################################################################################################
+		strStepDesc = "Click on ‘Reconcile' button without entering any value in the scan area and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText1+"' should be displayed.";
+		blnFlag = locationInventoryVerifyErrorMessages("Reconcile","Validate Inventory at Archive Samples","pgeCommon","objUIMessageErrorSummary",strExpectedText1);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText1+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'Reset' button to bring tissue scan to the base state and verify the navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Reset' button to bring tissue scan to the base state and verify the navigated page.";
+		strExpResult = "'Reset' button should be clicked and navigated page should be verified.";
+		blnFlag=handleAlertsLocationInventory("Reset","Validate Inventory at Archive Samples"); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Reset' button is clicked and the base page 'Validate Inventory at Archive Samples' is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter the valid tissue code in the scan-area on 'Validate Inventory at Archive Samples' Page.
+		// ########################################################################################################
+		strStepDesc = "Enter the valid tissue code in the scan-area on 'Validate Inventory at Archive Samples' Page.";
+		strExpResult = "A valid Tissue code '" + strTissueCode+ "' should be entered successfully.";
+		blnFlag=Page("pgeInventoryLocation").Element("txtscanList").Type(strTissueCode);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "A valid Tissue Code '" + strTissueCode+ "' is entered successfully. ", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click on 'Process Scans' button and verify the navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process Scans' button and verify the navigated page.";
+		strExpResult = "'Validate Inventory at Archive Samples' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeInventoryLocation","btnProcessScans","Validate Inventory at Archive Samples");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process Scans' button should be clicked and page is verified successfully. ", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Verify tissue is added in the grid on the same page.
+		// ########################################################################################################
+		strStepDesc = "Verify tissue is added in the grid on the same page.";
+		strExpResult = "Tissue '"+strTissueCode+"' should be successfully added in the grid.";
+		blnFlag=verifyExactText("pgeInventoryLocation", "objTissueGrid",strTissueCode);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue '"+strTissueCode+"' is successfully added in the grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// #############################################################################################################################@
+		// Step 12 - Click on 'Reconcile' button and verify message displayed.
+		// ##############################################################################################################################
+		strStepDesc = "Click on 'Reconcile' button and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText1+"' should be displayed.";
+		blnFlag = locationInventoryVerifyErrorMessages("Reconcile","Validate Inventory at Archive Samples","pgeCommon","objUIMessageErrorSummary",strExpectedText1);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText1+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+	
+		// ########################################################################################################
+		// Step 13 - Click on 'Resolved' link next to the first missing tissue and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resolved' button next to the first missing tissue and verify navigated page.";
+		strExpResult = "'Resolved' button should be clicked and 'Resolve Anomaly at Visual Inspection' page should be verified.";
+		blnFlag=clickAndVerify("pgeInventoryLocation","lnkResolved","Resolve Anomaly at Archive Samples");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resolved' link is clicked and 'Resolve Anomaly at Archive Samples' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// #############################################################################################################################@
+		// Step 14 - Click on 'Commit' button without selecting 'Action Taken' and verify message displayed.
+		// ##############################################################################################################################
+		strStepDesc = "Click on 'Commit' button without selecting 'Action Taken' and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText2+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeInventoryLocation","btnCommit","pgeCommon","objUIMessageErrorSummary",strExpectedText2);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText2+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+	    // ##################################################################################################################
+		// Step 15 - Select action 'Missing Item moved into Area.' from 'Action Taken' drop-down and verify the selection is successful.
+		// ##################################################################################################################
+		strStepDesc = "Select action 'Missing Item moved into Area.' from 'Action Taken' drop-down and verify the selection is successful.";
+		strExpResult = "Action '"+strSelectAction+"' should be successfully selected from the 'Action Taken' drop-down.";
+		blnFlag=Page("pgeInventoryLocation").Element("lstActionTaken").Select(strSelectAction);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Action '"+strSelectAction+"' is successfully selected from the 'Action Taken' drop-down.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Click on 'Commit' button and verify message displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText3+"' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeInventoryLocation","btnCommit","pgeCommon","objUIMessageErrorSummary",strExpectedText3);
+
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText3+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Click on 'Reset' button to bring tissue scan to the base state and verify the navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Reset' button to bring tissue scan to the base state and verify the navigated page.";
+		strExpResult = "'Reset' button should be clicked and navigated page should be verified.";
+		blnFlag=handleAlertsLocationInventory("Reset","Validate Inventory at Archive Samples"); 
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Reset' button is clicked and the base page 'Validate Inventory at Archive Samples' is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	

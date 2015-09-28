@@ -1,0 +1,28 @@
+package __PACKAGE_NAME__;
+
+
+import java.sql.Timestamp;
+import org.apache.log4j.Logger;
+import com.pyramidconsulting.runner.Script;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.*;
+
+import __LIB_PACKAGE_NAME__;
+
+public class __CLASS_NAME__ extends Script {
+	private static final Logger logger = Logger.getLogger(__CLASS_NAME__.class);
+    	
+    @Override
+    public void run() throws Exception {
+    
+    	boolean blnFlag = false;
+    	String strStepDesc="";
+		java.util.Date date= new java.util.Date();
+   	    String timeStamp =new Timestamp(date.getTime()).toString().replace(" ","").replace(":","").replace("-", "").replace(".","");
+	__SCRIPT_CODE__
+    }
+    
+    // Library methods
+    __LIB_METHODS__
+}

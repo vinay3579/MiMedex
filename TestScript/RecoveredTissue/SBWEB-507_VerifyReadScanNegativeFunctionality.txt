@@ -1,0 +1,620 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-507
+		// # Test Case Name: VerifyReadScanNegativeFunctionalityInRecoveryPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: Verify 'Read scan' screen error messages on Recovery Page (Recovered Tissue functionality)		
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-12-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");				
+		String strTissueErrorText = Script.dicTestData.get("strTissueErrorText");	
+		String strRefrigiratorErrorText = Script.dicTestData.get("strRefrigiratorErrorText");	
+		String strRemoveText = Script.dicTestData.get("strRemoveText");	
+		String strReturnText = Script.dicTestData.get("strReturnText");	
+		String strRefrigeratorBlank = Script.dicTestData.get("strRefrigeratorBlank");	
+		String strRefrigerator = Script.dicTestData.get("strRefrigerator");	
+		String strRefrigiratorNonQ = Script.dicTestData.get("strRefrigiratorNonQ");	
+		String strScanSuccessText = Script.dicTestData.get("strScanSuccessText");	
+		String strTechErrorText = Script.dicTestData.get("strTechErrorText");	
+		String strSurgeonErrorText = Script.dicTestData.get("strSurgeonErrorText");	
+		String strCollectionAgent = Script.dicTestData.get("strCollectionAgent");	
+		String strDonorErrorText = Script.dicTestData.get("strDonorErrorText");	
+		String strFirstName = Script.dicTestData.get("strFirstName");	
+		String strLastName = Script.dicTestData.get("strLastName");	
+		String strDate = Script.dicTestData.get("strDate");	
+		String strContainerErrorText = Script.dicTestData.get("strContainerErrorText");	
+		String strContentErrorText = Script.dicTestData.get("strContentErrorText");	
+		String strCoolantErrorText = Script.dicTestData.get("strCoolantErrorText");	
+		String strLabelErrorText = Script.dicTestData.get("strLabelErrorText");	
+		String strRecoveryErrorText = Script.dicTestData.get("strRecoveryErrorText");	
+		String strUserNameErrorText = Script.dicTestData.get("strUserNameErrorText");	
+		String strRecoverDateErrorText = Script.dicTestData.get("strRecoverDateErrorText");	
+		String strLoggedDateErrorText = Script.dicTestData.get("strLoggedDateErrorText");	
+		String strRefDateErrorText = Script.dicTestData.get("strRefDateErrorText");	
+		String strRejTissueErrorText = Script.dicTestData.get("strRejTissueErrorText");	
+		String strSurgeonName = Script.dicTestData.get("strSurgeonName");	
+		String strQuarantineRefText = Script.dicTestData.get("strQuarantineRefText");	
+		String strErrorMessage="";
+        String strRecoveryKey=""; 
+		
+		//Test Data to be fetched for the current 'Recovered Tissue' script from DB.
+		String strRecoveryIdDB = Script.dicTestData.get("RecoveryKey");
+		
+		// Get Recovery ID from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId");	
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Recovery link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkRecovered_Tissue");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Recovered Tissue' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovered Tissue' link and verify 'Recovered Tissue' page is displayed.";
+		strExpResult = "'Recovered Tissue' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkRecovered_Tissue", "Recovered Tissue");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovered Tissue' link is clicked and 'Recovered Tissue' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Click on Read Scan button. 
+		//########################################################################################################
+		strStepDesc = "Click on Read Scan button.";
+		strExpResult = "'Read Scan' button should be clicked.";
+		blnFlag=clickAndVerify("pgeRecovered_Tissue", "btnReadScan", "pgeRecovery", "btnProcessScans");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Read Scan' button clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	User clicks on 'Read Scans' button, selects a Refrigerator from drop-down list and click on 'Process Scan' button.
+		//########################################################################################################
+		strStepDesc = "User clicks on 'Read Scans' button, selects a Refrigerator from drop-down list and click on 'Process Scan' button.";	
+		strExpResult = "Error message '"+strTissueErrorText+"' should be displayed.";				
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeRecovery", "lstRefrigerator", strRefrigerator, "pgeRecovery", "btnProcessScans", "pgeCommon", "objUIMessageErrorSummary", strTissueErrorText, "", "");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strTissueErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7- 	User enters a recovery ID in the edit text-box ,de-selects any value from Refrigerator drop-down list and clicks on 'Process Scan' button.
+		//########################################################################################################
+		strStepDesc = "User enters a recovery ID in the edit text-box ,de-selects any value from Refrigerator drop-down list and clicks on 'Process Scan' button.";	
+		strExpResult = "Error message '"+strRefrigiratorErrorText+"' should be displayed.";				
+		blnFlag=validateProccessScan("",strRecoveryIdDB,strRefrigeratorBlank,strRefrigiratorErrorText,"objUIMessageErrorSummary");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strRefrigiratorErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8- 	User enters an existing recovery id in edit box, selects a refrigerator value from drop down list and clicks on 'Process Scan' button.
+		//########################################################################################################
+		strStepDesc = "User enters an existing recovery id in edit box, selects a refrigerator value from drop down list and clicks on 'Process Scan' button.";	
+		strErrorMessage = strRemoveText+" "+strRecoveryIdDB+strReturnText;
+		strExpResult = "Error message '"+strErrorMessage+"' should be displayed.";				
+		blnFlag=validateProccessScan("",strRecoveryIdDB,strRefrigerator,strErrorMessage,"objUIMessageErrorSummary");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strErrorMessage+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9-User enters a new recovery id in edit box, selects a refrigerator value other than a 'Quarantine- RFI-015Q'
+		//from drop down list and clicks on 'Process Scan' button.
+		//########################################################################################################
+		strStepDesc = "User enters a new recovery id in edit box, selects a refrigerator value other than a 'Quarantine- RFI-015Q'  from drop down list and clicks on 'Process Scan' button.";	
+		strExpResult = "Error message '"+strQuarantineRefText+"' should be displayed.";				
+		blnFlag=validateProccessScan(strRecoveryIdDB,"",strRefrigiratorNonQ,strQuarantineRefText,"objUIMessageErrorSummary");
+		if (blnFlag == true)
+		{   
+		    strRecoveryKey=Script.dicCommonValue.get("strRecoveryId"); 
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strQuarantineRefText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10-Enter new tissue ID and in text box and select  quarantine refrigerator for new tissue then click on Process scan button 		
+		//########################################################################################################
+		strStepDesc = "Enter new tissue ID and in text box and select  quarantine refrigerator for new tissue then click on Process scan button";	
+		strErrorMessage = strScanSuccessText+" "+strRecoveryKey;
+		strExpResult = "Error message '"+strErrorMessage+"' should be displayed.";				
+		blnFlag=validateProccessScan("",strRecoveryKey,strRefrigerator,strErrorMessage,"objUIMessageInfoSummary");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Message '"+strErrorMessage+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Click on Recovered Tissue link and verify 'Recovered Tissue' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Recovered Tissue link and verify 'Recovered Tissue' page is displayed.";
+		strExpResult = "'Recovered Tissue' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRecovered_Tissue", "pgeRecovered_Tissue", "btnReadScan");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovered Tissue' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - Verify that if search functionality working properly in Recovered Tissue entry table.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly in Recovered Tissue grid.";
+		strExpResult = "Searched result should be displayed in Recovered Tissue grid.";
+		blnFlag=verifySearch("pgeRecovered_Tissue","txtRecoveryId_RecoveredTissue","lnkRecoveryId", strRecoveryKey);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Recovered Tissue grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 13 - Click on specified Recovery Id link on Release Processing page.
+		// ########################################################################################################
+		strStepDesc = "Click on specified 'Recovery Id' link on 'Recovered Tissue' page.";
+		strExpResult = "Recovery Id '"+strRecoveryKey+"' link should be clicked on 'Recovered Tissue' page.";
+		blnFlag = clickLink(strRecoveryKey, "Add Recovered Tissue");
+
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' clicked 'Recovery Id' link '"+strRecoveryKey+"' successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Click on 'Save Button' on 'Add Recovered Tissue Page'.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save Button' on 'Add Recovered Tissue Page'.";
+		strExpResult = "Error message '"+strTechErrorText+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeNewRecoveredTissue","btnSave", "pgeCommon" ,"objUIMessageErrorSummary",strTechErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strTechErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - User selects a Collection technician and click on 'Save' button
+		// ########################################################################################################
+		strStepDesc = "User selects a  Collection technician and click on 'Save' button.";
+		strExpResult = "Error message '"+strSurgeonErrorText+"' should be displayed.";		
+		blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeNewRecoveredTissue", "lstCollectionTech", strCollectionAgent, "pgeNewRecoveredTissue", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strSurgeonErrorText, "", "");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strSurgeonErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - User enters a 'Surgeon' name.
+		// ########################################################################################################
+		strStepDesc = "User enters a 'Surgeon' .";
+		strExpResult = "Surgeon Name '"+strSurgeonName+"' is entered successfully.";		
+		blnFlag=enterSurgeon(strSurgeonName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Surgeon Name '"+strSurgeonName+"' is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - User enters a 'Surgeon' and clicks on 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "User enters a 'Surgeon' and clicks on 'Save' button.";
+		strExpResult = "Error message '"+strDonorErrorText+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeNewRecoveredTissue","btnSave", "pgeCommon" ,"objUIMessageErrorSummary",strDonorErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strDonorErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - User recruits a Donor mom and clicks on 'Save' button
+		// ########################################################################################################
+		strStepDesc = "User recruits a Donor mom and clicks on 'Save' button";
+		strExpResult = "Error message '"+strContainerErrorText+"' should be displayed.";
+		enterSurgeon(strSurgeonName);
+        enterSchedule(strSurgeonName,strFirstName,strLastName);		
+		blnFlag=verifyErrorMessage("pgeNewRecoveredTissue","btnSave", "pgeCommon" ,"objUIMessageErrorSummary",strContainerErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strContainerErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 19 - User selects 'Yes' from 'Is the shipping container sealed and intact?' dropdown and click on 'Save' button
+		// ########################################################################################################
+		strStepDesc = "User selects 'Yes' from 'Is the shipping container sealed and intact?' dropdown and click on 'Save' button.";
+		strExpResult = "Error message '"+strContentErrorText+"' should be displayed.";	
+        blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeNewRecoveredTissue", "drpShippingContainer", "Yes", "pgeNewRecoveredTissue","btnSave", "pgeCommon", "objUIMessageErrorSummary", strContentErrorText, "", "");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strContentErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - User selects 'Yes from 'Is ice or other coolant present and are the contents cool?' dropdown and click on 'Save' button
+		// ########################################################################################################
+		strStepDesc = "User selects 'Yes from 'Is ice or other coolant present and are the contents cool?' dropdown and click on 'Save' button";
+		strExpResult = "Error message '"+strCoolantErrorText+"' should be displayed.";	
+        blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeNewRecoveredTissue", "drpCoolent", "Yes", "pgeNewRecoveredTissue", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strCoolantErrorText, "", "");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strCoolantErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 21 - User selects 'Yes from 'Is donor paperwork present?' dropdown and click on 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "User selects 'Yes from 'Is donor paperwork present?' dropdown and click on 'Save' button.";
+		strExpResult = "Error message '"+strLabelErrorText+"' should be displayed.";	
+        blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeNewRecoveredTissue", "drpPaperwork", "Yes", "pgeNewRecoveredTissue", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strLabelErrorText, "", "");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strLabelErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - User selects 'Yes' from 'Does the recovery number on paperwork correspond with the recovery number on the tissue container?' dropdown and click 'Save'.
+		// ########################################################################################################
+		strStepDesc = "User selects 'Yes' from 'Does the recovery number on paperwork correspond with the recovery number on the tissue container?' dropdown and click 'Save'.";
+		strExpResult = "Error message '"+strRecoveryErrorText+"' should be displayed.";	
+        blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeNewRecoveredTissue", "drpTissueContainer", "Yes", "pgeNewRecoveredTissue", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strRecoveryErrorText, "", "");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strRecoveryErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - User selects 'Yes' from 'Tissue Accepted?' dropdown and click 'Save'.
+		// ########################################################################################################
+		strStepDesc = "User selects 'Yes' from 'Tissue Accepted?' dropdown and click 'Save'.";
+		strExpResult = "Error message '"+strUserNameErrorText+"' should be displayed.";	
+        blnFlag=verifyErrorMessageOnSelectWithDBValue("pgeNewRecoveredTissue", "drpTissueAccepted", "Yes", "pgeNewRecoveredTissue", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strUserNameErrorText, "", "");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strUserNameErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 24 - Clear the pre-populated 'Recovered Date'. 
+		// ########################################################################################################
+		strStepDesc = "Clear the pre-populated 'Recovered Date'.";
+		strExpResult = "'Recovery date' search box should be cleared.";
+		blnFlag = clearDateRecoveryPage("pgeNewRecoveredTissue", "dteSelectDate");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovered Date:' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 25 - User deletes the pre-populated 'Recovered Date' and click on 'Save'.
+		// ########################################################################################################
+		strStepDesc = "User deletes the pre-populated 'Recovered Date' and click on 'Save'.";
+		strExpResult = "Error message '"+strRecoverDateErrorText+"' should be displayed.";	
+        blnFlag=verifyErrorMessage("pgeNewRecoveredTissue","btnSave","pgeCommon","objUIMessageErrorSummary",strRecoverDateErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strRecoverDateErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 26 - User enters a valid date in Recovered date.
+		// ########################################################################################################
+		strStepDesc = "User enters a valid date in Recovered date.";
+		strExpResult = "Valid recovered date '"+strDate+"' is entered.";	
+        blnFlag=Page("pgeNewRecoveredTissue").Element("dteSelectDate").Type(strDate);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Valid recovered date '"+strDate+"' is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 27 - User clicks on 'Save'.
+		// ########################################################################################################
+		strStepDesc = "User clicks on 'Save'.";		
+		strExpResult = "Error message '"+strUserNameErrorText+"' should be displayed.";	        
+        blnFlag=verifyErrorMessage("pgeNewRecoveredTissue","btnSave","pgeCommon","objUIMessageErrorSummary",strUserNameErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strUserNameErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	
+	    // ########################################################################################################
+		// Step 28 - Clear the pre-populated 'Logged Date:'. 
+		// ########################################################################################################
+		strStepDesc = "Clear the pre-populated 'Logged Date'.";
+		strExpResult = "'Logged Date' search box should be cleared.";
+		blnFlag = clearDateRecoveryPage("pgeNewRecoveredTissue", "dteLoggedDate");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Logged Date:' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 29 - User deletes the pre-populated 'Logged Date' and click on 'Save'.
+		// ########################################################################################################
+		strStepDesc = "User deletes the pre-populated 'Logged Date' and click on 'Save'.";
+		strExpResult = "Error message '"+strLoggedDateErrorText+"' should be displayed.";	
+        blnFlag=verifyErrorMessage("pgeNewRecoveredTissue","btnSave","pgeCommon","objUIMessageErrorSummary",strLoggedDateErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strLoggedDateErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 30 - User enters a valid date in Logged date.
+		// ########################################################################################################
+		strStepDesc = "User enters a valid date in Logged date.";
+		strExpResult = "Valid Logged date '"+strDate+"' is entered.";	
+        blnFlag=blnFlag=Page("pgeNewRecoveredTissue").Element("dteLoggedDate").Type(strDate);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Valid Logged date '"+strDate+"' is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 31 - User deletes the pre-populated 'Refrigeration Date' and click on 'Save'.
+		// ########################################################################################################
+		strStepDesc = "User deletes the pre-populated 'Refrigeration Date' and click on 'Save'.";
+		strExpResult = "Error message '"+strRefDateErrorText+"' should be displayed.";	
+        blnFlag=verifyErrorMessage("pgeNewRecoveredTissue","dteRefDate", "","pgeNewRecoveredTissue","btnSave","pgeCommon","objUIMessageErrorSummary",strRefDateErrorText);
+        if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strRefDateErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 32 - User enters a valid date in Refrigiration date.
+		// ########################################################################################################
+		strStepDesc = "User enters a valid date in Refrigiration date.";
+		strExpResult = "Valid Logged date '"+strDate+"' is entered.";	
+        blnFlag=Page("pgeNewRecoveredTissue").Element("dteRefDate").Type(strDate);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Valid Refrigiration date '"+strDate+"' is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 33- User selects 'No' in 'Tissue Accepted?' dropdown.
+		// ########################################################################################################
+		strStepDesc = "User selects 'No' in 'Tissue Accepted?' dropdown.";
+		strExpResult = "Value 'No' is selected successfully";	
+        blnFlag = Page("pgeNewRecoveredTissue").Element("drpTissueAccepted").Select("No");
+		waitForSync(4);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Value 'No' is selected successfully", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 34 - User enters signature on the Canvas.
+		// ########################################################################################################
+		strStepDesc = "User enters signature on the Canvas.";
+		strExpResult = "The canvas is signed successfully.";	
+        blnFlag = canvasSignature(driver);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"The canvas is signed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 35 - click on 'Save'
+		// ########################################################################################################
+		strStepDesc = "User selects 'No' in 'Tissue Accepted?' dropdown and click on 'Save'";
+		strExpResult = "Error message '"+strRejTissueErrorText+"' should be displayed.";	
+		blnFlag=verifyErrorMessage("pgeNewRecoveredTissue", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strRejTissueErrorText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strRejTissueErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 36 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

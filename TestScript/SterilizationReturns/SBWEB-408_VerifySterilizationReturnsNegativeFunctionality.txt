@@ -1,0 +1,379 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-408
+		// # Test Case Name: VerifySterilizationReturnsNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts Verify 'Sterilization Returns' negative functionality in 'Process' page.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-15-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");	
+		String strTissueErrorText = Script.dicTestData.get("strTissueErrorText");	
+		String strLocationErrorText = Script.dicTestData.get("strLocationErrorText");	
+		String strDBText = Script.dicTestData.get("strDBText");	
+		String strErrorMessage;
+		
+		//Test Data to be fetched for the current 'Donor Processing' script from the DB.
+		String strSterilizationId = Script.dicTestData.get("SterilizationId");
+		String strTissueCode = Script.dicTestData.get("TissueCode");
+		String strDonorKey = Script.dicTestData.get("DonorKey");
+		String strAvailableQuantity = Script.dicTestData.get("AvailableQuantity");
+		String strDonorProductId = Script.dicTestData.get("DonorProductId");		
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Process link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkSterilizationReturns");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Sterilization Returns' link and verify if 'Sterilization Returns' page is displayed successfully.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Sterilization Returns' link and verify if 'Sterilization Returns' page is displayed successfully.";
+		strExpResult = "'Sterilization Returns' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkSterilizationReturns", "Sterilization Returns");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sterilization Returns' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on Sterilization ID link and verify the navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on Sterilization ID link.";
+		strExpResult = "Sterilization ID '"+strSterilizationId+"' link should be clicked and navigated page should be verified.";
+		blnFlag=clickVendorName("pgeSterilizationReturns", strSterilizationId , "pgeSterilizationReturns", "objValidateReturnedItems");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Sterilization ID '"+strSterilizationId+"' link is clicked successfully and navigated page is verified.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Enter some invalid/junk characters in the 'Tissue Code' search box on 'Validate Returned Items from Sterilization' page.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Tissue Code' search box on 'Validate Returned Items from Sterilization' page.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Tissue Code' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeSterilizationReturns", "Tissue Code", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Tissue Code' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Clear the 'Tissue Code' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Tissue Code' search box and verify page refresh.";
+		strExpResult = "'Tissue Code' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeSterilizationReturns", "Tissue Code");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Code' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter some invalid/junk characters in the 'Product Code' search box on 'Validate Returned Items from Sterilization' page.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Product Code' search box on 'Validate Returned Items from Sterilization' page.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Product Code' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeSterilizationReturns", "Product Code", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Product Code' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Clear the 'Product Code' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Product Code' search box and verify page refresh.";
+		strExpResult = "'Product Code' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeSterilizationReturns", "Product Code");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Product Code' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter some invalid/junk characters in the 'Donor' search box on 'Validate Returned Items from Sterilization' page.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Donor' search box on 'Validate Returned Items from Sterilization' page.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Donor' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeSterilizationReturns", "Donor", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Donor' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Clear the 'Donor' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Donor' search box and verify page refresh.";
+		strExpResult = "'Donor' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeSterilizationReturns", "Donor");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter some invalid/junk characters in the 'Location' search box on 'Validate Returned Items from Sterilization' page.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Location' search box on 'Validate Returned Items from Sterilization' page.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Location' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeSterilizationReturns", "Location", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Location' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13  - Clear the 'Location' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Location' search box and verify page refresh.";
+		strExpResult = "'Location' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeSterilizationReturns", "Location");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Location' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 14 - Search for the required Tissue Code from the grid displayed.
+		//########################################################################################################
+		strStepDesc = "Search for the required Tissue Code from the grid displayed.";
+		strExpResult = "Searched Tissue Code ("+strTissueCode+") should be displayed in the grid.";
+		blnFlag=verifySearch("pgeSterilizationReturns","txtTissueCode","objTissueCode", strTissueCode);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched Tissue Code ("+strTissueCode+") is displayed in the grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 15 - Search for the required Donor from the grid displayed.
+		//########################################################################################################
+		strStepDesc = "Search for the required Donor from the grid displayed.";
+		strExpResult = "Searched Donor ("+strDonorKey+") should be displayed in the grid.";
+		blnFlag=verifySearch("pgeSterilizationReturns","txtDonor","objDonor", strDonorKey);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched Tissue Code ("+strDonorKey+") is displayed in the grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Click on 'Certify' link and verify the navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Certify' link and verify the navigated page.";
+		strExpResult = "'Certify' link should be clicked and the navigated page should be verified.";
+		blnFlag=clickAndVerify("pgeSterilizationReturns", "lnkCertify", "Certify Returned Items from Sterilization");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Certify' link is clicked successfully and the navigated page is verified.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 -  Input invalid tissue code in "Certify Returned Items from Sterilization" page.
+		// ########################################################################################################
+		strStepDesc = "Input invalid tissue code in 'Certify Returned Items from Sterilization' page.";
+		strExpResult = "Tissue code should be entered";
+		blnFlag = calcTissueCode(strTissueCode);
+		if (blnFlag == true) 
+		{
+			strTissueCode=Script.dicTestData.get("InvalidTissue");
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid tissue code '"+strTissueCode+"' entered successfully in the Edit box.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 -  Click on 'Process Scans' button and verify error message.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process Scans' button and verify error message.";
+		strErrorMessage = strTissueErrorText+" "+strSterilizationId+"/"+strTissueCode+" "+strDBText;
+		strExpResult = "Error message '"+strErrorMessage+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeSterilizationReturns","btnProcessScans", "pgeSterilizationReturns" ,"dlgRemoveForm",strErrorMessage);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strErrorMessage+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 -  Click on close on dialog box
+		// ########################################################################################################
+		strStepDesc = "Click on close on dialog box";
+		strExpResult = "Verify the dialog box is closed";
+		blnFlag = Page("pgeSterilizationReturns").Element("btnClose").Click(20);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Dialog box is closed successfully", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 -  User enters some invalid/junk values in the scan list and clicks on 'Process Scans' button.
+		// ########################################################################################################
+		strStepDesc = "User enters some invalid/junk values in the scan list and clicks on 'Process Scans' button.";
+		strErrorMessage = strTissueErrorText+" "+strSterilizationId+"/"+strSearchText+" "+strDBText;
+		strExpResult = "Error message '"+strErrorMessage+"' should be displayed.";
+		blnFlag=verifyErrorMessage("pgeSterilizationReturns","txtscanListSter", strSearchText,"pgeSterilizationReturns","btnProcessScans","pgeSterilizationReturns","dlgRemoveForm",strErrorMessage);
+        if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error message '"+strErrorMessage+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 -  Click on close on dialog box
+		// ########################################################################################################
+		strStepDesc = "Click on close on dialog box";
+		strExpResult = "Verify the dialog box is closed";
+		blnFlag = Page("pgeSterilizationReturns").Element("btnClose").Click(20);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Dialog box is closed successfully", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		
+		
+		// ########################################################################################################
+		// Step 22 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

@@ -1,0 +1,346 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-387
+		// # Test Case Name: VerifyOrdersInProcessedStateFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies processed order functionality on Consignment Billing page and then 
+		// # successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// #				 User is on "Field Tracking" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 12-08-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strDate = Script.dicTestData.get("strImplantDate");
+		String strExpText = Script.dicTestData.get("strConfMsg");
+		String strPurchaseOrder = Script.dicTestData.get("strPurchaseOrder"); 
+		
+	
+		//Test Data to be fetched for the current 'Consignment Billing' script from DB.
+		String strAgentName = Script.dicTestData.get("AgentName");
+		String strCustomerName = Script.dicTestData.get("CustomerName");
+		String strTissueId = Script.dicTestData.get("TissueId");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Remote Access link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Remote Access' link given on left navigation area";
+		strExpResult = "'Remote Access' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRemoteAccess", "pgeAssembly_Lines", "lnkFieldTracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Remote Access' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Field Tracking' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Field Tracking' link and verify navigated page.";
+		strExpResult = "'Field Tracking' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkFieldTracking", "Field Tracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Field Tracking' link is clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Enter agent name in 'Agent' input box.
+		// ########################################################################################################
+		strStepDesc = "Enter agent name in 'Agent' input box.";
+		strExpResult = "Agent name '"+strAgentName+"' should be entered and page should be refreshed.";
+		blnFlag=enterAgentName(strAgentName);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Agent name '"+strAgentName+"' is entered and page refreshes successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on Consignment Billing button on 'Field Tracking' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Consignment Billing' button on 'Field Tracking' page.";
+		strExpResult = "'Consignment Billing' button should be clicked and 'Consignment Purchase Order' page should be displayed.";
+		blnFlag=clickAndVerify("pgeFieldTracking","btnConsignmentBilling", "Consignment Purchase Order");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Consignment Billing' button is clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - Fill purchase order on 'Consignment Purchase Order' page.
+		//########################################################################################################
+		strStepDesc = "Fill purchase order on 'Consignment Purchase Order' page.";
+		strExpResult = "Purchase order should be filled in 'Purchase Order' field.";
+		blnFlag=enterPurchaseOrder(strPurchaseOrder);
+		if (blnFlag == true)
+		{
+			strPurchaseOrder=Script.dicCommonValue.get("strPurchaseOrder");
+			reporter.ReportStep(strStepDesc, strExpResult, "Purchase order: '"+strPurchaseOrder+"' filled in 'Purchase Order' field.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Fill customer name on 'Consignment Purchase Order' page.
+		//########################################################################################################
+		strStepDesc = "Fill customer name on 'Consignment Purchase Order' page.";
+		strExpResult = "Customer name: '"+strCustomerName+"' should be filled in 'Customer' field.";
+		blnFlag=fillCustomerName(strCustomerName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Customer name: '"+strCustomerName+"' filled in 'Customer' field.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 		
+		// ########################################################################################################
+		// Step 9 - Click on next button on 'Consignment Purchase Order' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Next' button on 'Consignment Purchase Order' page.";
+		strExpResult = "'Next' button should be clicked and 'OUTSTANDING TISSUES' grid should be displayed.";
+		blnFlag=clickAndVerify("pgeConsignmentPurchaseOrder", "btnNext", "pgeConsignmentPurchaseOrder", "objAvailableTissues");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Next' button is clicked and 'OUTSTANDING TISSUES' grid is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Select tissue from 'Available Tissues' grid and move to 'Selected Tissues' grid on 'Consignment Purchase Order' page.
+		// ########################################################################################################
+		strStepDesc = "Select tissue from 'Available Tissues' grid and move to 'Selected Tissues' grid on 'Consignment Purchase Order' page.";
+		strExpResult = "Tissue should be moved and displayed under 'Selected Tissues' grid.";
+		blnFlag=selectAndMoveTissue();
+		if (blnFlag == true) 
+		{
+			strTissueId=Script.dicTestData.get("TargetTissue");
+			reporter.ReportStep(strStepDesc, strExpResult, "Tissue '"+strTissueId+"' is moved from 'Available Tissues' grid and displayed under 'Selected Tissues' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Click on next button on 'Consignment Purchase Order' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Next' button on 'Consignment Purchase Order' page.";
+		strExpResult = "'Commit' button should be displayed on 'Consignment Purchase Order' page.";
+		blnFlag=clickAndVerify("pgeConsignmentPurchaseOrder", "btnNext", "pgeConsignmentPurchaseOrder", "btnCommit");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Next' button is clicked and 'Commit' button is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+			
+		// ########################################################################################################
+		// Step 12 - Enter date in 'Date' input field.
+		// ########################################################################################################
+		strStepDesc = "Enter date in 'Date' input field.";
+		strExpResult = "Date should be filled in 'Date' input field.";
+		blnFlag=enterCurrentDate("pgeConsignmentPurchaseOrder", "txtDate", strDate);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Current date filled successfully in 'Date' input field.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+			
+		// ########################################################################################################
+		// Step 13 - Click on commit button on 'Consignment Purchase Order' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button on 'Consignment Purchase Order' page.";
+		strExpResult = "'Commit' button should be clicked and Confirmation message should be displayed.";
+		blnFlag=clickCommitAndVerifyConfirmationMessage(strExpText,strPurchaseOrder);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and Confirmation message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		// ########################################################################################################
+		// Step 14 - Click on Orders link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkConsignmentBilling");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 15 - Click on 'Consignment Billing' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Consignment Billing' link and verify navigated page.";
+		strExpResult = "'Consignment Billing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkConsignmentBilling", "Consignment Billing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Consignment Billing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Click 'Processed' tab on Consignment Billing page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Processed' tab on 'Consignment Billing' page.";
+		strExpResult = "'Processed' tab should be clicked.";
+		blnFlag=clickTab("pgeConsignmentBilling","tabProcessed", "Processed");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Processed' tab is clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 17 - Search same purchase order provided while creating the consignment billing  from "Field Tracking" page.
+		//########################################################################################################
+		strStepDesc = "Search same purchase order provided while creating the consignment billing  from 'Field Tracking' page.";
+		strExpResult = "Searched purchase order '"+strPurchaseOrder+"' should be displayed in the 'Consignment Billing' grid.";
+		blnFlag=verifySearch("pgeConsignmentBilling","txtPurchaseOrder","lnkPurchaseOrder",strPurchaseOrder.toUpperCase());
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched purchase order '"+strPurchaseOrder+"' is displayed in the 'Consignment Billing' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 18 - Click on specified purchase order link on 'Consignment Billing' page. 
+		//########################################################################################################
+		strStepDesc = "Click on specified purchase order link on 'Consignment Billing' page.";
+		strExpResult = "Purchase Order '"+strPurchaseOrder+"' link should be clicked and 'FACILITY - HOSPITAL' grid should be displayed.";
+		blnFlag=clickAndVerify("pgeConsignmentBilling", "lnkPurchaseOrder", "pgeConsignmentBilling", "objFacilityHospital");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Purchase Order '"+strPurchaseOrder+"' link is clicked and 'FACILITY - HOSPITAL' grid is displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Click on 'Return' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify navigated page.";
+		strExpResult = "'Consignment Billing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon","btnReturn", "Consignment Billing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Consignment Billing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+				
+		// ########################################################################################################
+		// Step 20 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

@@ -1,0 +1,219 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-319
+		// # Test Case Name: VerifyTestResultDetailsFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Lab Test Rejections
+		// # landing page, search for a Donor Key, verify its details and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 11-27-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		
+		// Getting eligible data from the DB
+		String strDonorKey = Script.dicTestData.get("DonorKey");
+		String strTestName = Script.dicTestData.get("TestName");
+		String strRejectReason = Script.dicTestData.get("RejectReason");
+		
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkLabTestRejections");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Lab Test Rejections' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Lab Test Rejections' link and verify 'Lab Test Rejections' page is displayed.";
+		strExpResult = "'Lab Test Rejections' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkLabTestRejections", "Lab Test Rejections");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Lab Test Rejections' link is clicked and 'Lab Test Rejections' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Search for a Donor Key in Lab Test Rejections grid.
+		//########################################################################################################
+		strStepDesc = "Search for a Donor Key in Lab Test Rejections grid.";
+		strExpResult = "Searched result '"+strDonorKey+"' should be displayed in the 'Lab Test Rejections' grid.";
+		blnFlag=verifySearch("pgeLabTestRejections","txtDonor","lnkDonor", strDonorKey);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Donor Key value '"+strDonorKey+"' is displayed in the 'Lab Test Rejections' grid successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Search for a valid Test Name in Lab Test Rejections grid, in the searched results.
+		//########################################################################################################
+		strStepDesc = "Search for a valid Test Name in Lab Test Rejections grid, in the searched results.";
+		strExpResult = "Searched result '"+strTestName+"' should be displayed in the 'Lab Test Rejections' grid, in the earlier searched results.";
+		blnFlag=verifySearch("pgeLabTestRejections","txtTestName","objTestNameRejectionsGrid", strTestName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Test Name value '"+strTestName+"' is filtered and dispalyed in the 'Lab Test Rejections' grid successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Click on the filtered Donor Key and verify if Test Results Details dialog box is opened successfully.
+		//########################################################################################################
+		strStepDesc = "Click on the filtered Donor Key and verify if Test Results Details dialog box is opened successfully.";
+		strExpResult = "Donor Key '"+strDonorKey+"' should be clicked and Test Results Details dialog box should be opened.";
+		blnFlag=clickAndVerify("pgeLabTestRejections","lnkDonor", "pgeLabTestRejections","btnClose");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Donor Key '"+strDonorKey+"' is clicked and Test Results Details dialog box is opened successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Verify the Donor Key displayed on the Test Results dialog box.
+		//########################################################################################################
+		strStepDesc = "Verify the Donor Key displayed on the Test Results dialog box.";
+		strExpResult = "The Donor Key '"+strDonorKey+"' displayed on the Test Results dialog box should be verified successfully.";
+		blnFlag=verifyExactText("pgeLabTestRejections", "objDonor", strDonorKey);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Donor Key '"+strDonorKey+"' is verified on Test Results Details dialog box successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Verify the Test Name displayed on the Test Results dialog box.
+		//########################################################################################################
+		strStepDesc = "Verify the Test Name displayed on the Test Results dialog box.";
+		strExpResult = "The Test Name '"+strTestName+"' displayed on the Test Results dialog box should be verified successfully.";
+		blnFlag=verifyExactText("pgeLabTestRejections", "objTestName", strTestName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Test Name '"+strTestName+"' is verified on Test Results Details dialog box successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - 	Verify the 'Reason for Rejection' displayed on the Test Results dialog box.
+		//########################################################################################################
+		strStepDesc = "Verify the 'Reason for Rejection' displayed on the Test Results dialog box.";
+		strExpResult = "The 'Reason for Rejection' displayed on the Test Results dialog box should be verified successfully.";
+		blnFlag=verifyExactText("pgeLabTestRejections", "objRejectReason", strRejectReason);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Reason for Rejection '"+strRejectReason+"' is verified on Test Results Details dialog box successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - 	Click on 'Close' button on the Test Result Details dialog.
+		//########################################################################################################
+		strStepDesc = "Click on 'Close' button on the Test Result Details dialog.";
+		strExpResult = "The 'Close' button on the Test Result Details dialog box should be clicked and the navigated page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeLabTestRejections","btnClose","Lab Test Rejections");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Close' button on the Test Result Details dialog box is clicked and the navigated page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 12 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

@@ -1,0 +1,459 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-543
+		// # Test Case Name: VerifyDehydrationNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies error messages on 'Dehydration' page(Donor Processing)"
+		// # ------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Donor Tissues" page.
+		// #				 User releases the Amnion and Chorion.
+		// # 		         Tissue Assessment has already been completed for the tissue.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner:	Neha Chauhan
+		// # Created on: 05-28-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strFixture = Script.dicTestData.get("strFixture");
+		String strFullName = Script.dicCommonValue.get("strFullName");
+		String strInvalidDate = Script.dicTestData.get("strInvalidDate");
+		String strLoadNumber = Script.dicTestData.get("strLoadNumber");
+		String strEquipmentType = Script.dicTestData.get("strEquipmentType");
+		String strEquipment = Script.dicTestData.get("strEquipment");
+		String strSheet = Script.dicTestData.get("strSheet");
+		String strEquipmentPouch = Script.dicTestData.get("strEquipmentPouch");
+		String strSealedAtTemp = Script.dicTestData.get("strSealedAtTemp");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strInvalidText = Script.dicTestData.get("strSearchText");
+		String strExpectedText1 = Script.dicTestData.get("strExpectedText1");
+		String strExpectedText2 = Script.dicTestData.get("strExpectedText2");
+		String strExpectedText3 = Script.dicTestData.get("strExpectedText3");
+		String strExpectedText4 = Script.dicTestData.get("strExpectedText4");
+		String strExpectedText5 = Script.dicTestData.get("strExpectedText5");
+		String strExpectedText6 = Script.dicTestData.get("strExpectedText6");
+		String strExpectedText7 = Script.dicTestData.get("strExpectedText7");
+		String strExpectedText8 = Script.dicTestData.get("strExpectedText8");
+		String strExpectedText9 = Script.dicTestData.get("strExpectedText9");
+		String strExpectedText10 = Script.dicTestData.get("strExpectedText10");
+		
+		// Get Tissue Recovery ID, Donor Key from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_DonorProcessing");
+		String strDonorKey= Script.dicCommonValue.get("strDonorKey_DonorProcessing");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 3 - Click on Process link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkDonor_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Donor Processing link and verify 'Donor List' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Donor Processing link and verify 'Donor List' page is displayed.";
+		strExpResult = "'Donor List' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonor_Processing", "Donor List");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor List' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - Search for an eligible Donor ID. 
+		//########################################################################################################
+		strStepDesc = "Search for an eligible Donor ID.";
+		strExpResult = "Search for an eligible Donor ID should be successful.";
+		blnFlag=verifySearch("pgeDonor_List","txtRecoveryId_DonorList","objRecoveryID", strRecoveryId);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search for an eligible Donor ID is successful.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.
+		//########################################################################################################
+		strStepDesc = "Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.";
+		strExpResult = "The donor ID corresponding to Recovery ID "+strRecoveryId+" should be clicked and 'Donor Tissues' page should be verified successfully.";
+		blnFlag = clickandVerifyDonorIDLink(strRecoveryId, "Donor Tissues");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The donor ID corresponding to Recovery ID "+strRecoveryId+" is clicked and 'Donor Tissues' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	 Click on 'Dehydration' button on "Donor Tissues" page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Dehydration' button on 'Donor Tissues' page.";
+		strExpResult = "The 'Dehydration' button should be clicked on 'Donor Tissues' page.";		
+		blnFlag=clickAndVerify("pgeDonorProcessing", "btnDehydration", "pgeProductDehydration", "objProdDehydrationHeader");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Dehydration' button is clicked and 'Product Dehydration' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - Click on 'Commit' button without entering any data and verify message displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button without entering any data and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText+"' should be displayed.";	
+		blnFlag=verifyErrorMessage("pgeCommon","btnCommit","pgeCommon","objUIMessageErrorSummary",strExpectedText);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//##############################################################################################################################
+		//Step 9 - Enter some invalid/junk characters in 'Fixture' field and verify message displayed on clicking 'Add Fixture' button.
+		//##############################################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in 'Fixture' field and verify message displayed on clicking 'Add Fixture' button.";
+		strExpResult = "Error Message '"+strExpectedText1+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeProductDehydration","txtFixture",strInvalidText,"btnAddFixture","pgeCommon","objUIMessageErrorSummary",strExpectedText1);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText1+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 -   Click on 'No equipment specified' expansion link and verify if section expands.
+		//########################################################################################################
+		strStepDesc = "Click on 'No equipment specified' expansion link and verify if section expands.";
+		strExpResult = "The link 'No equipment specified' link should be clicked.";		
+		blnFlag = clickAndVerifyVisible("pgeProductDehydration", "lnkNoEquipmentSpecified", "pgeProductDehydration", "btnAddEquipment");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The link 'No equipment specified' link is clicked and the section expands.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		//############################################################################################################
+		//Step 11 -  Click on 'Add Equipment' button without entering/selecting any data and verify message displayed.
+		//############################################################################################################
+		strStepDesc = " Click on 'Add Equipment' button without entering/selecting any data and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText2+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeProductDehydration","btnAddEquipment","pgeCommon","objUIMessageErrorSummary",strExpectedText2);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText2+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - Select an Equipment type.
+		//########################################################################################################
+		strStepDesc = "Select an Equipment type.";
+		strExpResult = "Equipment Type: '"+strEquipmentType+"' should be selected.";		
+		blnFlag = selectEquipmentTypeListBox(strEquipmentType);
+		 
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Equipment Type: '"+strEquipmentType+"' is selected successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 13 - Leave 'Equipment' field blank and verify message displayed on clicking 'Add Equipment' button.
+		//########################################################################################################
+		strStepDesc = "Leave 'Equipment' field blank and verify message displayed on clicking 'Add Equipment' button.";
+		strExpResult = "Error Message '"+strExpectedText3+"' should be displayed.";		
+	
+		blnFlag=verifyErrorMessage("pgeProductDehydration","btnAddEquipment","pgeCommon","objUIMessageErrorSummary",strExpectedText3);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText3+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 14 -  Enter a valid Equipment without setting the dryer temperature and verify message displayed.
+		//########################################################################################################
+		strStepDesc = "Enter a valid Equipment without setting the dryer temperature and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText4+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeProductDehydration","lstEquipment",strEquipment,"btnAddEquipment","pgeCommon","objUIMessageErrorSummary",strExpectedText4);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText4+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 15 -   Check the check box for "Confirm Set Temperature @ 45°C".
+		//########################################################################################################
+		strStepDesc = "Check the check box for 'Confirm Set Temperature @ 45°C'.";
+		strExpResult = "The check box 'Confirm Set Temperature @ 45°C' should be checked.";		
+		blnFlag = selectConfirmTempCheckBox();
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The check box 'Confirm Set Temperature @ 45°C' has been checked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 - Leave 'Date' blank and verify message displayed.
+		//########################################################################################################
+		strStepDesc = "Leave 'Date' blank and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText5+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeProductDehydration","btnAddEquipment","pgeCommon","objUIMessageErrorSummary",strExpectedText5);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText5+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###################################################################################################################
+		//Step 17 - Enter invalid/junk values in 'Date' field and verify message displayed on clicking 'Add Equipment' button.
+		//###################################################################################################################
+		strStepDesc = "Enter invalid/junk values in 'Date' field and verify message displayed on clicking 'Add Equipment' button.";
+		strExpResult = "Error Message '"+strExpectedText6+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeProductDehydration","txtDate_Equipment",strInvalidDate,"btnAddEquipment","pgeCommon","objUIMessageErrorSummary",strExpectedText6);
+
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText6+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 18 -   Click on 'No configuration specified' expansion link and verify if section expands.
+		//########################################################################################################
+		strStepDesc = "Click on 'No configuration specified' expansion link and verify if section expands.";
+		strExpResult = "The link 'No configuration specified' link should be clicked.";		
+		blnFlag = clickAndVerifyVisible("pgeProductDehydration", "lnkNoConfigurationsSpecified", "pgeProductDehydration", "btnStartSheet");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The link 'No configuration specified' link is clicked and the section expands.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//#######################################################################################################################################
+		//Step 19 - Click on 'Start Sheet' button without adding any data under 'No configuration Required' section and verify message displayed.
+		//#######################################################################################################################################
+		strStepDesc = "Click on 'Start Sheet' button without adding any data under 'No configuration Required' section and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText7+"' should be displayed.";	
+		blnFlag=verifyErrorMessage("pgeProductDehydration","txtDate_Equipment","","txtSheet","","pgeProductDehydration","btnStartSheet","pgeCommon","objUIMessageErrorSummary",strExpectedText7);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText7+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###################################################################################################################
+		//Step 20 - Enter invalid/junk values in 'Sheet' field and verify message displayed on clicking 'Start Sheet' button.
+		//###################################################################################################################
+		strStepDesc = "Enter invalid/junk values in 'Sheet' field and verify message displayed on clicking 'Start Sheet' button.";
+		strExpResult = "Error Message '"+strExpectedText8+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeProductDehydration","txtSheet",strInvalidText,"btnStartSheet","pgeCommon","objUIMessageErrorSummary",strExpectedText8);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText8+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//#######################################################################################################################################
+		//Step 21 - Enter a valid 'Sheet' name without selecting an 'Equipment' and verify message displayed.
+		//#######################################################################################################################################
+		strStepDesc = "Enter a valid 'Sheet' name without selecting an 'Equipment' and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedText9+"' should be displayed.";	
+		blnFlag=verifyErrorMessage("pgeProductDehydration","lstEquipment_Sheet","","txtSheet",strSheet,"pgeProductDehydration","btnStartSheet","pgeCommon","objUIMessageErrorSummary",strExpectedText9);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Error Message '"+strExpectedText9+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 22 -   Click on 'No pouches specified' expansion link and verify if section expands.
+		//########################################################################################################
+		strStepDesc = "Click on 'No pouches specified' expansion link and verify if section expands.";
+		strExpResult = "The link 'No pouches specified' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeProductDehydration", "lnkNoPouchesSpecified", "pgeProductDehydration", "btnAddPouch");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The link 'No pouches specified' link is clicked and the section expands.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//##################################################################################################################################################
+		//Step 23 - Enter invalid/junk values in 'Sealed At (°F)' field under 'Pouches' section and verify message displayed on clicking 'Add Pouch' button.
+		//##################################################################################################################################################
+		strStepDesc = "Enter invalid/junk values in 'Sealed At (°F)' field under 'Pouches' section and verify message displayed on clicking 'Add Pouch' button.";
+		strExpResult = "Error Message '"+strExpectedText10+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeProductDehydration","txtSealedAt",strInvalidText,"btnAddPouch","pgeCommon","objUIMessageErrorSummary",strExpectedText10);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedText10+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//##################################################################################################################################################
+		//Step 24 - Clear-Out 'Sealed At (°F)' field under 'Pouches' section.
+		//##################################################################################################################################################
+		strStepDesc = "Clear-Out 'Sealed At (°F)' field under 'Pouches' section.";
+		strExpResult = "'Sealed At (°F)' field should be cleared-out.";		
+		blnFlag=Page("pgeProductDehydration").Element("txtSealedAt").Type("");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Sealed At (°F)' field is cleared-out successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//##################################################################################################################################################
+		//Step 25 - Enter valid data under all the sections on 'Product Dehydration' page and click on 'Commit' button.
+		//##################################################################################################################################################
+		strStepDesc = "Enter valid data under all the sections on 'Product Dehydration' page and click on 'Commit' button.";
+		strExpResult = "All the required data should be entered and 'Commit' button should be clicked.";		
+		blnFlag=donorProcessingAddProductDehydrationData(strFixture,strLoadNumber,strEquipmentType,strEquipment,strSheet,strEquipmentPouch,strSealedAtTemp,strFullName);
+
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"All the required data is entered and 'Commit' button is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 26 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

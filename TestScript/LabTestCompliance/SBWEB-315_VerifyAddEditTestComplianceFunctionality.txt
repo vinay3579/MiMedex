@@ -1,0 +1,404 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-315
+		// # Test Case Name: VerifyAddEditTestComplianceFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Lab Test Compliance' landing
+		// # page, add a new Lab Test and edit the same and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Lab Test Compliance" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 11-24-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strTestName = Script.dicTestData.get("strTestName");
+		String strTestDisplayName = Script.dicTestData.get("strTestDisplayName");
+		String strResultName = Script.dicTestData.get("strResultName");
+		String strResultDisplayName = Script.dicTestData.get("strResultDisplayName");
+		String strCompliant = Script.dicTestData.get("strCompliant");
+		String strTestDisplayNameEdited = Script.dicTestData.get("strTestDisplayNameEdited");
+				
+		// Get data from the DB
+		String strTestNameDb = Script.dicTestData.get("TestName");			
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkLabTestCompliance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Lab Test Compliance' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Lab Test Compliance' link and verify 'Lab Test Compliance' page is displayed.";
+		strExpResult = "'Lab Test Compliance' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkLabTestCompliance", "Lab Test Compliance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Lab Test Compliance' link is clicked and 'Lab Test Compliance' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Calculate a Test Name that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Test Name that does not exist in the application for further use.";
+		strExpResult = "A Test Name that does not exist in the application should be calculated and pushed to the Common Sheet under 'strLabTestCompliance' for further use.";
+		blnFlag=calculateNewItem(strTestName, strTestNameDb, "strLabTestCompliance"); 
+		if (blnFlag == true)
+		{
+			strTestName = Script.dicCommonValue.get("strLabTestCompliance");
+			reporter.ReportStep(strStepDesc, strExpResult, "Test Name '"+strTestName+"' is pushed to the Common Sheet under 'strLabTestCompliance'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}			
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'Add Lab Test' button and verify 'Add Lab Test' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Add Lab Test' button and verify 'Add Lab Test' page is displayed.";
+		strExpResult = "'Add Lab Test' page should be displayed.";
+		blnFlag=clickAndVerify("pgeLabTestCompliance", "btnAddLabTest", "Add Lab Test");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Lab Test' button is clicked and 'Add Lab Test' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter Test Name in 'Add Lab Test' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Test Name in 'Add Lab Test' page.";
+		strExpResult = "The Test Name ("+strTestName+") in 'Add Lab Test' page should be entered.";
+		blnFlag= Page("pgeLabTestCompliance").Element("txtNewTestName").Type(strTestName); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Test Name ("+strTestName+") in 'Add Lab Test' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter Test Display Name in 'Add Lab Test' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Test Display Name in 'Add Lab Test' page.";
+		strExpResult = "The Test Display Name ("+strTestDisplayName+") in 'Add Lab Test' page should be entered.";
+		blnFlag= Page("pgeLabTestCompliance").Element("txtNewTestDisplayName").Type(strTestDisplayName); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Test Display Name ("+strTestDisplayName+") in 'Add Lab Test' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click on 'Save' button and verify 'Edit Lab Test' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Edit Lab Test' page is displayed.";
+		strExpResult = "'Edit Lab Test' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnSave", "Edit Lab Test");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Edit Lab Test' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Click on 'Add Test Results' button and verify 'Commit' button is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Add Test Results' button and verify 'Commit' button is displayed.";
+		strExpResult = "'Add Test Results' button should be clicked and 'Commit' button should be displayed.";
+		blnFlag=clickAndVerify("pgeLabTestCompliance", "btnAddTestResults", "pgeCommon", "btnCommit");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Test Results' button is clicked and 'Commit' button is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter Result Name in 'Edit Lab Test' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Result Name in 'Edit Lab Test' page.";
+		strExpResult = "The Result Name ("+strResultName+") in 'Edit Lab Test' page should be entered.";
+		blnFlag= Page("pgeLabTestCompliance").Element("txtResultName").Type(strResultName); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Result Name ("+strResultName+") in 'Edit Lab Test' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Enter Result Display Name in 'Edit Lab Test' page.
+		// ########################################################################################################
+		strStepDesc = "Enter Result Display Name in 'Edit Lab Test' page.";
+		strExpResult = "The Result Display Name ("+strResultDisplayName+") in 'Edit Lab Test' page should be entered.";
+		blnFlag= Page("pgeLabTestCompliance").Element("txtResultDisplayName").Type(strResultDisplayName); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Result Display Name ("+strResultDisplayName+") in 'Edit Lab Test' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Select Compliant value from dialog box in 'Edit Lab Test' page.
+		// ########################################################################################################
+		strStepDesc = "Select Compliant value from dialog box in 'Edit Lab Test' page.";
+		strExpResult = "The Compliant value ("+strCompliant+") from dialog box in 'Edit Lab Test' page should be selected.";
+		blnFlag= Page("pgeLabTestCompliance").Element("lstCompliant_Result").Select(strCompliant); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Compliant value ("+strCompliant+") in dialog box of 'Edit Lab Test' page is selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Click on 'Commit' button and verify 'Add Test Results' button is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify 'Add Test Results' button is displayed.";
+		strExpResult = "'Commit' button should be clicked and 'Add Test Results' button should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnCommit","pgeLabTestCompliance", "btnAddTestResults");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and 'Add Test Results' button is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Verify if the result is added in the Test Results grid.
+		// ########################################################################################################
+		strStepDesc = "Verify if the result is added in the Test Results grid.";
+		strExpResult = "The Result added ("+strResultName+") should be displayed in 'Test Results' grid.";
+		blnFlag=verifyExactText("pgeLabTestCompliance", "lnkAddedResultName", strResultName);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Result added ("+strResultName+")is displayed in 'Test Results' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Click on 'Return' button and verify 'Lab Test Compliance' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify 'Lab Test Compliance' page is displayed.";
+		strExpResult = "'Return' button should be clicked and 'Lab Test Compliance' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnReturn","Lab Test Compliance");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked and 'Lab Test Compliance' button is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 18 - 	Verify that if the added Lab Test is searched in Lab Test Compliance grid.
+		//########################################################################################################
+		strStepDesc = "Verify that if the added Lab Test is searched in Lab Test Compliance grid.";
+		strExpResult = "Added Lab Test '"+strTestName+"' should be displayed in the 'Lab Test Compliance' grid.";
+		blnFlag=verifySearch("pgeLabTestCompliance","txtTestName","lnkTestName", strTestName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Test '"+strTestName+"' is searched successfully in the Lab Test Compliance grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Click on the added Test and verify 'Edit Lab Test' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the added Test and verify 'Edit Lab Test' page is displayed.";
+		strExpResult = "The added test '"+strTestName+"' link should be clicked and 'Edit Lab Test' page should be displayed.";
+		blnFlag=clickAndVerify("pgeLabTestCompliance", "lnkTestName","Edit Lab Test");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'The added test '"+strTestName+"' link is clicked and 'Edit Lab Test' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Enter new Test Display Name in 'Edit Lab Test' page.
+		// ########################################################################################################
+		strStepDesc = "Enter new Test Display Name in 'Edit Lab Test' page.";
+		strExpResult = "The new Test Display Name ("+strTestDisplayNameEdited+") in 'Edit Lab Test' page should be entered.";
+		blnFlag= Page("pgeLabTestCompliance").Element("txtNewTestDisplayName").Type(strTestDisplayNameEdited); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The new Test Display Name ("+strTestDisplayNameEdited+") in 'Edit Lab Test' page is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Click on 'Save' button.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button.";
+		strExpResult = "'Save' button should be clicked.";
+		blnFlag=Page("pgeCommon").Element("btnSave").Click(20); 		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Click on 'Return' button and verify 'Lab Test Compliance' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify 'Lab Test Compliance' page is displayed.";
+		strExpResult = "'Return' button should be clicked and 'Lab Test Compliance' page should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnReturn","Lab Test Compliance");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked and 'Lab Test Compliance' button is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 21 - 	Search for the added Lab test in Lab Test Compliance grid.
+		//########################################################################################################
+		strStepDesc = "Search for the added Lab test in Lab Test Compliance grid";
+		strExpResult = "Added Lab Test '"+strTestName+"' should be displayed in the 'Lab Test Compliance' grid.";
+		blnFlag=verifySearch("pgeLabTestCompliance","txtTestName","lnkTestName", strTestName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Test '"+strTestName+"' is searched successfully in the Lab Test Compliance grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Verify if the edited Test Display Name is displayed in the Test Results grid.
+		// ########################################################################################################
+		strStepDesc = "Verify if the edited Test Display Name is displayed in the Test Results grid.";
+		strExpResult = "The edited Test Display Name ("+strTestDisplayNameEdited+") should be displayed in 'Test Results' grid.";
+		blnFlag=verifyExactText("pgeLabTestCompliance", "objDisplayTestName", strTestDisplayNameEdited);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Test Display Name ("+strTestDisplayNameEdited+")is displayed in 'Test Results' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+
+		// ########################################################################################################
+		// Step 23 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

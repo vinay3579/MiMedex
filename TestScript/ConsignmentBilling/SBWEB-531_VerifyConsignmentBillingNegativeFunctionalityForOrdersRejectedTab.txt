@@ -1,0 +1,316 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-530
+		// # Test Case Name: VerifyConsignmentBillingNegativeFunctionalityForOrdersRejectedTab
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies error messages on 'Orders' page for 'Rejected' tab under
+		// #              'Consignment Billing' functionality.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: 	MiMedx SBWeb URL is accessible to the user.
+		// #					User is logged in into the MiMedx SBWeb application.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 06-11-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Orders link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkConsignmentBilling");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Consignment Billing' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Consignment Billing' link and verify navigated page.";
+		strExpResult = "'Consignment Billing' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkConsignmentBilling", "Consignment Billing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Consignment Billing' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click 'Rejected' tab.
+		// ########################################################################################################
+		strStepDesc = "Click 'Rejected' tab.";
+		strExpResult = "'Rejected' tab should be displayed.";
+		blnFlag=clickTab("pgeConsignmentBilling","tabRejected", "Consignment Billing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Rejected' tab displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Enter some invalid/junk characters in the 'Purchase Order' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Purchase Order' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Purchase Order' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling","txtPurchaseOrder_Rejected",strSearchText,"objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Purchase Order' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Clear 'Purchase Order' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Purchase Order' search box and verify page refresh.";
+		strExpResult = "'Purchase Order' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeConsignmentBilling","txtPurchaseOrder_Rejected") ;
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Purchase Order' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter some invalid/junk characters in the 'Bill To' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Bill To' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Bill To' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling","txtBillTo_Rejected",strSearchText,"objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Bill To' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Clear 'Bill To' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Bill To' search box and verify page refresh.";
+		strExpResult = "'Bill To' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeConsignmentBilling","txtBillTo_Rejected") ;
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Bill To' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter some invalid/junk characters in the 'Ship To' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Ship To' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Ship To' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling","txtShipTo_Rejected",strSearchText,"objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Ship To' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Clear 'Ship To' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Ship To' search box and verify page refresh.";
+		strExpResult = "'Ship To' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeConsignmentBilling","txtShipTo_Rejected") ;
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Ship To' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter some invalid/junk characters in the 'Sales Agent' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Sales Agent' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Sales Agent' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling","txtSalesAgent_Rejected",strSearchText,"objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Sales Agent' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Clear 'Sales Agent' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Sales Agent' search box and verify page refresh.";
+		strExpResult = "'Sales Agent' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeConsignmentBilling","txtSalesAgent_Rejected") ;
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sales Agent' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Enter some invalid/junk characters in the 'Approver' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Approver' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Approver' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling", "txtApprover_Rejected", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Approver' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Clear 'Approver' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Approver' search box and verify page refresh.";
+		strExpResult = "'Approver' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeConsignmentBilling","txtApprover_Rejected") ;
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Approver' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Enter some invalid/junk characters in the 'Date' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Date' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Date' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeConsignmentBilling","txtDate_Rejected",strSearchText,"objNoRecordsFound",strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Date' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Clear 'Date' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Date' search box and verify page refresh.";
+		strExpResult = "'Date' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeConsignmentBilling","txtDate_Rejected") ;
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Date' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

@@ -1,0 +1,304 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-491
+		// # Test Case Name: VerifyLoadTechnicianInfoFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Autoclave Log landing 
+		// #  page and add an autoclave Log, load technician and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Autoclave Log" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 02-12-2014
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strLoadTechnician = Script.dicTestData.get("strLoadTechnician");
+		String str3MLotNumber = Script.dicTestData.get("str3MLotNumber");
+		String strRegimenLotNumber = Script.dicTestData.get("strRegimenLotNumber");
+		String strInterval = Script.dicTestData.get("strInterval");
+		
+		//Test Data to be fetched for the current 'Autoclave Log' script from DB.
+		String strEquipmentKey = Script.dicTestData.get("EquipmentKey");		
+		
+		//Variable used in script
+		String strExpirationDate = "";
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Manufacturing link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Manufacturing' link given on left navigation area.";
+		strExpResult = "'Manufacturing' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkManufacturing", "pgeAssembly_Lines", "lnkAutoclaveLog");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Manufacturing' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Autoclave Log' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Autoclave Log' link and verify navigated page.";
+		strExpResult = "'Autoclave Log' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkAutoclaveLog", "Autoclave Log");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Click on 'Add Autoclave Log' button on Autoclave Log page and verify if 'Add Autoclave Log' is displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Autoclave Log' button on Autoclave Log page and verify if 'Add Autoclave Log' is displayed.";
+		strExpResult = "'Add Autoclave Log' button on Autoclave Log page should be clicked and 'Add Autoclave Log' page should be verified.";
+		blnFlag=clickAndVerify("pgeAutoclaveLog","btnAddAutoclaveLog", "Add Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Autoclave Log' button on Autoclave Log page is clicked and 'Add Autoclave Log' page is verified.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 6 - 	Verify if 'Load Technician Information - Step (1 of 2)' is displayed on the panel title.
+		//########################################################################################################
+		strStepDesc = "Verify if 'Load Technician Information - Step (1 of 2)' is displayed on the panel title.";
+		strExpResult = "'Load Technician Information - Step (1 of 2)' should be displayed on the panel title.";
+		blnFlag=verifyExactText("pgeAddAutoclaveLog", "objPanelTitle", "Load Technician Information - Step (1 of 2)");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Load Technician Information - Step (1 of 2)' is displayed on the panel title.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 7 - 	Select an eligible Autoclave Equipment number from the 'Autoclave EQ #:' field.
+		//########################################################################################################
+		strStepDesc = "Select an eligible Autoclave Equipment number from the 'Autoclave EQ #:' field.";
+		strExpResult = "An eligible Autoclave Equipment number ("+strEquipmentKey+") from the 'Autoclave EQ #:' field should be selected.";
+		blnFlag=selectDataItemValueTextBox("pgeAddAutoclaveLog","txtAutoclaveEQ",strEquipmentKey);      
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "An eligible Autoclave Equipment number ("+strEquipmentKey+") from the 'Autoclave EQ #:' field is selected.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");	
+			return;			
+		} 
+		
+		//########################################################################################################
+		//Step 8 - 	Verify if 'Load Number' field is not empty and push value to Common Sheet for reference in further scripts.
+		//########################################################################################################
+		strStepDesc = "Verify if 'Load Number' field is not empty and push value to Common Sheet for reference in further scripts.";
+		strExpResult = "'Load Number' field should not be empty and should be pushed to Common Sheet 'strLoadNumber' for further use.";
+		blnFlag=pushLoadNumbertoCommonSheet("strLoadNumber");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Load Number' field should not be empty and should be pushed to Common Sheet 'strLoadNumber' for further use.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Select a Load Technician from the 'Add Autoclave Log' page.
+		//########################################################################################################
+		strStepDesc = "Select a Load Technician from the 'Add Autoclave Log' page.";
+		strExpResult = "A Load Technician ("+strLoadTechnician+") from the 'Add Autoclave Log' page should be selected.";
+		blnFlag=selectDataItemValueTextBox("pgeAddAutoclaveLog","txtLoadTechnician",strLoadTechnician);      
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "A Load Technician ("+strLoadTechnician+") from the 'Add Autoclave Log' page is selected.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		} 	
+
+		//########################################################################################################
+		//Step 10 - 	Enter a 3M Manufacturer Lot # in the 'Add Autoclave Log' page.
+		//########################################################################################################
+		strStepDesc = "Enter a 3M Manufacturer Lot # in the 'Add Autoclave Log' page.";
+		strExpResult = "A 3M Manufacturer Lot # '"+str3MLotNumber+"' should be entered.";
+		blnFlag=Page("pgeAddAutoclaveLog").Element("txt3MLot").Type(str3MLotNumber);		
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "A 3M Manufacturer Lot #  ("+str3MLotNumber+") is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 		
+		
+		//########################################################################################################
+		//Step 11 - 	Enter a 3M Manufacturer Expiration Date based on the interval specified in the 'Add Autoclave Log' page.
+		//########################################################################################################
+		strStepDesc = "Enter a 3M Manufacturer Expiration Date based on the interval specified in the 'Add Autoclave Log' page.";
+		strExpResult = "A 3M Manufacturer Expiration Date based on the interval '"+strInterval+"' days should be entered.";
+		blnFlag=enterDateinField("pgeAddAutoclaveLog","txt3MExpirationDate","MM-YYYY",strInterval);        
+		if (blnFlag == true)
+		{
+			strExpirationDate = Script.dicTestData.get("strCalculatedDate");
+			reporter.ReportStep(strStepDesc, strExpResult, "A 3M Manufacturer Expiration Date ("+strExpirationDate+") is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 
+		
+		//########################################################################################################
+		//Step 12 - 	Enter a Regimen Manufacturer Lot # in the 'Add Autoclave Log' page.
+		//########################################################################################################
+		strStepDesc = "Enter a Regimen Manufacturer Lot # in the 'Add Autoclave Log' page.";
+		strExpResult = "A Regimen Manufacturer Lot # '"+strRegimenLotNumber+"' should be entered.";
+		blnFlag=Page("pgeAddAutoclaveLog").Element("txtRegimenLot").Type(strRegimenLotNumber);		
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "A Regimen Manufacturer Lot #  ("+strRegimenLotNumber+") is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 		
+		
+		//########################################################################################################
+		//Step 13 - 	Enter a Regimen Manufacturer Expiration Date based on the interval specified in the 'Add Autoclave Log' page.
+		//########################################################################################################
+		strStepDesc = "Enter a Regimen Manufacturer Expiration Date based on the interval specified in the 'Add Autoclave Log' page.";
+		strExpResult = "A Regimen Manufacturer Expiration Date based on the interval '"+strInterval+"' days should be entered.";
+		blnFlag=enterDateinField("pgeAddAutoclaveLog","txtRegimenExpirationDate","MM-YYYY",strInterval);        
+		if (blnFlag == true)
+		{
+			strExpirationDate = Script.dicTestData.get("strCalculatedDate");
+			reporter.ReportStep(strStepDesc, strExpResult, "A Regimen Manufacturer Expiration Date ("+strExpirationDate+") is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 
+		
+		//########################################################################################################
+		//Step 14 - 	Enter Load Technician Review username and signature in the 'Add Autoclave Log' page.
+		//########################################################################################################
+		strStepDesc = "Enter Load Technician Review username and signature in the 'Add Autoclave Log' page.";
+		strExpResult = "Load Technician Review username '"+strUserName+"' and signature should be entered in the 'Add Autoclave Log' page.";
+		blnFlag= electronicSignaturePackaging(strUserName);
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "Load Technician Review username '"+strUserName+"' and signature is entered in the 'Add Autoclave Log' page.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 
+		
+		// ########################################################################################################
+		// Step 15 - Click on 'Next' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Next' button and verify navigated page.";
+		strExpResult = "'Next' button should be clicked and 'Add Autoclave Log' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAddAutoclaveLog","btnNext", "Add Autoclave Log");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Next' button is clicked and 'Add Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 - 	Verify if 'Select Instruments - Step (2 of 2)' is displayed on the panel title.
+		//########################################################################################################
+		strStepDesc = "Verify if 'Select Instruments - Step (2 of 2)' is displayed on the panel title.";
+		strExpResult = "'Select Instruments - Step (2 of 2)' should be displayed on the panel title.";
+		blnFlag=verifyExactText("pgeAddAutoclaveLog", "objPanelTitle", "Select Instruments - Step (2 of 2)");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Select Instruments - Step (2 of 2)' is displayed on the panel title.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		} 			
+		
+		// ########################################################################################################
+		// Step 17 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

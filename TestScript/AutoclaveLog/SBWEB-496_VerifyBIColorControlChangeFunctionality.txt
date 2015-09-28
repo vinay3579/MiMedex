@@ -1,0 +1,361 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-496
+		// # Test Case Name: VerifyBIColorControlChangeFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Autoclave Log landing 
+		// #  page,pick the Load number from previous script, verify 'BI Color and Control Change' functionality, save and then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Autoclave Log" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 02-25-2014
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strBIIndicatorResult = Script.dicTestData.get("strBIIndicatorResult");
+		String strBIColorChange1 = Script.dicTestData.get("strBIColorChange1");		
+		String strBIColorChange2 = Script.dicTestData.get("strBIColorChange2");		
+		String strControlChange = Script.dicTestData.get("strControlChange");		
+			
+		//Test Data to be fetched for the current 'Autoclave Log' script from Common Sheet.
+		String strLoadNumber = Script.dicCommonValue.get("strLoadNumber");	
+
+		// Variable(s) used in script
+		String strCalculatedDate = "";
+			
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Manufacturing link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Manufacturing' link given on left navigation area.";
+		strExpResult = "'Manufacturing' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkManufacturing", "pgeAssembly_Lines", "lnkAutoclaveLog");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Manufacturing' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Autoclave Log' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Autoclave Log' link and verify navigated page.";
+		strExpResult = "'Autoclave Log' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkAutoclaveLog", "Autoclave Log");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Search for an eligible autoclave Load number on Autoclave Log page.
+		//########################################################################################################
+		strStepDesc = "Search for an eligible autoclave Load number on Autoclave Log page.";
+		strExpResult = "Searched load number '"+strLoadNumber+"' should be displayed in the 'Autoclave Log' grid.";
+		blnFlag=verifySearch("pgeAutoclaveLog","txtLoadNumber","lnkLoadNumber",strLoadNumber);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumber+"' is displayed in the 'Autoclave Log' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 
+		
+		//########################################################################################################
+		//Step 6 - 	Click on the 'Load number' that is searched on the grid and verify navigated page.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Load number' that is searched on the grid and verify navigated page.";
+		strExpResult = "Searched load number '"+strLoadNumber+"' should be clicked and 'Edit Autoclave Log' page should be verified.";
+		blnFlag=clickAndVerify("pgeAutoclaveLog","lnkLoadNumber","Edit Autoclave Log");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched load number '"+strLoadNumber+"' is clicked and 'Edit Autoclave Log' page is verified successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		} 		
+				
+		//########################################################################################################
+		//Step 7 - 	Select Indicator Results for Indicator Type of 'Biological Indicator' in 'Edit Autoclave Page'.
+		//########################################################################################################
+		strStepDesc = "Select Indicator Results for Indicator Type of 'Biological Indicator' in 'Edit Autoclave Page'.";
+		strExpResult = "Indicator Results ("+strBIIndicatorResult+") for Indicator Type of 'Biological Indicator' should be selected in 'Edit Autoclave Page'.";
+		blnFlag=Page("pgeEditAutoclaveLog").Element("drpBiologicalIndicatorResults").Select(strBIIndicatorResult);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strBIIndicatorResult+"' Indicator Results for Indicator Type of 'Biological Indicator' in the 'Edit Autoclave Page' is enetered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		} 
+		
+		//########################################################################################################
+		//Step 8 - 	In the 'Time/Date OUT' field, update the date to 2 days in the future.
+		//########################################################################################################
+		strStepDesc = "In the 'Time/Date OUT' field, update the date to 2 days in the future.";
+		strExpResult = "The  'Time/Date OUT' date value should be updated to 2 days in future to current date.";
+		blnFlag=enterDateinField("pgeEditAutoclaveLog","txtTimeDateOUT","MM-dd-yyyy kk:mm","2")  ;		
+		if (blnFlag == true)
+		{
+			strCalculatedDate = Script.dicTestData.get("strCalculatedDate");
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Time/Date OUT' date value should be updated to 2 days in future to current date successfully. The calculated value is '"+strCalculatedDate+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		} 
+		
+		//########################################################################################################
+		//Step 9 - 	Select the value indicated in the 'BI Color Change' dropdown in 'Edit Autoclave Page'.
+		//########################################################################################################
+		strStepDesc = "Select the value indicated in the 'BI Color Change' dropdown in 'Edit Autoclave Page'.";
+		strExpResult = "The value indicated ("+strBIColorChange1+") should be selected the 'BI Color Change' dropdown in 'Edit Autoclave Page'.";
+		blnFlag=Page("pgeEditAutoclaveLog").Element("drpBIColorChange").Select(strBIColorChange1);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strBIColorChange1+"' value is selected from the 'BI Color Change' dropdown in 'Edit Autoclave Page' successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		}
+
+		//########################################################################################################
+		//Step 10 - Click on 'Yes' button on the 'BI Color Change Confirmation' popup.
+		//########################################################################################################
+		strStepDesc = "Click on 'Yes' button on the 'BI Color Change Confirmation' popup.";
+		strExpResult = "'Yes' button should be clicked on the 'BI Color Change Confirmation' popup.";
+		blnFlag=Page("pgeEditAutoclaveLog").Element("btnYesBIColorChangeConfirmation").Click(20);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Yes' button is clicked on the 'BI Color Change Confirmation' popup successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		}
+
+		//########################################################################################################
+		//Step 11 - Verify if the value selected is presented on the BI Color Change dropdown.
+		//########################################################################################################
+		strStepDesc = "Verify if the value selected is presented on the BI Color Change dropdown.";
+		strExpResult = "The value selected ("+strBIColorChange1+") should be presented on the BI Color Change dropdown.";
+		blnFlag=isValueSelected("pgeEditAutoclaveLog","drpBIColorChange",strBIColorChange1);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The value selected ("+strBIColorChange1+") is presented on the BI Color Change dropdown successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		}	
+
+		//########################################################################################################
+		//Step 12 - Verify if 'Successful Run' dropdown automatically updates to 'FAIL'.
+		//########################################################################################################
+		strStepDesc = "Verify if 'Successful Run' dropdown automatically updates to 'FAIL'.";
+		strExpResult = "'Successful Run' dropdown should automatically update to 'FAIL'.";
+		blnFlag=isValueSelected("pgeEditAutoclaveLog","drpSuccessfulRun","FAIL");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Successful Run' dropdown automatically updates to 'FAIL' successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		}
+
+		//########################################################################################################
+		//Step 13 - Verify if 'Indicator Results' for 'Biological Indicator' updates to 'FAIL'.
+		//########################################################################################################
+		strStepDesc = "Verify if 'Indicator Results' for 'Biological Indicator' updates to 'FAIL'.";
+		strExpResult = "'Indicator Results' for 'Biological Indicator' should update to 'FAIL'.";
+		blnFlag=isValueSelected("pgeEditAutoclaveLog","drpBiologicalIndicatorResults","FAIL");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Indicator Results' for 'Biological Indicator' updates to 'FAIL' successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		}	
+
+		//########################################################################################################
+		//Step 14 - 	Select the value indicated in the 'BI Color Change' dropdown in 'Edit Autoclave Page'.
+		//########################################################################################################
+		strStepDesc = "Select the value indicated in the 'BI Color Change' dropdown in 'Edit Autoclave Page'.";
+		strExpResult = "The value indicated ("+strBIColorChange2+") should be selected the 'BI Color Change' dropdown in 'Edit Autoclave Page'.";
+		blnFlag=Page("pgeEditAutoclaveLog").Element("drpBIColorChange").Select(strBIColorChange2);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strBIColorChange2+"' value is selected from the 'BI Color Change' dropdown in 'Edit Autoclave Page' successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		}	
+
+		//########################################################################################################
+		//Step 15 - Verify if the value selected is presented on the BI Color Change dropdown.
+		//########################################################################################################
+		strStepDesc = "Verify if the value selected is presented on the BI Color Change dropdown.";
+		strExpResult = "The value selected ("+strBIColorChange2+") should be presented on the BI Color Change dropdown.";
+		blnFlag=isValueSelected("pgeEditAutoclaveLog","drpBIColorChange",strBIColorChange2);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The value selected ("+strBIColorChange2+") is presented on the BI Color Change dropdown successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		}	
+
+		//########################################################################################################
+		//Step 16 - Verify if 'Successful Run' dropdown automatically updates to 'PASS'.
+		//########################################################################################################
+		strStepDesc = "Verify if 'Successful Run' dropdown automatically updates to 'PASS'.";
+		strExpResult = "'Successful Run' dropdown should automatically update to 'PASS'.";
+		blnFlag=isValueSelected("pgeEditAutoclaveLog","drpSuccessfulRun","PASS");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Successful Run' dropdown automatically updates to 'PASS' successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		}
+
+		//########################################################################################################
+		//Step 17 - Verify if 'Indicator Results' for 'Biological Indicator' updates to 'PASS'.
+		//########################################################################################################
+		strStepDesc = "Verify if 'Indicator Results' for 'Biological Indicator' updates to 'PASS'.";
+		strExpResult = "'Indicator Results' for 'Biological Indicator' should update to 'PASS'.";
+		blnFlag=isValueSelected("pgeEditAutoclaveLog","drpBiologicalIndicatorResults","PASS");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Indicator Results' for 'Biological Indicator' updates to 'PASS' successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		}
+
+		//########################################################################################################
+		//Step 18 - 	Select the value indicated in the 'Control Change' dropdown in 'Edit Autoclave Page'.
+		//########################################################################################################
+		strStepDesc = "Select the value indicated in the 'Control Change' dropdown in 'Edit Autoclave Page'.";
+		strExpResult = "The value indicated ("+strControlChange+") should be selected the 'Control Change' dropdown in 'Edit Autoclave Page'.";
+		blnFlag=Page("pgeEditAutoclaveLog").Element("drpControlChange").Select(strControlChange);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strControlChange+"' value is selected from the 'Control Change' dropdown in 'Edit Autoclave Page' successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");					
+		}		
+		
+		//########################################################################################################
+		//Step 19 - 	Enter 'Initials' for 'Biological Indicator'.
+		//########################################################################################################
+		strStepDesc = "Enter 'Initials' for 'Biological Indicator'.";
+		strExpResult = "'Initials' for 'Biological Indicator' with username '"+strUserName+"' and signature should be entered.";
+		blnFlag= electronicSignaturePackaging(strUserName);
+		if (blnFlag == true)
+		{				
+			reporter.ReportStep(strStepDesc, strExpResult, "'Initials' for 'Biological Indicator' with username '"+strUserName+"' and signature is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");				
+		} 
+		
+		// ########################################################################################################
+		// Step 20 - Click on 'Save' button and verify presence of 'Manufacturing Review' section.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify presence of 'Manufacturing Review' section.";
+		strExpResult = "'Save' button should be clicked and 'Manufacturing Review' section should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon","btnSave", "pgeEditAutoclaveLog", "objManufacturingReview");
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Manufacturing Review' section is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+		
+		// ########################################################################################################
+		// Step 21 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

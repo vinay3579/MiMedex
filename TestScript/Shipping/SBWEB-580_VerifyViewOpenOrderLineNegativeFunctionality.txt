@@ -1,0 +1,322 @@
+// ########################################################################################################
+		// # Test Case ID: SBWEB-580
+		// # Test Case Name: VerifyViewOpenOrderLineNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the View Open Order 
+		// # page and click sales order on the page then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Open Sales/Ship Orders" landing page.
+		// # 				 User is on "View Open Order" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-08-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		
+		//Test Data to be fetched for the current 'Shipping' script from DB.
+		String strSalesOrder = Script.dicTestData.get("SalesOrderId");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Orders link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkShipping");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Shipping' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Shipping' link and verify navigated page.";
+		strExpResult = "'Open Sales/Ship Orders' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkShipping", "Open Sales/Ship Orders");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Open Sales/Ship Orders' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - 	Search sales order on Open Sales/Ship Orders page.
+		//########################################################################################################
+		strStepDesc = "Search sales order on Open Sales/Ship Orders page.";
+		strExpResult = "Searched result should be displayed in the 'Open Sales/Ship Orders' grid.";
+		blnFlag=verifySearch("pgeSterilization","txtSalesOrder","lnkSalesOrder",strSalesOrder);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Searched result is displayed in the 'Open Sales/Ship Orders' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click on specified sales order link on Open Sales/Ship Orders page. 
+		//########################################################################################################
+		strStepDesc = "Click on specified sales orders link on 'Open Sales/Ship Orders' page.";
+		strExpResult = "Sales Order:'"+strSalesOrder+"' link should be clicked and 'View Open Order' page should be displayed.";
+		blnFlag=clickLink(strSalesOrder, "View Open Order");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sales Order:"+strSalesOrder+"' link clicked and 'View Open Order' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Click on specified sales order link on View Open Order page. 
+		//########################################################################################################
+		strStepDesc = "Click on sales ship orders link on 'View Open Order' page.";
+		strExpResult = "Sales Ship Order link should be clicked and 'View Open Order Line' page should be displayed.";
+		blnFlag=clickAndVerify("pgeSalesShipOrders","lnkSalesShipOrder", "View Open Order Line");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Sales Ship Order link clicked and 'View Open Order Line' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter some invalid/junk characters in the 'Shipment Number' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Shipment Number' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Shipment Number' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeSalesShipOrders", "Shipment Number", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Shipment Number' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Clear the 'Shipment Number' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Shipment Number' search box and verify page refresh.";
+		strExpResult = "'Shipment Number' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeSalesShipOrders", "Shipment Number");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Shipment Number' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter some invalid/junk characters in the 'Shipment Quantity' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Shipment Quantity' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Shipment Quantity' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeSalesShipOrders", "Shipment Quantity", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Shipment Quantity' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		// ########################################################################################################
+		// Step 11 - Clear the 'Shipment Quantity' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Shipment Quantity' search box and verify page refresh.";
+		strExpResult = "'Shipment Quantity' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeSalesShipOrders", "Shipment Quantity");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Shipment Quantity' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter some invalid/junk characters in the 'Ordered Date' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Ordered Date' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Ordered Date' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeSalesShipOrders", "Ordered Date", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Ordered Date' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Clear the 'Ordered Date' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Ordered Date' search box and verify page refresh.";
+		strExpResult = "'Ordered Date' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeSalesShipOrders", "Ordered Date");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Ordered Date' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Enter some invalid/junk characters in the 'Target Date' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Target Date' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Target Date' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeSalesShipOrders", "Target Date", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Target Date' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Clear the 'Target Date' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Target Date' search box and verify page refresh.";
+		strExpResult = "'Target Date' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeSalesShipOrders", "Target Date");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Target Date' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		
+		// ########################################################################################################
+		// Step 14 - Enter some invalid/junk characters in the 'Ship Date' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Ship Date' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Ship Date' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeSalesShipOrders", "Ship Date", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Ship Date' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Clear the 'Ship Date' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Ship Date' search box and verify page refresh.";
+		strExpResult = "'Ship Date' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeSalesShipOrders", "Ship Date");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Ship Date' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		
+		// ########################################################################################################
+		// Step 12 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

@@ -1,0 +1,397 @@
+// ########################################################################################################
+		// # Test Case ID: SBWEB-428
+		// # Test Case Name: VerifyCertificateOfConformanceNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Certificate of Conformance 
+		// # landing page and verifies negative functionality then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-21-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkCertificate_of_Conformance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Certificate of Conformance' link and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Certificate of Conformance' link and verify 'Certificate of Conformance' landing page is displayed.";
+		strExpResult = "'Certificate of Conformance' landing page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkCertificate_of_Conformance", "Certificate of Conformance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Certificate of Conformance' link is clicked and 'Certificate of Conformance' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Enter some invalid/junk characters in the 'Donor' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Donor' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Donor' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeCertificateOfConformance", "Donor", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Donor' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Clear the 'Donor' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Donor' search box and verify page refresh.";
+		strExpResult = "'Donor' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeCertificateOfConformance", "Donor");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter some invalid/junk characters in the 'Product Code' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Product Code' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Product Code' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeCertificateOfConformance", "Product Code", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Product Code' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Clear the 'Product Code' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Product Code' search box and verify page refresh.";
+		strExpResult = "'Product Code' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeCertificateOfConformance", "Product Code");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Product Code' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter some invalid/junk characters in the 'Donor Eligibility' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Donor Eligibility' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Donor Eligibility' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeCertificateOfConformance", "Donor Eligibility", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Donor Eligibility' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Clear the 'Donor Eligibility' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Donor Eligibility' search box and verify page refresh.";
+		strExpResult = "'Donor Eligibility' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeCertificateOfConformance", "Donor Eligibility");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor Eligibility' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Enter some invalid/junk characters in the 'Manufacturing Process' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Manufacturing Process' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Manufacturing Process' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeCertificateOfConformance", "Manufacturing Process", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Manufacturing Process' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Clear the 'Manufacturing Process' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Manufacturing Process' search box and verify page refresh.";
+		strExpResult = "'Manufacturing Process' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeCertificateOfConformance", "Manufacturing Process");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Manufacturing Process' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Enter some invalid/junk characters in the 'Inspection Process' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Inspection Process' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Inspection Process' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeCertificateOfConformance", "Inspection Process", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Inspection Process' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Clear the 'Inspection Process' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Inspection Process' search box and verify page refresh.";
+		strExpResult = "'Inspection Process' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeCertificateOfConformance", "Inspection Process");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Inspection Process' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Enter some invalid/junk characters in the 'Sterilization Process' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Sterilization Process' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Sterilization Process' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeCertificateOfConformance", "Sterilization Process", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Sterilization Process' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Clear the 'Sterilization Process' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Sterilization Process' search box and verify page refresh.";
+		strExpResult = "'Sterilization Process' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeCertificateOfConformance", "Sterilization Process");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sterilization Process' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Enter some invalid/junk characters in the 'Packaging Process' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Packaging Process' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Packaging Process' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeCertificateOfConformance", "Packaging Process", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Packaging Process' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Clear the 'Packaging Process' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Packaging Process' search box and verify page refresh.";
+		strExpResult = "'Packaging Process' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeCertificateOfConformance", "Packaging Process");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging Process' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Enter some invalid/junk characters in the 'Traceability' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Traceability' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Traceability' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeCertificateOfConformance", "Traceability", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Traceability' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Clear the 'Traceability' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Traceability' search box and verify page refresh.";
+		strExpResult = "'Traceability' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeCertificateOfConformance", "Traceability");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Traceability' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 - Enter some invalid/junk characters in the 'Release Approval' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Release Approval' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Release Approval' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeCertificateOfConformance", "Release Approval", strSearchText, "pgeCommon", "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Release Approval' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Clear the 'Release Approval' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear the 'Release Approval' search box and verify page refresh.";
+		strExpResult = "'Release Approval' search box should be cleared and the page should refresh.";
+		blnFlag = clearSearchField("pgeCertificateOfConformance", "Release Approval");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Release Approval' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

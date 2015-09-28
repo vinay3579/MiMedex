@@ -1,0 +1,136 @@
+
+		//########################################################################################################
+		//# Test Case ID: SBWEB-236
+		//# Test Case Name: VerifyAddOnRecoveredTissueFunctionality
+		//#--------------------------------------------------------------------------------------------------------
+		//# Description: This scripts verifies add recovered tissue functionality and status of processed 
+		//# tissue then successfully log out.
+		//#--------------------------------------------------------------------------------------------------------
+		//# Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		//# 				User added tissue on "Read Scan" page.	
+		//#					User is on "Recovered Tissue" page.
+		//# Post-conditions: NA
+		//# Limitations: NA
+		//#--------------------------------------------------------------------------------------------------------
+		//# Owner:  Ashish Khare
+		//# Created on: 07-15-2014
+		//#--------------------------------------------------------------------------------------------------------
+		//# Reviewer: Himanshu Gosain
+		//# Review Date: 
+		//#--------------------------------------------------------------------------------------------------------
+		//# History Notes: 
+		//########################################################################################################				
+
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strRecoveryId = Script.dicTestData.get("strRecoveryId");
+		String strHospitalCode = Script.dicTestData.get("strHospitalCode");
+		String strCollectionAgent = Script.dicTestData.get("strCollectionAgent");
+		String dteDate = Script.dicTestData.get("strDate");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		blnFlag = LaunchApplicationUrl();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, "Launch application failed.", "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Recovery link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkRecovered_Tissue");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Recovered Tissue link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovered Tissue' link.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRecovered_Tissue", "pgeRecovered_Tissue", "btnReadScan");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"'Recovered Tissue' link clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 5 - Click on specified Recovery Id link on Release Processing page.
+		// ########################################################################################################
+		strStepDesc = "Click on specified 'Recovery Id' link on 'Recovered Tissue' page";
+		blnFlag = clickLink(strRecoveryId, "Add Recovered Tissue");
+
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"User: '" + strUserName+ "' clicked 'Recovery Id' link successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 6 - Fill all the details on 'Add Recovered Tissue' page.
+		// ########################################################################################################
+		strStepDesc = "Fill all the details on 'Add Recovered Tissue' page";
+		blnFlag = addTissue(strRecoveryId, strUserName, strCollectionAgent,	dteDate, strHospitalCode);
+
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc,"User: '" + strUserName+ "' successfully fills all the details on 'Add Recovered Tissue' page.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 7 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, Err.Description, "Fail");
+		}

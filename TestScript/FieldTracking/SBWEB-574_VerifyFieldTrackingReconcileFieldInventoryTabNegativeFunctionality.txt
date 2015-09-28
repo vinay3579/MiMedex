@@ -1,0 +1,347 @@
+// ########################################################################################################
+		// # Test Case ID: SBWEB-574
+		// # Test Case Name: VerifyFieldTrackingReconcileFieldInventoryTabNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Field Tracking landing 
+		// # page then click on Reconcile Field Inventory tab, verifies negative functionality  and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 06-11-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Remote Access link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Remote Access' link given on left navigation area.";
+		strExpResult = "'Remote Access' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRemoteAccess", "pgeAssembly_Lines", "lnkFieldTracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Remote Access' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Field Tracking' link and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Field Tracking' link and verify 'Field Tracking' landing page is displayed.";
+		strExpResult = "'Field Tracking' landing page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkFieldTracking", "Field Tracking");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Field Tracking' link is clicked and 'Field Tracking' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click 'Returned' tab on Field Tracking page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Returned' tab on Field Tracking page.";
+		strExpResult = "'Returned' tab should be clicked.";
+		blnFlag=clickTab("pgeFieldTracking","tabReconcileFieldInventory", "Returned");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Returned' tab clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+	    // ########################################################################################################
+		// Step 6 - Enter some invalid/junk characters in the 'Customer' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Customer' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Customer' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtCustomer_Reconcile", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Customer' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Clear 'Customer' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Customer' search box and verify page refresh.";
+		strExpResult = "'Customer' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtCustomer_Reconcile");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Customer' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 8 - Enter some invalid/junk characters in the 'Class' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Class' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Class' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtClass_Reconcile", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Class' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Clear 'Class' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Class' search box and verify page refresh.";
+		strExpResult = "'Class' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtClass_Reconcile");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Class' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 10 - Enter some invalid/junk characters in the 'Rep Name' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Rep Name' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Rep Name' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtRepName_Reoncile", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Rep Name' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Clear 'Rep Name' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Rep Name' search box and verify page refresh.";
+		strExpResult = "'Rep Name' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtRepName_Reoncile");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Rep Name' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Enter some invalid/junk characters in the 'City' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'City' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'City' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtCity_Reconcile", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'City' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Clear 'City' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'City' search box and verify page refresh.";
+		strExpResult = "'City' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtCity_Reconcile");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'City' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 14 - Enter some invalid/junk characters in the 'State' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'State' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'State' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtState_Reconcile", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'State' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Clear 'State' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'State' search box and verify page refresh.";
+		strExpResult = "'State' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtState_Reconcile");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'State' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Enter some invalid/junk characters in the 'Reconciled By' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Reconciled By' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Reconciled By' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtReconciledBy_Reconcile", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Reconciled By' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Clear 'Reconciled By' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Reconciled By' search box and verify page refresh.";
+		strExpResult = "'Reconciled By' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtReconciledBy_Reconcile");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Reconciled By' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Enter some invalid/junk characters in the 'Status' search box and verify displayed message.
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Status' search box and verify displayed message.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Status' search box and '" + strExpectedText + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeFieldTracking", "txtStatus_Reconcile", strSearchText, "objNoRecordsFound", strExpectedText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"Invalid/junk characters are entered in the 'Status' search box and '" + strExpectedText + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Clear 'Status' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Status' search box and verify page refresh.";
+		strExpResult = "'Status' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearFieldandWait("pgeFieldTracking", "txtStatus_Reconcile");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Status' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

@@ -1,0 +1,507 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-532
+		// # Test Case Name: VerifyLabTestCompliancesNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'Lab Test Compliance' negative functionality in 'Add Lab Test' page
+		// # and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 02-Apr-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL = Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strSearchText = Script.dicTestData.get("strSearchText");
+		String strTestName = Script.dicTestData.get("strTestName");
+		String strTestDisplayName = Script.dicTestData.get("strTestDisplayName");
+		String strResultName = Script.dicTestData.get("strResultName");
+		String strResultDisplayName = Script.dicTestData.get("strResultDisplayName");
+		String strTestNameError = Script.dicTestData.get("strTestNameError");
+		String strTestDisplayNameError = Script.dicTestData.get("strTestDisplayNameError");
+		String strTestResultError = Script.dicTestData.get("strTestResultError");
+		String strTestResultDisplayValueError = Script.dicTestData.get("strTestResultDisplayValueError");
+		String strNoRecordsFound = Script.dicTestData.get("strNoRecordsFound");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Quality Assurance' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkLabTestCompliance");
+
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Lab Test Compliance' link and verify landing page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Lab Test Compliance' link and verify 'Lab Test Compliance' landing page is displayed.";
+		strExpResult = "'Lab Test Compliance' landing page should be verified successfully.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines","lnkLabTestCompliance", "Lab Test Compliance");
+
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Lab Test Compliance' link is clicked and 'Lab Test Compliance' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 5 - Click 'Add Lab Test' button and verify 'Add Lab Test' landing page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click 'Add Lab Test' button and verify 'Add Lab Test' landing page is displayed.";
+		strExpResult = "'Add Lab Test' button should be clicked and 'Add Lab Test' landing page should be displayed.";
+		blnFlag = clickAndVerify("pgeLabTestCompliance","btnAddLabTest", "Add Lab Test");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Lab Test' button is clicked and 'Add Lab Test' landing page is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click 'Save' button without entering anything in the input fields and verify message 'A lab 
+		// test name is required to save.' is displayed on the 'Add Lab Test' page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Save' button without entering anything in the input fields and verify message '" + strTestNameError + "' is displayed on the 'Add Lab Test' page.";
+		strExpResult = "'Save' button should be clicked without entering anything in the input fields and message '" + strTestNameError + "' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeLabTestCompliance", "txtNewTestName", "", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strTestNameError); 
+				
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button should be clicked without entering anything in the input fields and message '" + strTestNameError + "' is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter test name, click on 'Save' button and verify error message 'A lab test display name is 
+		// required to save.' is displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter test name, click on 'Save' button and verify error message '" + strTestDisplayNameError + "' is displayed.";
+		strExpResult = "Test name should be entered, 'Save' button should be clicked and error message '" + strTestDisplayNameError + "' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeLabTestCompliance", "txtNewTestName", strTestName, "btnSave", "pgeCommon", "objUIMessageErrorSummary", strTestDisplayNameError);
+				
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Test name is entered, 'Save' button is clicked and error message '" + strTestDisplayNameError + "' is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter test name.
+		// ########################################################################################################
+		strStepDesc = "Enter test name.";
+		strExpResult = "Test name should be entered.";
+		blnFlag = Page("pgeLabTestCompliance").Element("txtNewTestName").Type(strTestName);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Test name is successfully entered.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Enter Display name.
+		// ########################################################################################################
+		strStepDesc = "Enter Display name.";
+		strExpResult = "Display name should be entered.";
+		blnFlag = Page("pgeLabTestCompliance").Element("txtNewTestDisplayName").Type(strTestDisplayName);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Display name is successfully entered.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click 'Save' button and verify 'Add Test Results' button is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click 'Save' button and verify 'Add Test Results' button is displayed.";
+		strExpResult = "'Save' button should be clicked and 'Add Test Results' button should be displayed.";
+		blnFlag = clickAndVerify("pgeLabTestCompliance", "btnSave", "pgeLabTestCompliance", "btnAddTestResults");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Add Test Results' button is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Click 'Add Test Results' button and verify 'Add Test Results' popup is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click 'Add Test Results' button and verify 'Add Test Results' popup is displayed.";
+		strExpResult = "'Add Test Results' button should be clicked and 'Add Test Results' popup should be displayed.";
+		blnFlag = clickAndVerify("pgeLabTestCompliance", "btnAddTestResults", "pgeLabTestCompliance", "objAddTestResultsPopupTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Test Results' button is clicked and 'Add Test Results' popup is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Click on 'Commit' button without entering anything and verify error message 'A lab test result 
+		// is required to save.' is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button without entering anything and verify error message '" + strTestResultError + "' is displayed.";
+		strExpResult = "'Commit' button should be clicked without entering anything and error message '" + strTestResultError + "' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeLabTestCompliance", "txtResultName", "", "btnCommit", "pgeCommon", "objUIMessageErrorSummary", strTestResultError);
+				
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked without entering anything and error message '" + strTestResultError + "' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Click 'Add Test Results' button and verify 'Add Test Results' popup is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click 'Add Test Results' button and verify 'Add Test Results' popup is displayed.";
+		strExpResult = "'Add Test Results' button should be clicked and 'Add Test Results' popup should be displayed.";
+		blnFlag = clickAndVerify("pgeLabTestCompliance", "btnAddTestResults", "pgeLabTestCompliance", "objAddTestResultsPopupTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Test Results' button is clicked and 'Add Test Results' popup is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Enter result name, click on 'Commit' button and verify error message 'A lab test result display 
+		// value is required to save.' is displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter result name , click on 'Commit' button and verify error message '" + strTestResultDisplayValueError + "' is displayed.";
+		strExpResult = "Result name should be entered, 'Commit' button should be clicked and error message '" + strTestResultDisplayValueError + "' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeLabTestCompliance", "txtResultName", strResultName, "btnCommit", "pgeCommon", "objUIMessageErrorSummary", strTestResultDisplayValueError);
+				
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Result name is entered, 'Commit' button is clicked and error message '" + strTestResultDisplayValueError + "' is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Click 'Add Test Results' button and verify 'Add Test Results' popup is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click 'Add Test Results' button and verify 'Add Test Results' popup is displayed.";
+		strExpResult = "'Add Test Results' button should be clicked and 'Add Test Results' popup should be displayed.";
+		blnFlag = clickAndVerify("pgeLabTestCompliance", "btnAddTestResults", "pgeLabTestCompliance", "objAddTestResultsPopupTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Test Results' button is clicked and 'Add Test Results' popup is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Enter display name , click on 'Commit' button and verify error message 'A lab test result is 
+		// required to save.' is displayed.
+		// ########################################################################################################
+		strStepDesc = "Enter display name , click on 'Commit' button and verify error message '" + strTestResultError + "' is displayed.";
+		strExpResult = "Display name should be entered, 'Commit' button should be clicked and error message '" + strTestResultError + "' should be displayed.";
+		blnFlag = verifyErrorMessage("pgeLabTestCompliance", "txtResultDisplayName", strResultDisplayName, "btnCommit", "pgeCommon", "objUIMessageErrorSummary", strTestResultError);
+				
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Display name is entered, 'Commit' button is clicked and error message '" + strTestResultError + "' is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Click 'Return' button and verify 'Lab Test Compliance' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click 'Return' button and verify 'Lab Test Compliance' page is displayed.";
+		strExpResult = "'Return' button should be clicked and 'Lab Test Compliance' page should be displayed.";
+		blnFlag = clickAndVerify("pgeCommon","btnReturn", "Lab Test Compliance");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked and 'Lab Test Compliance' page is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Click on an existing Test and verify 'Edit Lab Test' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on an existing Test and verify 'Edit Lab Test' page is displayed.";
+		strExpResult = "An existing Test should be clicked and 'Edit Lab Test' page should be displayed.";
+		blnFlag = clickAndVerify("pgeLabTestCompliance","lnkTestName", "Edit Lab Test");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "An existing Test is clicked and 'Edit Lab Test' page is displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Enter some invalid/junk characters in the 'Result Name' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Result Name' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Result Name' search box and '" + strNoRecordsFound + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeLabTestCompliance", "Result Name", strSearchText, "objNoRecordsFound", strNoRecordsFound);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Result Name' search box and '" + strNoRecordsFound + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Clear 'Result Name' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Result Name' search box and verify page refresh.";
+		strExpResult = "'Result Name' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeLabTestCompliance", "Result Name");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Result Name' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 - Enter some invalid/junk characters in the 'Display Name' search box and verify No Records Found Message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Display Name' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Display Name' search box and '" + strNoRecordsFound + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeLabTestCompliance", "Display Name", strSearchText, "objNoRecordsFound", strNoRecordsFound);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Display Name' search box and '" + strNoRecordsFound + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Clear 'Display Name' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Display Name' search box and verify page refresh.";
+		strExpResult = "'Display Name' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeLabTestCompliance", "Display Name");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Display Name' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Enter some invalid/junk characters in the 'Compliant' search box and verify displayed message. 
+		// ########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in the 'Compliant' search box.";
+		strExpResult = "Invalid/junk characters should be entered in the 'Compliant' search box and '" + strNoRecordsFound + "' message should be displayed.";
+		blnFlag = verifySearchResults("pgeLabTestCompliance", "Compliant", strSearchText, "objNoRecordsFound", strNoRecordsFound);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Invalid/junk characters are entered in the 'Compliant' search box and '" + strNoRecordsFound + "' message is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 24 - Clear 'Compliant' search box and verify page refresh. 
+		// ########################################################################################################
+		strStepDesc = "Clear 'Compliant' search box and verify page refresh.";
+		strExpResult = "'Compliant' search box should be cleared and the page should be refreshed.";
+		blnFlag = clearSearchField("pgeLabTestCompliance", "Compliant");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Compliant' search box is cleared and the page is refreshed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 25 - Click 'Return' button and verify 'Lab Test Compliance' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click 'Return' button and verify 'Lab Test Compliance' page is displayed.";
+		strExpResult = "'Return' button should be clicked and 'Lab Test Compliance' page should be displayed.";
+		blnFlag = clickAndVerify("pgeCommon","btnReturn", "Lab Test Compliance");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked and 'Lab Test Compliance' page is displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 26 - Verify that the Lab Test is searched in Lab Test Compliance grid.
+		//########################################################################################################
+		strStepDesc = "Verify that the Lab Test (" + strTestName + ") is searched in Lab Test Compliance grid.";
+		strExpResult = "The Lab Test '" + strTestName + "' should be displayed in the 'Lab Test Compliance' grid.";
+		blnFlag = verifySearch("pgeLabTestCompliance","txtTestName","lnkTestName", strTestName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Lab Test '" + strTestName + "' is searched successfully in the Lab Test Compliance grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 27 - Click on the delete link against the searched Test and verify 'Lab Test Compliance' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the delete link against the searched Test and verify 'Lab Test Compliance' page is displayed.";
+		strExpResult = "The delete link against the Test '" + strTestName + "' should be clicked and 'Lab Test Compliance' page should be displayed.";
+		blnFlag = clickAndVerify("pgeLabTestCompliance", "lnkDeleteTest","Lab Test Compliance");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The delete link against the Test '" + strTestName + "' is clicked and 'Lab Test Compliance' page is sucessfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 28 - Verify that the deleted Lab Test is not displayed in Lab Test Compliance grid.
+		//########################################################################################################
+		strStepDesc = "Verify that the deleted Lab Test '" + strTestName + "' is not displayed in Lab Test Compliance grid.";
+		strExpResult = "The Lab Test '"+strTestName+"' should not be displayed in the 'Lab Test Compliance' grid.";
+		blnFlag = verifySearchRecordNotFound("pgeLabTestCompliance","txtTestName","lnkTestName", strTestName);     
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Lab Test '" + strTestName + "' is not present in the Lab Test Compliance grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}
+		
+		// ########################################################################################################
+		// Step 29 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

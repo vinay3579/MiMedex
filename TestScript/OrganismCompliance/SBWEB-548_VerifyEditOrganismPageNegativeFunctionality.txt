@@ -1,0 +1,215 @@
+// ########################################################################################################
+		// # Test Case ID: SBWEB-548
+		// # Test Case Name: VerifyEditOrganismPageNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Organism Compliance
+		// # landing page, verify negative functionality and then successfully logs out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-11-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strOrganismName = Script.dicTestData.get("strOrganismName");
+		String strDisplayName = Script.dicTestData.get("strDisplayName");
+		String strNewDisplayName = Script.dicTestData.get("strNewDisplayName");	
+        String strOrganismNameError = Script.dicTestData.get("strOrganismNameError");
+        String strDisplayNameError = Script.dicTestData.get("strDisplayNameError");		
+		
+		// Get data from the DB
+		String strOrganismNameDb = Script.dicTestData.get("Name");
+		//strOrganismNameDb="Bacillus endophyticus";
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkOrganismCompliance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Organism Compliance' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Organism Compliance' link and verify 'Organism Compliance' page is displayed.";
+		strExpResult = "'Organism Compliance' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkOrganismCompliance", "Organism Compliance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Organism Compliance' link is clicked and 'Organism Compliance' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Calculate an Organism name that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Organism name that does not exist in the application for further use.";
+		strExpResult = "An Organism name that does not exist in the application should be calculated and pushed to the Common Sheet under 'strOrganism' for further use.";
+		blnFlag=calculateNewItem(strOrganismName, strOrganismNameDb, "strOrganism"); 
+		if (blnFlag == true)
+		{
+			strOrganismName = Script.dicCommonValue.get("strOrganism");
+			reporter.ReportStep(strStepDesc, strExpResult, "Organism Name '"+strOrganismName+"' is pushed to the Common Sheet under 'strOrganism'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		
+		//########################################################################################################
+		//Step 6 - 	Search Organism Name on Organism Compliance page.
+		//########################################################################################################
+		strStepDesc = "Search Organism Name on Organism Compliance page.";
+		strExpResult = "Searched result should be displayed in the 'Organism Compliance' page.";
+		blnFlag=verifySearch("pgeOrganismCompliance","txtOrganismName","lnkOrganismName", strOrganismName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search result on the Organism Compliance page '"+strOrganismName+"'is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		
+		
+		//########################################################################################################
+		//Step 7 - 	Click on specified Organism Name link on Organism Compliance page. 
+		//########################################################################################################
+		strStepDesc = "Click on specified Organism Name link on Organism Compliance page.";
+		strExpResult = "Organism Name:'"+strOrganismName+"' link should be clicked and 'Edit Organisms' page / pop-up should be displayed.";
+		blnFlag=clickLink(strOrganismName, "Organism Compliance");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Organism Name:'"+strOrganismName+"' link is clicked and 'Edit Organism' page / pop-up is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter blank value in Organism Name and click on commit button.
+		// ########################################################################################################
+		strStepDesc = "Enter blank value in Organism Name and click on commit button.";
+		strExpResult = "'An organism name is required to save.' message should be displayed.";
+		blnFlag = verifyErrorMessage("pgeOrganismCompliance", "txtOrganismName_DialogBox", "", "pgeCommon", "btnCommit", "pgeCommon","objUIMessageErrorSummary", strOrganismNameError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Organism Name Error Message:'"+strOrganismNameError+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Click on specified Organism Name link on Organism Compliance page. 
+		//########################################################################################################
+		strStepDesc = "Click on specified Organism Name link on Organism Compliance page.";
+		strExpResult = "Organism Name:'"+strOrganismName+"' link should be clicked and 'Edit Organisms' page / pop-up should be displayed.";
+		blnFlag=clickLink(strOrganismName, "Organism Compliance");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Organism Name:'"+strOrganismName+"' link is clicked and 'Edit Organism' page / pop-up is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Enter blank value in Display Name and click on commit button.
+		// ########################################################################################################
+		strStepDesc = "Enter blank value in Display Name and click on commit button.";
+		strExpResult = "'An organism display value is required to save.' message should be displayed.";
+		blnFlag = verifyErrorMessage("pgeOrganismCompliance", "txtDisplayName_DialogBox", "", "pgeCommon", "btnCommit", "pgeCommon","objUIMessageErrorSummary", strDisplayNameError);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Display Name Error Message:'"+strDisplayNameError+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		

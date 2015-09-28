@@ -1,0 +1,194 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-563
+		// # Test Case Name: VerifyAddShipToQADOrderNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Sales/Ship Orders 
+		// # page and verify negative functionality on Add ShipTo/QAD Order page then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Sales/Ship Orders" landing page.
+		// # 				 User is on "Add ShipTo/QAD Order" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 04-14-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+ 		String strInvalidDate = Script.dicTestData.get("strSearchText");
+		String strDateError = Script.dicTestData.get("strExpectedText");
+		String strErrorText = Script.dicTestData.get("strErrorText");
+		String strInvalidText = Script.dicTestData.get("strInvalidText");
+				
+ 		//Test Data to be fetched for the current 'Sales/Ship Orders' script from DB.
+		String strQADLink = Script.dicTestData.get("QADLink");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Orders link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Orders' link given on left navigation area.";
+		strExpResult = "'Orders' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkOrders", "pgeAssembly_Lines", "lnkSalesShipOrders");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Orders' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Sales/Ship Orders' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Sales/Ship Orders' link and verify navigated page.";
+		strExpResult = "'Sales/Ship Orders' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkSalesShipOrders", "Sales/Ship Orders");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Sales/Ship Orders' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 5 - Click 'Ship To/QAD Order' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click 'Ship To/QAD Order' button and verify navigated page.";
+		strExpResult = "'Add ShipTo/QAD Order' page should be displayed.";
+		blnFlag=clickAndVerify("pgeSalesOrder","btnShipToQadOrder", "Add ShipTo/QAD Order");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add ShipTo/QAD Order' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click save button without entering anything. 
+		//########################################################################################################
+		strStepDesc = "Click save button without entering anything on 'Add ShipTo/QAD Order' page.";
+		strExpResult = "Error message '"+strErrorText+"' should be displayed.";
+		blnFlag=verifyMultipleErrorMessages("pgeSalesOrder", "btnSave", "pgeCommon", "objUIMessageErrorSummary", strErrorText);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error message '"+strErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Enter some invalid/junk characters in QAD Link and click save button.
+		//########################################################################################################
+		strStepDesc = "Enter some invalid/junk characters in QAD Link and click save button.";
+		strExpResult = "Error message '"+strErrorText+"' should be displayed.";
+		blnFlag=verifyErrorMessage("pgeSalesOrder", "txtQADLink", strInvalidText, "btnSave", "pgeCommon", "objUIMessageErrorSummary", strErrorText);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error message '"+strErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Enter an existing QAD link in QAD Link and click save button.
+		//########################################################################################################
+		strStepDesc = "Enter an existing QAD link in QAD Link and click save button.";
+		strExpResult = "Error message '"+strErrorText+"' should be displayed.";
+		blnFlag=verifyErrorMessage("pgeSalesOrder", "txtQADLink", strQADLink, "btnSave", "pgeCommon", "objUIMessageErrorSummary", strErrorText);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error message '"+strErrorText+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Clear date and enter some invalid/junk characters in date and click save button.
+		// ########################################################################################################
+		strStepDesc = "Clear date and enter some invalid/junk characters in date and click save button.";
+		strExpResult = "Error message '"+strDateError+"' should be displayed.";
+		blnFlag=verifyErrorMessage("pgeSalesOrder", "txtTransferDate", strInvalidDate, "btnSave", "pgeCommon", "objUIMessageErrorSummary", strDateError);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error message '"+strDateError+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

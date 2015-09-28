@@ -1,0 +1,217 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-346
+		// # Test Case Name: VerifyTransfertoNewLocation
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Packaged Donors' landing
+		// # page , perform Transfer to a New Location on a tissue and then log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Packaged Donors" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 11-11-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strLocation = Script.dicTestData.get("strLocation");		
+		
+		//Fetch the test data from the Common Sheet
+		String strDonorKey = Script.dicCommonValue.get("strDonorKey_PackagedDonors");				
+				
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkPackagedDonors");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Packaged Donors' link and verify 'Packaged Donors' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaged Donors' link and verify 'Packaged Donors' page is displayed.";
+		strExpResult = "'Packaged Donors' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkPackagedDonors", "Packaged Donors");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaged Donors' link is clicked and 'Packaged Donors' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly in Packaged Donors grid.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly in Packaged Donors grid.";
+		strExpResult = "Searched result should be displayed in the 'Packaged Donors' grid.";
+		blnFlag=verifySearch("pgePackagedDonors","txtDonor","lnkDonor", strDonorKey);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Packaged Donors grid in the Donor field with value '"+strDonorKey+"'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on the searched Donor Key and verify the navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on the searched Donor Key and verify the navigated page.";
+		strExpResult = "Donor Key '"+strDonorKey+"' should be clicked and the navigated page should be verified.";
+		blnFlag = clickAndVerify("pgePackagedDonors", "lnkDonor", "pgeAddTissue","btnTransfertoNewLocation");		
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "Donor Key '"+strDonorKey+"' is clicked successfully and the page is navigated successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		// ########################################################################################################
+		// Step 7 - Click on the 'Transfer to New Location' button and verify the navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on the 'Transfer to New Location' button and verify the navigated page.";
+		strExpResult = "'Transfer to New Location' button should be clicked and the navigated page should be verified.";
+		blnFlag = clickAndVerify("pgeAddTissue","btnTransfertoNewLocation","Inventory Transfer");		
+		if (blnFlag == true) 
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "'Transfer to New Location' button is clicked and the navigated page is verified successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 8 - 	Select Location value from drop down list given under 'New Location'.
+		//########################################################################################################
+		strStepDesc = "Select Location value from drop down list given under 'New Location'.";
+		strExpResult = "'"+strLocation+"' value from drop down list given should be selected in 'New Location'.";
+		blnFlag=Page("pgeAddTissue").Element("lstNewLocation").Select(strLocation);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strLocation+"' value from drop down list given has been selected in 'New Location'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+		
+		//########################################################################################################
+		//Step 9 - 	Click on 'Save' button on Inventory Transfer page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Save button on Inventory Transfer page.";
+		strExpResult = "'Save' button should be clicked on Inventory Transfer Page.";
+		blnFlag =	Page("pgeCommon").Element("btnSave").Click(20);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button has been clicked successfully on Inventory Transfer Page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		// ########################################################################################################
+		// Step 10 - Click on 'Return' button and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify navigated page.";
+		strExpResult = "'Return' button should be clicked and navigated page should be verified.";
+		blnFlag=clickAndVerify("pgeCommon", "btnReturn", "pgeAddTissue", "btnTransfertoNewLocation");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked and navigated page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - 	Verify if location has been updated on navigated page.
+		//########################################################################################################
+		strStepDesc = "Verify if location has been updated on navigated page.";
+		strExpResult = "The location '"+strLocation+"' should be updated successfully on navigated page.";
+		blnFlag= verifyExactText("pgeAddTissue","objLocation", strLocation);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The location '"+strLocation+"' has been updated successfully on the navigated page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 12 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

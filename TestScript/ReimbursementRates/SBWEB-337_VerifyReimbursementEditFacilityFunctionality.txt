@@ -1,0 +1,276 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-337
+		// # Test Case Name: VerifyReimbursementEditFacilityFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Reimbursement Rates landing
+		// # page, edit a Facility rate, verify if the edited Facility arte is reflected in Hospitals page and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 12-19-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		
+		//Variables used in script
+		String strFirstFacility = "" ;
+		String strFacilityRate = "" ;
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc,strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Recovery link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkReimbursementRates");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Reimbursement Rates' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Reimbursement Rates' link and verify 'Reimbursement Rates' page is displayed.";
+		strExpResult = "'Reimbursement Rates' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkReimbursementRates", "Reimbursement Rates");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, " 'Reimbursement Rates' link is clicked and 'Reimbursement Rates' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Navigate to previous month and select Reimbursement tab.
+		// ########################################################################################################
+		strStepDesc = "Navigate to previous month and select Reimbursement tab.";
+		strExpResult = "'Reimbursement' tab with the previous month details should be displayed.";
+		blnFlag=goToPreviousMonthTab("Reimbursement");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Reimbursement' tab with the previous month details is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Retrieve the first Facility Name on Reimbursement tab.
+		// ########################################################################################################
+		strStepDesc = "Retrieve the first Facility Name on Reimbursement tab.";
+		strExpResult = "The first Facility Name on Reimbursement tab should be retrieved successfully.";
+		blnFlag=retrieveFacilityName();
+		
+		if (blnFlag == true) 
+		{
+			strFirstFacility = Script.dicCommonValue.get("strFirstFacility");
+			reporter.ReportStep(strStepDesc, strExpResult, "The first Facility Name ("+strFirstFacility+") on Reimbursement tab is retrieved successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Calculate a random Facility Rate for entering on 'Edit Hospital' page.
+		// ########################################################################################################
+		strStepDesc = "Calculate a random Facility Rate for entering on 'Edit Hospital' page.";
+		strExpResult = "A random Facility Rate for entering on 'Edit Hospital' page should be calculated successfully.";
+		blnFlag=generateFacilityRate();
+		
+		if (blnFlag == true) 
+		{
+			strFacilityRate = Script.dicCommonValue.get("strCalcFacilityRate");
+			reporter.ReportStep(strStepDesc, strExpResult, "A random Facility Rate ("+strFacilityRate+") for entering on 'Edit Hospital' page is calculated successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 8 - Click on the first Facility name and verify if 'Edit Hospital' page is displayed successfully.
+		//########################################################################################################
+		strStepDesc = "Click on the first Facility name and verify if 'Edit Hospital' page is displayed successfully.";
+		strExpResult = "The first Facility ("+strFirstFacility+") should be clicked and 'Edit Hospital' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeReimbursementRates","lnkFirstFacility", "Edit Hospital");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The first Facility ("+strFirstFacility+") is clicked and 'Edit Hospital' page is displayed sucecssfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Edit facility rate on 'Edit Hospital' page with the calculated value.
+		// ########################################################################################################
+		strStepDesc = "Edit facility rate on 'Edit Hospital' page with the calculated value.";
+		strExpResult = "New facility rate ("+strFacilityRate+") should be entered in 'Facility Rate' field on 'Edit Hospital' page successfully.";
+		blnFlag=Page("pgeHospitals").Element("txtFacilityRate").Type(strFacilityRate);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "New facility rate ("+strFacilityRate+") entered in 'Facility Rate' field on 'Edit Hospital' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Click on 'Save' button and verify 'Edit Hospital' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Edit Hospital' page is displayed.";
+		strExpResult = "'Edit Hospital' page should be displayed.";
+		blnFlag=clickAndVerify("pgeHospitals", "btnSave", "Edit Hospital");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Edit Hospital' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Click on 'Return' button and verify 'Reimbursement Rates' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify 'Reimbursement Rates' page is displayed.";
+		strExpResult = "'Reimbursement Rates' page should be displayed.";
+		blnFlag=clickAndVerify("pgeHospitals", "btnReturn", "Reimbursement Rates");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Return' button is clicked and 'Reimbursement Rates' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Click on Hospitals link and verify 'Hospitals' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Hospitals link and verify 'Hospitals' page is displayed.";
+		strExpResult = "'Hospitals' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkHospitals", "pgeHospitals", "btnNewHospital");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Hospitals' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 13 - Search for the Facility whose rate was edited in the 'Hospitals' grid.
+		//########################################################################################################
+		strStepDesc = "Search for the Facility whose rate was edited in the 'Hospitals' grid.";
+		strExpResult = "The Facility whose rate was edited ("+strFirstFacility+") should be displayed in the 'Hospitals' grid.";
+		blnFlag=verifySearch("pgeHospitals","txtName","lnkName", strFirstFacility);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Facility whose rate was edited ("+strFirstFacility+") is displayed successfully in the search result in the 'Hospitals' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Verify if the Facility Rate edit is successful on 'Hospitals' page.
+		// ########################################################################################################
+		strStepDesc = "Verify if the Facility Rate edit is successful on 'Hospitals' page.";
+		strExpResult = "The edited Facility Rate("+strFacilityRate+") should be displayed in the 'Hospitals' grid.";
+		blnFlag=verifyExactText("pgeHospitals", "objFacilityRate", strFacilityRate);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Facility Rate ("+strFacilityRate+") is displayed successfully in the search result in the 'Hospitals' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+
+		// ########################################################################################################
+		// Step 15 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

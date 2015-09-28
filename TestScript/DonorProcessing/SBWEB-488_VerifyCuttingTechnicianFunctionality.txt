@@ -1,0 +1,399 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-488
+		// # Test Case Name: VerifyCuttingTechnicianFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies the 'Cutting Technician' edit box functionality in GS Sheet grid on "Donor Tissue" page.
+		// # ------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Donor Tissues" page.
+		// #				 User releases the Amnion and Chorion.
+		// # 		         Tissue Assessment has already been completed for the tissue.
+		// # 		         Dehydration has already been completed for the tissue.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 03-03-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strCuttingTech1 = Script.dicTestData.get("strCuttingTech1");
+		String strCuttingTech2 = Script.dicTestData.get("strCuttingTech2");
+		
+		// Get Tissue Recovery ID from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_DonorProcessing");
+		
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl();
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Launch application failed.", "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Process link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkDonor_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Donor Processing link and verify 'Donor List' landing page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Donor Processing link and verify 'Donor List' landing page is displayed.";
+		strExpResult = "'Donor List' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonor_Processing", "Donor List");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Donor Processing link is clicked and 'Donor List' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly in Donor List grid.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly in Donor List grid.";
+		strExpResult = "Searched result should be displayed in the 'Donor List' grid.";
+		blnFlag=verifySearch("pgeDonor_List","txtRecoveryId_DonorList","objRecoveryID", strRecoveryId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Donor List grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.
+		//########################################################################################################
+		strStepDesc = "Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.";
+		strExpResult = "The donor ID corresponding to Recovery ID "+strRecoveryId+" should be clicked and 'Donor Tissues' page should be verified successfully.";
+		blnFlag = clickandVerifyDonorIDLink(strRecoveryId, "Donor Tissues");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The donor ID corresponding to Recovery ID "+strRecoveryId+" is clicked and 'Donor Tissues' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Select a 'Cutting Technician' from the first row on the data grid.
+		//########################################################################################################
+		strStepDesc = "Select a 'Cutting Technician' from the first row on the data grid.";
+		strExpResult = "The Cutting Technician '"+strCuttingTech1+"' from the first row on the data grid should be selected successfully.";
+		blnFlag = selectDataItemValueTextBox("pgeDonorProcessing","objCuttingTech_FirstRow","txtCuttingTech_FirstRow",strCuttingTech1);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Cutting Technician '"+strCuttingTech1+"' is selected successfully on the first row.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Click on 'Add Cut' and verify that a second row is added in the data grid.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Cut' and verify that a second row is added in the data grid.";
+		strExpResult = "Link 'Add Cut' should be clicked and a second row should be added successfully.";
+		blnFlag=clickAndVerify("pgeDonorProcessing", "lnkAddCut_FirstRow", "pgeDonorProcessing", "objCuttingTech_SecondRow");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Link 'Add Cut' is clicked and a second row is added successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Verify that the Cutting Technician just added is moved to the second row.
+		//########################################################################################################
+		strStepDesc = "Verify that the Cutting Technician just added is moved to the second row.";
+		strExpResult = "The Cutting Technician just added '"+strCuttingTech1+"' should be moved to the second row.";
+		blnFlag=verifyExactText("pgeDonorProcessing", "objCuttingTech_SecondRow", strCuttingTech1);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Cutting Technician just added '"+strCuttingTech1+"' is moved to the second row successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - 	Select Micronized Type from the first row on the data grid.
+		//########################################################################################################
+		strStepDesc = "Select Micronized Type from the first row on the data grid.";
+		strExpResult = "Micronized Type from the first row on the data grid should be selected successfully.";
+		blnFlag = selectDataItemValueTextBox("pgeDonorProcessing","objType_FirstRow","objType_FirstRow","Micronized");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Micronized Type from the first row on the data grid is selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - 	Select the same 'Cutting Technician' as before from the first row on the data grid.
+		//########################################################################################################
+		strStepDesc = "Select the same 'Cutting Technician' as before from the first row on the data grid.";
+		strExpResult = "The same Cutting Technician '"+strCuttingTech1+"' from the first row on the data grid should be selected successfully.";
+		blnFlag = selectDataItemValueTextBox("pgeDonorProcessing","objCuttingTech_FirstRow","txtCuttingTech_FirstRow",strCuttingTech1);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The same Cutting Technician '"+strCuttingTech1+"' is selected successfully on the first row.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 12 - 	Verify that the First and second row are switched due to sorting logic.
+		//########################################################################################################
+		strStepDesc = "Verify that the First and second row are switched due to sorting logic.";
+		strExpResult = "The First and second row should be switched due to sorting logic. The second row Type should now read 'Micronized'.";
+		blnFlag=verifyExactText("pgeDonorProcessing", "objType_SecondRow", "Micronized");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The First and second row are switched due to sorting logic. The second row Type now reads 'Micronized'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 13 - 	Click on 'Add Cut' and verify that a third row is added in the data grid.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Cut' and verify that a third row is added in the data grid.";
+		strExpResult = "Link 'Add Cut' should be clicked and a third row should be added successfully.";
+		blnFlag=clickAndVerify("pgeDonorProcessing", "lnkAddCut_FirstRow", "pgeDonorProcessing", "objCuttingTech_ThirdRow");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Link 'Add Cut' is clicked and a third row is added successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 14 - 	Verify that the third row now contains 'Micronized' Type.
+		//########################################################################################################
+		strStepDesc = "Verify that the third row now contains 'Micronized' Type.";
+		strExpResult = "The third row should now contain 'Micronized' Type.";
+		blnFlag=verifyExactText("pgeDonorProcessing", "objType_ThirdRow", "Micronized");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The third row now contains 'Micronized' Type.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 15 - 	Select a different 'Cutting Technician' from the first row on the data grid.
+		//########################################################################################################
+		strStepDesc = "Select a different 'Cutting Technician' from the first row on the data grid.";
+		strExpResult = "A different Cutting Technician '"+strCuttingTech2+"' from the first row on the data grid should be selected successfully.";
+		blnFlag = selectDataItemValueTextBox("pgeDonorProcessing","objCuttingTech_FirstRow","txtCuttingTech_FirstRow",strCuttingTech2);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "A different Cutting Technician '"+strCuttingTech2+"' is selected successfully on the first row.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 - 	Click on 'Add Cut' and verify that a fourth row is added in the data grid.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Cut' and verify that a fourth row is added in the data grid.";
+		strExpResult = "Link 'Add Cut' should be clicked and a fourth row should be added successfully.";
+		blnFlag=clickAndVerify("pgeDonorProcessing", "lnkAddCut_FirstRow", "pgeDonorProcessing", "objCuttingTech_FourthRow");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Link 'Add Cut' is clicked and a fourth row is added successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 17 - 	Verify that the fourth row now contains 'Micronized' Type.
+		//########################################################################################################
+		strStepDesc = "Verify that the fourth row now contains 'Micronized' Type.";
+		strExpResult = "The fourth row should now contain 'Micronized' Type.";
+		blnFlag=verifyExactText("pgeDonorProcessing", "objType_FourthRow", "Micronized");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The fourth row now contains 'Micronized' Type.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 18 - 	Verify that the third row now contains 'Allograft' Type.
+		//########################################################################################################
+		strStepDesc = "Verify that the third row now contains 'Allograft' Type.";
+		strExpResult = "The third row should now contain 'Allograft' Type.";
+		blnFlag=verifyExactText("pgeDonorProcessing", "objType_ThirdRow", "Allograft");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The third row now contains 'Allograft' Type.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 19 - 	Verify that the third row also contains the initially added Cutting Technician.
+		//########################################################################################################
+		strStepDesc = "Verify that the third row also contains the initially added Cutting Technician '"+strCuttingTech1+"'.";
+		strExpResult = "The third row should also contain the initially added Cutting Technician '"+strCuttingTech1+"'.";
+		blnFlag=verifyExactText("pgeDonorProcessing", "objCuttingTech_ThirdRow", strCuttingTech1);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The third row also contains the initially added Cutting Technician '"+strCuttingTech1+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 20 - 	Verify that the second row now contains 'Allograft' Type.
+		//########################################################################################################
+		strStepDesc = "Verify that the second row now contains 'Allograft' Type.";
+		strExpResult = "The second row should now contain 'Allograft' Type.";
+		blnFlag=verifyExactText("pgeDonorProcessing", "objType_SecondRow", "Allograft");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The second row now contains 'Allograft' Type.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 21 - 	Verify that the second row also contains the newly added Cutting Technician.
+		//########################################################################################################
+		strStepDesc = "Verify that the second row also contains the newly added Cutting Technician '"+strCuttingTech2+"'.";
+		strExpResult = "The second row should also contain the newly added Cutting Technician '"+strCuttingTech2+"'.";
+		blnFlag=verifyExactText("pgeDonorProcessing", "objCuttingTech_SecondRow", strCuttingTech2);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The second row also contains the newly added Cutting Technician '"+strCuttingTech2+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 22 - 	Verify that the first row contains "N/A" Cutting Technician.
+		//########################################################################################################
+		strStepDesc = "Verify that the first row contains the 'N/A' Cutting Technician.";
+		strExpResult = "The first row should contain the 'N/A' Cutting Technician.";
+		blnFlag=verifyExactText("pgeDonorProcessing", "objCuttingTech_FirstRow", "N/A");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The first row contains the 'N/A' Cutting Technician.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 23 - 	Click on 'Delete' on the fourth row and verify that the row is deleted in the data grid.
+		//########################################################################################################
+		strStepDesc = "Click on 'Delete' and verify that the added row is deleted in the data grid.";
+		strExpResult = "Link 'Delete' on the fourth row should be clicked and the fourth row should be deleted successfully.";
+		blnFlag=clickAndVerifyNotExist("pgeDonorProcessing", "lnkDelete_FourthRow", "pgeDonorProcessing", "objCuttingTech_FourthRow");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Link 'Delete' on the fourth row is clicked and the fourth row is deleted successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 24 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User: '" + strUserName+ "' should be signed out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		

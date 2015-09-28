@@ -1,0 +1,697 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-283
+		// # Test Case Name: VerifyAddTissueFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'Add Tissue' functionality on "Donor Tissues" page.
+		// # ------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Donor Tissues" page  with completed Tissue Assessment, Hold and Release Amnion and Chorion and Dehydration.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 08-22-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strTissueCode = Script.dicTestData.get("strTissueCode");
+		String strQuantity = Script.dicTestData.get("strQuantity");
+		String strProduct = Script.dicTestData.get("strProduct");
+		String strNewLocation = Script.dicTestData.get("strNewLocation");
+		String strExpectedText = Script.dicTestData.get("strExpectedText");
+		
+		// Get Tissue Recovery ID, Donor Key from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_DonorProcessing");
+		String strDonorKey= Script.dicCommonValue.get("strDonorKey_DonorProcessing");
+		String strProcessingDate = "";
+		
+		// Variables used in script
+        String strDonorProductID = ""; 		
+		String strAvailableQuantity = ""; 			
+	
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+					
+		// ########################################################################################################
+		// Step 3 - Click on Process link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkDonor_Processing");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Donor Processing link and verify 'Donor List' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Donor Processing link and verify 'Donor List' page is displayed.";
+		strExpResult = "'Donor List' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonor_Processing", "Donor List");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor List' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - 	Verify that if search functionality working properly in Donor List grid.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly in Donor List grid.";
+		strExpResult = "Searched result should be displayed in the 'Donor List' grid.";
+		blnFlag=verifySearch("pgeDonor_List","txtRecoveryId_DonorList","objRecoveryID", strRecoveryId);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in Donor List grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.
+		//########################################################################################################
+		strStepDesc = "Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.";
+		strExpResult = "The donor ID corresponding to Recovery ID "+strRecoveryId+" should be clicked and 'Donor Tissues' page should be verified.";
+		blnFlag = clickandVerifyDonorIDLink(strRecoveryId, "Donor Tissues");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The donor ID corresponding to Recovery ID "+strRecoveryId+" is clicked and 'Donor Tissues' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Retrieve the 'Processing Started' date from the application UI.
+		//########################################################################################################
+		strStepDesc = "Retrieve the 'Processing Started' date from the application UI.";
+		strExpResult = "The 'Processing Started' date should be retrieved from the application UI.";
+		blnFlag = getProcessStartDate("pgeDonorProcessing", "txtProcessingStartedDate");
+		if (blnFlag == true) 
+		{
+			strProcessingDate = Script.dicCommonValue.get("ProcessStartDate");
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Processing Start Date' ("+strProcessingDate+") is retrieved successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Click on 'Add Tissue' button and verify 'New Donor-Product' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Tissue' button and verify 'New Donor-Product' page.";
+		strExpResult = "The 'Add Tissue' button should be clicked and 'New Donor-Product' page should be verified.";
+		blnFlag=clickAndVerify("pgeDonorProcessing", "btnAddTissue", "New Donor-Product");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Add Tissue' button is clicked and 'New Donor-Product' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - 	Fill the tissue code in the 'Tissue Code' edit box in the 'New Donor- Product' page.
+		//########################################################################################################
+		strStepDesc = "Fill the tissue code in the 'Tissue Code' edit box in the 'New Donor- Product' page.";
+		strExpResult = "The Tissue Code '"+strTissueCode+"' should be filled in the 'New Donor- Product' page.";
+		blnFlag=Page("pgeAddTissue").Element("txtTissueCode").Type(strTissueCode);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Tissue Code '"+strTissueCode+"' is filled successfully in the 'New Donor- Product' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 -  Fill the quantity in the 'Quantity' edit box in the 'New Donor- Product' page.
+		//########################################################################################################
+		strStepDesc = "Fill the quantity in the 'Quantity' edit box in the 'New Donor- Product' page.";
+		strExpResult = "The quantity '"+strQuantity+"' should be filled in the 'New Donor- Product' page.";
+		blnFlag=Page("pgeAddTissue").Element("txtQuantity").Type(strQuantity);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The quantity '"+strQuantity+"' is filled successfully in the 'New Donor- Product' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 11 -  Verify if Expiration Date displayed is 5 years in future to the Processing Date and the first of that month.
+		//########################################################################################################
+		strStepDesc = "Verify if Expiration Date displayed is 5 years in future to the Processing Date and the first of that month";
+		strExpResult = "The Expiration Date displayed should be five years in future to the Processing Date and the first of that month.";
+		blnFlag=verifyExpirationDate("pgeAddTissue","objExpirationDate",strProcessingDate);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The expiration date that is displayed on the application is 5 years in future to the Processing Date(current date) and the first of that month.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 12 - 	Click on 'Save' button and verify if the addded tissue is displayed on 'Donor Tissues' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify if the addded tissue is displayed on 'Donor Tissues' page.";
+		strExpResult = "The 'Save' button should be clicked and the added tissue link should be verified.";
+		blnFlag=clickAndVerify("pgeAddTissue", "btnSave", "pgeDonorProcessing", "lnkAddedTissue");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Save' button is clicked and the added tissue link is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Click on 'Inner Barcode' link and verify if a PDF opens with desired details.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Inner Barcode' link and verify if a PDF opens with desired details.";
+		strExpResult = "'Inner Barcode' PDF should be verified for the keywords '"+strDonorKey+","+strExpectedText+"'.";
+		blnFlag= clickInnerBarcode(strDonorKey, strExpectedText);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Inner Barcode' has been clicked and the PDF has been verified for the keywords '"+strDonorKey+","+strExpectedText+"'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 14 - Close the 'Inner Barcode' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Inner Barcode' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Inner Barcode' PDF should be closed successfully.";
+		blnFlag=closePDF("Donor Tissues");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Inner Barcode' PDF has been closed successfully and the navigated page has been verified for the title 'Donor Tissues'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+	
+		//########################################################################################################
+		//Step 15 - Click on the added tissue link and verify if navigated to 'Donor Id():Tissue Items' page.
+		//########################################################################################################
+		strStepDesc = "Click on the added tissue link and verify if navigated to 'Donor Id():Tissue Items' page.";
+		strExpResult = "The added tissue link should be clicked and the navigated page '"+strDonorKey+"():Tissue Items' should be verified.";
+		blnFlag=clickAndVerify("pgeDonorProcessing", "lnkAddedTissue", strDonorKey+"(): Tissue Items");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added tissue link is clicked and the navigated page '"+strDonorKey+"():Tissue Items' is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 16 - Retrieve the Donor Product ID from the 'Donor Id():Tissue Items' page for verification in the label.
+		//########################################################################################################
+		strStepDesc = "Retrieve the Donor Product ID from the 'Donor Id():Tissue Items' page for verification in the label.";
+		strExpResult = "The Donor Product ID from the 'Donor Id():Tissue Items' page should be retrieved for verification in the label.";
+		blnFlag=retrieveValueFromField("pgeAddTissue","objDonorProductID");
+		if (blnFlag == true)
+		{
+			strDonorProductID = Script.dicTestData.get("strValueRetrievedfromField");
+			reporter.ReportStep(strStepDesc, strExpResult, "The Donor Product ID ("+strDonorProductID+") from the 'Donor Id():Tissue Items' page is retrieved for verification in the label successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+		
+		//########################################################################################################
+		//Step 17 - Retrieve the Available Quantity from the 'Donor Id():Tissue Items' page for verification in the label.
+		//########################################################################################################
+		strStepDesc = "Retrieve the Available Quantity from the 'Donor Id():Tissue Items' page for verification in the label.";
+		strExpResult = "The Available Quantity from the 'Donor Id():Tissue Items' page should be retrieved for verification in the label.";
+		blnFlag=retrieveValueFromField("pgeAddTissue","objAvailableQuantity");
+		if (blnFlag == true)
+		{
+			strAvailableQuantity = Script.dicTestData.get("strValueRetrievedfromField");
+			reporter.ReportStep(strStepDesc, strExpResult, "The Available Quantity ("+strAvailableQuantity+") from the 'Donor Id():Tissue Items' page is retrieved for verification in the label successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+		
+		//########################################################################################################
+		//Step 18 - Click on the 'Record/Review Tissue Inspection' button and verify if navigated to 'Tissue Item Inspection' page.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Record/Review Tissue Inspection' button and verify if navigated to 'Tissue Item Inspection' page.";
+		strExpResult = "The 'Record/Review Tissue Inspection' button should be clicked and the navigated page 'Tissue Item Inspection' should be verified.";
+		blnFlag=clickAndVerify("pgeAddTissue", "btnRecordReviewTissueInspection", "Tissue Item Inspection");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Record/Review Tissue Inspection' button is clicked and the navigated page 'Tissue Item Inspection' is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 19 - Select all the 'Pass' checkboxes for Tissue Inspection.
+		//########################################################################################################
+		strStepDesc = "Select all the 'Pass' checkboxes for Tissue Inspection.";
+		strExpResult = "All the checkboxes under 'Pass' in Tissue Inspection page should be clicked.";
+		blnFlag=clickVerifyCheckboxesAddTissue("pgeAddTissue","objQuantity","Pass","Click");
+		if (blnFlag == true) 
+		{
+			waitForSync(10);
+			reporter.ReportStep(strStepDesc, strExpResult, "All the checkboxes under 'Pass' in Tissue Inspection page have been clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		
+		//########################################################################################################
+		//Step 20 - Verify if the 'Pass' checkboxes for Tissue Inspection have been successfully selected.
+		//########################################################################################################
+		strStepDesc = "Verify if the 'Pass' checkboxes for Tissue Inspection have been successfully selected.";
+		strExpResult = "All the checkboxes under 'Pass' in Tissue Inspection page should be selected.";
+		blnFlag=VerifyCheckboxesSelection("pgeAddTissue","objQuantity","Pass");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All the checkboxes under 'Pass' in Tissue Inspection page are selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 21 - Sign the 'Inspector' canvas for 'Tissue Inspection' functionality.
+		//########################################################################################################
+		strStepDesc = "Sign the 'Inspector' canvas for 'Tissue Inspection' functionality.";
+		strExpResult = "The 'Inspector' canvas for 'Tissue Inspection' functionality should be signed successfully.";		
+		blnFlag= canvasSignature("pgeAddTissue", "objCanvas") ;
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Transcribed By' canvas for 'Commit' functionality is signed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 22 - Click on 'Commit' button and verify if navigated to 'Donor Id():Tissue Items' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify if navigated to 'Donor Id():Tissue Items' page.";
+		strExpResult = "The 'Commit' button should be clicked and the navigated page '"+strDonorKey+"():Tissue Items' should be verified.";
+		blnFlag=clickAndVerify("pgeCommon", "btnCommit", strDonorKey+"(): Tissue Items");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Commit' button is clicked and the navigated page '"+strDonorKey+"():Tissue Items' is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 23 - Select a product from the Product list box on 'Donor Id():Tissue Items' page.
+		//########################################################################################################
+		strStepDesc = "Select a product from the Product list box on '"+strDonorKey+"():Tissue Items' page.";
+		strExpResult = "The Product '"+strProduct+"' should be selected from the Product list box.";
+		blnFlag=Page("pgeAddTissue").Element("lstProduct").Select(strProduct);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Product '"+strProduct+"'  is selected from the Product list box successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 24 - Click on 'Change Product' button on 'Donor Id():Tissue Items' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Change Product' button on '"+strDonorKey+"():Tissue Items' page.";
+		strExpResult = "The 'Change Product' button on '"+strDonorKey+"():Tissue Items' page should be clicked.";
+		blnFlag=Page("pgeAddTissue").Element("btnChangeProduct").Click(20);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Change Product' button on '"+strDonorKey+"():Tissue Items' page has been clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 25 - Click on 'Outer Packaging' button and verify if navigated to 'Validate Outer Packaging' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Outer Packaging' button and verify if navigated to 'Validate Outer Packaging' page.";
+		strExpResult = "The 'Outer Packaging' button should be clicked and the navigated page 'Validate Outer Packaging' should be verified.";
+		blnFlag=clickAndVerify("pgeAddTissue", "btnOuterPackaging", "Validate Outer Packaging");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Outer Packaging' button is clicked and the navigated page 'Validate Outer Packaging' is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 26 - Scan all the tissues in the 'Validate Outer Packaging' page.
+		//########################################################################################################
+		strStepDesc = "Scan all the tissues in the 'Validate Outer Packaging' page.";
+		strExpResult = "All the tissues on 'Validate Outer Packaging' page should be scanned.";
+		blnFlag=scanTissue("pgeAddTissue", "objQuantity");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All the tissues on 'Validate Outer Packaging' page have been scanned successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 27 - Click on 'Process Scans' button on 'Validate Outer Packaging' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Process Scans' button on 'Validate Outer Packaging' page.";
+		strExpResult = "'Process Scans' button should be clicked.";
+		blnFlag=Page("pgeAddTissue").Element("btnProcessScans").Click(20);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process Scans' button has been clicked successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 28 - Verify if system generated message is displayed that the scanning is successsful for all the tissues.
+		//########################################################################################################
+		strStepDesc = "Verify if system generated message is displayed that the scanning is successsful for all the tissues.";
+		strExpResult = "'Scanned tissue items updated.' message should be verified.";
+		blnFlag= verifyTextContains("pgeAddTissue","objMessageSummary", "scanned tissue items updated.");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Scanned tissue items updated.' message has been verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 29 - Verify if the 'Outer Pouch Seal' checkboxes for 'Validate Outer Packaging' have been successfully selected.
+		//########################################################################################################
+		strStepDesc = "Verify if the 'Outer Pouch Seal' checkboxes for 'Validate Outer Packaging' have been successfully selected.";
+		strExpResult = "All the checkboxes under 'Outer Pouch Seal' in 'Validate Outer Packaging' page should be selected.";
+		blnFlag=clickVerifyCheckboxesAddTissue("pgeAddTissue","objQuantity","Outer Pouch Seal","Verify");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All the checkboxes under 'Outer Pouch Seal' in 'Validate Outer Packaging' page are selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 30 - Verify if the 'Outer Label' checkboxes for 'Validate Outer Packaging' have been successfully selected.
+		//########################################################################################################
+		strStepDesc = "Verify if the 'Outer Label' checkboxes for 'Validate Outer Packaging' have been successfully selected.";
+		strExpResult = "All the checkboxes under 'Outer Label' in 'Validate Outer Packaging' page should be selected.";
+		blnFlag=clickVerifyCheckboxesAddTissue("pgeAddTissue","objQuantity","Outer Label","Verify");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All the checkboxes under 'Outer Label' in 'Validate Outer Packaging' page are selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 31 - Click on 'Commit' button and verify if navigated to 'Validate Outer Packaging' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify if navigated to 'Validate Outer Packaging' page.";
+		strExpResult = "The 'Commit' button should be clicked and the navigated page 'Validate Outer Packaging' should be verified.";
+		blnFlag=clickAndVerify("pgeCommon", "btnCommit", "Validate Outer Packaging");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Commit' button is clicked and the navigated page 'Validate Outer Packaging' is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 32 - Click and verify Generate Label button on 'Validate Outer Packaging' page. 
+		//########################################################################################################
+		strStepDesc = "Click and verify Generate Label button on 'Validate Outer Packaging' page.";
+		strExpResult = "'Generate Label' PDF should be verified for the keywords '"+strTissueCode+","+strDonorKey+","+strAvailableQuantity+","+strDonorProductID+"'.";
+		blnFlag=clickGenerateLabel(strTissueCode, strDonorKey, strAvailableQuantity, strDonorProductID);		
+		if (blnFlag == true)
+		{			
+			reporter.ReportStep(strStepDesc, strExpResult, "'Generate Label' button has been clicked and the PDF has been verified for the keywords '"+strTissueCode+","+strDonorKey+","+strAvailableQuantity+","+strDonorProductID+"'." , "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 33 - Close the 'Generate Label' PDF and validate if the PDF has been closed successfully.
+		//########################################################################################################
+		strStepDesc = "Close the 'Generate Label' PDF and validate if the PDF has been closed successfully.";
+		strExpResult = "'Generate Label' PDF should be closed successfully.";
+		blnFlag=closePDF("Validate Outer Packaging");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Generate Label' PDF has been closed successfully and the navigated page has been verified for the title 'Validate Outer Packaging'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 34 - Click on 'Return' button and verify if navigated to 'Donor Id():Tissue Items' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify if navigated to 'Donor Id():Tissue Items' page.";
+		strExpResult = "The 'Return' button should be clicked and the navigated page '"+strDonorKey+"():Tissue Items' should be verified.";
+		blnFlag=clickAndVerify("pgeCommon", "btnReturn", strDonorKey+"("+strProduct+"): Tissue Items");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Return' button is clicked and the navigated page '"+strDonorKey+"():Tissue Items' is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 35 - Verify if location is initally updated on 'Donor Id():Tissue Items' page as 'Visual Inspection'.
+		//########################################################################################################
+		strStepDesc = "Verify if location is initally updated on 'Donor Id():Tissue Items' page as 'Visual Inspection'.";
+		strExpResult = "Location should be initially updated as 'Visual Inspection' on '"+strDonorKey+"("+strProduct+"): Tissue Items page.";
+		blnFlag= verifyExactText("pgeAddTissue","objLocation", "Visual Inspection");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Location is initially updated as 'Visual Inspection' on '"+strDonorKey+"("+strProduct+"): Tissue Items page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 36 - Click on 'Transfer To New Location' button and verify if navigated to 'Inventory Transfer' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Transfer To New Location' button and verify if navigated to 'Inventory Transfer' page.";
+		strExpResult = "The 'Transfer To New Location' button should be clicked and the navigated page 'Inventory Transfer' should be verified.";
+		blnFlag=clickAndVerify("pgeAddTissue", "btnTransfertoNewLocation", "Inventory Transfer");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Transfer To New Location' button is clicked and the navigated page 'Inventory Transfer' is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 37 - Select 'Pre Sterilization Quarantine' value from drop down list given under 'New Location'.
+		//########################################################################################################
+		strStepDesc = "Select 'Pre Sterilization Quarantine' value from drop down list given under 'New Location'.";
+		strExpResult = "'"+strNewLocation+"' value from drop down list given should be selected in 'New Location'.";
+		blnFlag=Page("pgeAddTissue").Element("lstNewLocation").Select(strNewLocation);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'"+strNewLocation+"' value from drop down list given has been selected in 'New Location'.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 38 - Click on 'Save' button on Inventory Transfer page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Save button on Inventory Transfer page.";
+		strExpResult = "'Save' button should be clicked on Inventory Transfer Page.";
+		blnFlag =	Page("pgeCommon").Element("btnSave").Click(20);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button has been clicked successfully on Inventory Transfer Page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 39 - Click on 'Return' button and verify if navigated to 'Donor Id():Tissue Items' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify if navigated to 'Donor Id():Tissue Items' page.";
+		strExpResult = "The 'Return' button should be clicked and the navigated page '"+strDonorKey+"("+strProduct+"): Tissue Items' should be verified.";
+		blnFlag=clickAndVerify("pgeCommon", "btnReturn", strDonorKey+"("+strProduct+"): Tissue Items");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Return' button is clicked and the navigated page '"+strDonorKey+"("+strProduct+"): Tissue Items' is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 40 - Verify if location has been updated on 'Donor Id():Tissue Items' page.
+		//########################################################################################################
+		strStepDesc = "Verify if location has been updated on '"+strDonorKey+"("+strProduct+"): Tissue Items' page.";
+		strExpResult = "The location '"+strNewLocation+"' should be updated successfully on '"+strDonorKey+"("+strProduct+"): Tissue Items' page.";
+		blnFlag= verifyExactText("pgeAddTissue","objLocation", strNewLocation);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The location '"+strNewLocation+"' has been updated successfully on '"+strDonorKey+"("+strProduct+"): Tissue Items' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 41 - Click on 'Return' button and verify if 'VI Form' link is displayed successfully on 'Donor Tissues' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Return' button and verify if 'VI Form' link is displayed successfully on 'Donor Tissues' page.";
+		strExpResult = "The 'Return' button should be clicked and the link 'VI Form' on 'Donor Tissues' page should be verified.";
+		blnFlag=clickAndVerify("pgeCommon", "btnReturn", "pgeDonorProcessing", "lnkVIForm");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Return' button has been clicked and the link 'VI Form' on 'Donor Tissues' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 42 - Complete Outer Packaging for the Archive Sample Tissue entry, if present, on 'Donor Tissues' page.
+		//########################################################################################################
+		strStepDesc = "Complete Outer Packaging for the Archive Sample Tissue entry, if present, on 'Donor Tissues' page.";
+		strExpResult = "If the Archive Samples tissue entry were present, Outer Packaging should be performed on 'Donor Tissues' page.";
+		blnFlag=completeOuterPackaging_ArchiveSample(strUserName,strPassword);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Archive Sample Outer Packaging has been performed successfully, if present.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+				
+		// ########################################################################################################
+		// Step 43 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

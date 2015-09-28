@@ -1,0 +1,299 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-322
+		// # Test Case Name: VerifyAddEditOrganismComplianceFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Organism Compliance
+		// # landing page, adds an Organism, edits the same and then successfully logs out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 12-01-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strOrganismName = Script.dicTestData.get("strOrganismName");
+		String strDisplayName = Script.dicTestData.get("strDisplayName");
+		String strCompliant = Script.dicTestData.get("strCompliant");
+		String strNewDisplayName = Script.dicTestData.get("strNewDisplayName");		
+		
+		// Get data from the DB
+		String strOrganismNameDb = Script.dicTestData.get("Name");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkOrganismCompliance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Organism Compliance' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Organism Compliance' link and verify 'Organism Compliance' page is displayed.";
+		strExpResult = "'Organism Compliance' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkOrganismCompliance", "Organism Compliance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Organism Compliance' link is clicked and 'Organism Compliance' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Calculate an Organism name that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Organism name that does not exist in the application for further use.";
+		strExpResult = "An Organism name that does not exist in the application should be calculated and pushed to the Common Sheet under 'strOrganism' for further use.";
+		blnFlag=calculateNewItem(strOrganismName, strOrganismNameDb, "strOrganism"); 
+		if (blnFlag == true)
+		{
+			strOrganismName = Script.dicCommonValue.get("strOrganism");
+			reporter.ReportStep(strStepDesc, strExpResult, "Organism Name '"+strOrganismName+"' is pushed to the Common Sheet under 'strOrganism'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+						
+		// ########################################################################################################
+		// Step 6 - Click on 'Add Organism' button and verify 'Add Organisms' dialog box is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Add Lab Test' button and verify 'Add Organisms' dialog box is displayed.";
+		strExpResult = "'Add Organisms' dialog box should be displayed.";
+		blnFlag=clickAndVerify("pgeOrganismCompliance", "btnAddOrganism", "pgeOrganismCompliance", "objAddOrganismsTitle");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Organism' button is clicked and 'Add Organisms' dialog box is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter Organism Name in 'Add Organisms' dialog box.
+		// ########################################################################################################
+		strStepDesc = "Enter Organism Name in 'Add Organisms' dialog box.";
+		strExpResult = "The Organism Name ("+strOrganismName+") in 'Add Organisms' dialog box should be entered.";
+		blnFlag= Page("pgeOrganismCompliance").Element("txtOrganismName_DialogBox").Type(strOrganismName); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Organism Name ("+strOrganismName+") in 'Add Organisms' dialog box is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Enter Display Name in 'Add Organisms' dialog box.
+		// ########################################################################################################
+		strStepDesc = "Enter Display Name in 'Add Organisms' dialog box.";
+		strExpResult = "The Display Name ("+strDisplayName+") in 'Add Organisms' dialog box should be entered.";
+		blnFlag= Page("pgeOrganismCompliance").Element("txtDisplayName_DialogBox").Type(strDisplayName); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Display Name ("+strDisplayName+") in 'Add Organisms' dialog box is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Select Compliant Yes/No value from Compliant dropdown in 'Add Organisms' dialog box.
+		// ########################################################################################################
+		strStepDesc = "Select Compliant Yes/No value from Compliant dropdown in 'Add Organisms' dialog box.";
+		strExpResult = "The Compliant value ("+strCompliant+") from the Compliant dropdown in 'Add Organisms' dialog box should be selected.";
+		blnFlag= Page("pgeOrganismCompliance").Element("drpOrganismCompliant_DialogBox").Select(strCompliant); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Compliant value ("+strCompliant+") from Compliant dropdown in 'Add Organisms' dialog box is selected successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		// ########################################################################################################
+		// Step 10 - Click on 'Commit' button and verify 'Add Organism' button is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify 'Add Organism' button is displayed.";
+		strExpResult = "'Commit' button should be clicked and 'Add Organism' button should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnCommit", "pgeOrganismCompliance", "btnAddOrganism");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and 'Add Organism' button is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Verify if the Organism is added in the Organism Compliance grid.
+		// ########################################################################################################
+		strStepDesc = "Verify if the Organism is added in the Organism Compliance grid.";
+		strExpResult = "The Organism added ("+strOrganismName+") should be displayed in 'Organism Compliance' grid.";
+		blnFlag=verifySearch("pgeOrganismCompliance","txtOrganismName","lnkOrganismName", strOrganismName);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Organism added ("+strOrganismName+")is displayed in 'Organism Compliance' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Click on the added Organism and verify 'Edit Organisms' dialog box is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the added Organism and verify 'Edit Organisms' dialog box is displayed.";
+		strExpResult = "The added Organism '"+strOrganismName+"' link should be clicked and 'Edit Organisms' dialog box should be displayed.";
+		blnFlag=clickAndVerify("pgeOrganismCompliance", "lnkOrganismName","pgeOrganismCompliance", "objEditOrganismsTitle");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'The added Organism '"+strOrganismName+"' link is clicked and 'Edit Organisms' dialog box is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Enter new Display Name in 'Edit Organisms' dialog box.
+		// ########################################################################################################
+		strStepDesc = "Enter new Display Name in 'Edit Organisms' dialog box.";
+		strExpResult = "The new Display Name ("+strNewDisplayName+") in 'Edit Organisms' dialog box should be entered.";
+		blnFlag= Page("pgeOrganismCompliance").Element("txtDisplayName_DialogBox").Type(strNewDisplayName); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The New Display Name ("+strNewDisplayName+") in 'Edit Organisms' dialog box is entered successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Click on 'Commit' button and verify 'Add Organism' button is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify 'Add Organism' button is displayed.";
+		strExpResult = "'Commit' button should be clicked and 'Add Organism' button should be displayed.";
+		blnFlag=clickAndVerify("pgeCommon", "btnCommit", "pgeOrganismCompliance", "btnAddOrganism");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and 'Add Organism' button is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 15 - 	Search for the added Organism in Organism Compliance grid.
+		//########################################################################################################
+		strStepDesc = "Search for the added Organism in Organism Compliance grid.";
+		strExpResult = "Added Organism '"+strOrganismName+"' should be displayed in the 'Organism Compliance' grid.";
+		blnFlag=verifySearch("pgeOrganismCompliance","txtOrganismName","lnkOrganismName", strOrganismName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Organism '"+strOrganismName+"' is searched successfully in the Organism Compliance grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Verify if the edited Organism Display Name is displayed in the Organism Compliance grid.
+		// ########################################################################################################
+		strStepDesc = "Verify if the edited Organism Display Name is displayed in the Organism Compliance grid.";
+		strExpResult = "The edited Organism Display Name ("+strNewDisplayName+") should be displayed in 'Organism Compliance' grid.";
+		blnFlag=verifyExactText("pgeOrganismCompliance", "objDisplayName", strNewDisplayName);		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Organism Display Name ("+strNewDisplayName+") is displayed in 'Organism Compliance' grid.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+
+		// ########################################################################################################
+		// Step 17 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

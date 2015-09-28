@@ -1,0 +1,172 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-266
+		// # Test Case Name: VerifyAssemblyLineFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that a the user can sign in and land on the "Package Inspection" landing page, select an assembly line, and // #	then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// # 				 MiMedx SBWeb URL is accessible to the user.
+		// #				 User is on 'Packaging Inspection' page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 09-03-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strAssemblyLine = Script.dicCommonValue.get("strAssemblyLine");
+
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Packaging' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging' link given on left navigation area.";
+		strExpResult = "'Packaging' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkPackaging", "pgeAssembly_Lines", "lnkPackagingInspection");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging' link is clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Packaging Inspection' link and verify 'Packaging Inspection' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Packaging Inspection' link and verify 'Packaging Inspection' page is displayed.";
+		strExpResult = "'Packaging Inspection' page should be verified.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkPackagingInspection", "Packaging Inspection");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Packaging Inspection' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Validate if the Package Assembly process has been completed successfully by checking the 'strAssemblyLine' in Common Sheet.
+		// ########################################################################################################
+		strStepDesc = "Validate if the Package Assembly process has been completed successfully by checking the 'strAssemblyLine' in Common Sheet.";
+		strExpResult = "The Package Assembly process should have been completed successfully and the assembly line 'strAssemblyLine' should not be empty.";
+		blnFlag=!strAssemblyLine.isEmpty();		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'strAssemblyLine' in Common Sheet is '"+strAssemblyLine+"' and Inspection process can now proceed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 -  Select the Assembly Line from 'Assembly Line' dropdown from 'Packaging Inspection' page.
+		// ########################################################################################################
+		strStepDesc = "Select the Assembly Line from 'Assembly Line' dropdown from 'Packaging Inspection' page.";
+		strExpResult = "The value '"+strAssemblyLine+"' should be selected from the Assembly line dropdown on 'Packaging Inspection' page.";
+		blnFlag=Page("pgePackagingCollection").Element("lstAssemblyLine_PackagingInspection").Select(strAssemblyLine);	
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The value '"+strAssemblyLine+"' is selected from the Assembly line dropdown on 'Packaging Inspection' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 7 -  Click on 'Next' on 'Packaging Inspection' page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Next' on 'Packaging Inspection' page.";
+		strExpResult = "The 'Next' button should be clicked on 'Packaging Inspection' page.";
+		blnFlag=Page("pgePackagingCollection").Element("btnNext").Click(20);	
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Next' button is clicked on 'Packaging Inspection' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+		
+		// ########################################################################################################
+		// Step 8 -  Verify if 'Packaging Inspection' grid is displayed on the page.
+		// ########################################################################################################
+		strStepDesc = "Verify if 'Package Inspection' grid is displayed on the page.";
+		strExpResult = "'Package Inspection' grid should be displayed on the page.";
+		blnFlag= verifyExactText("pgePackagingCollection", "objAssemblyPanelTitle", "Package Inspection"); 
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Package Inspection' grid is displayed on the page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 9 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

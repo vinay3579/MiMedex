@@ -1,0 +1,269 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-326
+		// # Test Case Name: VerifyAddEditProducts
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Products' landing
+		// # page, add a new Product and edit the same and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Products" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Kamlesh Yadav
+		// # Created on: 12-09-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strNewProductID = Script.dicTestData.get("strNewProductID");
+		String strEditedProductName = Script.dicTestData.get("strEditedProductName");
+		
+		// More test data
+		String strProductName = Script.dicTestData.get("strProductName");		
+		String strTissuePrefix = Script.dicTestData.get("strTissuePrefix");
+		
+		// Test Data to be fetched for the current 'Products' script from DB
+		String strProductCodeDb = Script.dicTestData.get("ProductCode");
+		
+				
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link on left side navigation area.";
+		strExpResult = "'Resources' section should be expanded.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkProducts");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link is expanded successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Products' link and verify 'Products' landing page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Products' link under the 'Resources' option in the left side navigation area.";
+		strExpResult = "'Products' landing page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkProducts", "Products");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Products' link is clicked and 'Products' landing page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 5 - 	Calculate a Product code that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Product code that does not exist in the application for further use.";
+		strExpResult = "A Product code that does not exist in the application should be calculated and pushed to the Common Sheet under 'strNewProductID' for further use.";
+		blnFlag=calculateNewItem(strNewProductID, strProductCodeDb, "strNewProductID"); 
+		if (blnFlag == true)
+		{
+			strNewProductID = Script.dicCommonValue.get("strNewProductID");
+			reporter.ReportStep(strStepDesc, strExpResult, "Product Code '"+strNewProductID+"' is pushed to the Common Sheet under 'strNewProductID'.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'New Product' button on "Products" page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Product' button on 'Products' page.";
+		strExpResult = "'Add New Product' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeProducts", "btnNewProduct", "Add New Product");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Product' button is clicked and 'Add New Product' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter all valid details on the "Add New Products" page.
+		// ########################################################################################################
+		strStepDesc = "Enter all valid details on the 'Add New Products' page.";
+		strExpResult = "All required details in the 'Add New Product' should be filled.";
+		blnFlag=fillAddNewProductForm(strNewProductID,strProductName,strTissuePrefix);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All required details in the 'Add New Product' page is filled successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'Save' button and verify details are saved successfully.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify details are saved successfully.";
+		strExpResult = "The details should be saved successfully.";
+		blnFlag=clickAndVerify("pgeProducts", "btnSave", "Products");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Products' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 9 - Search for the added Product in the 'Product' field.
+		//########################################################################################################
+		strStepDesc = "Search for the added Product in the 'Product' field.";
+		strExpResult = "The added Product ("+strNewProductID+") should be displayed in the 'Products' grid.";
+		blnFlag=verifySearch("pgeProducts","txtSearchProduct","lnkProductName", strNewProductID);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Product ("+strNewProductID+") is displayed successfully in the search result in the 'Products' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - 	Click on the added Product and verify if 'Edit Product' page is displayed successfully.
+		//########################################################################################################
+		strStepDesc = "Click on the added Product and verify if 'Edit Product' page is displayed successfully.";
+		strExpResult = "The added Product ("+strNewProductID+") should be clicked and 'Edit Product' page should be displayed successfully.";
+		blnFlag=clickAndVerify("pgeProducts","lnkProductName", "Edit Product");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Product ("+strNewProductID+") is clicked and 'Edit Product' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 11 - 	Enter the new Product Name in the 'Name' field.
+		//########################################################################################################
+		strStepDesc = "Enter the new Product Name in the 'Name' field.";
+		strExpResult = "The new Product Name ("+strEditedProductName+") should be entered successfully.";
+		blnFlag=Page("pgeProducts").Element("txtProductName").Type(strEditedProductName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The new Product Name ("+strEditedProductName+") should be entered in the 'Name' field in 'Edit Product' page  successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Click on 'Save' button and verify 'Products' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Products' page is displayed.";
+		strExpResult = "'Products' page should be displayed.";
+		blnFlag=clickAndVerify("pgeProducts", "btnSave", "Products");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Products' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 13 - 	Search for the edited Product in the Products grid.
+		//########################################################################################################
+		strStepDesc = "Search for the edited Product in the Products grid.";
+		strExpResult = "The edited Product ("+strNewProductID+") should be displayed in the 'Products' grid.";
+		blnFlag=verifySearch("pgeProducts","txtSearchProduct","lnkProductName", strNewProductID);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited product ("+strNewProductID+") is displayed successfully in the search result in the 'Products' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+      //########################################################################################################
+      //Step 14 - 	Verify if the Product Name edit is successful on 'Products' page.
+      //########################################################################################################
+		strStepDesc = "Verify if the Product Name edit is successful on 'Products' page.";
+		strExpResult = "The edited Product Name("+strEditedProductName+") should be displayed in the 'Products' grid.";
+		blnFlag=verifyExactText("pgeProducts", "objProductName", strEditedProductName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The edited Product Name ("+strEditedProductName+") is displayed successfully in the search result in the 'Products' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 15 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	

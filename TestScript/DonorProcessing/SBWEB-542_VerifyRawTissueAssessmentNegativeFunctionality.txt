@@ -1,0 +1,404 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-542
+		// # Test Case Name: VerifyRawTissueAssessmentNegativeFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This script verifies error messages on 'Raw Tissue Assessment' page(Donor Processing)"
+		// # ------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User credentials are communicated to the user.
+		// #			     MiMedx SBWeb URL is accessible to the user
+		// # 		         User is on 'Donor Tissues' page and Start Process button has already been clicked.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Neha Chauhan
+		// # Created on: 05-27-2015
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strAmnionHeight = Script.dicTestData.get("strAmnionHeight");
+		String strAmnionWidth = Script.dicTestData.get("strAmnionWidth");
+		String strExpectedResult = Script.dicTestData.get("strExpectedText");
+		String strInputMaxHeight = Script.dicTestData.get("strInputMaxHeight");
+		String strMaxLength = Script.dicTestData.get("strMaxLength");
+		String strInputMaxWidth = Script.dicTestData.get("strInputMaxHeight");
+		String strExpectedResult1 = Script.dicTestData.get("strExpectedText1");
+		String strExpectedResult2 = Script.dicTestData.get("strExpectedText2");
+		String strInvalidText = Script.dicTestData.get("strSearchText");
+		String strInvalidDate = Script.dicTestData.get("strInvalidDate");
+		String strExpectedResult3 = Script.dicTestData.get("strExpectedText3");
+		String strExpectedResult4 = Script.dicTestData.get("strExpectedText4");
+		String strAlphanumericText = Script.dicTestData.get("strAlphanumericText");
+		String strExpectedResult5 = Script.dicTestData.get("strExpectedText5");
+		String strExpectedResult6 = Script.dicTestData.get("strExpectedText6");
+		String strExpectedResult7 = Script.dicTestData.get("strExpectedText7");
+		String strExpectedResult8 = Script.dicTestData.get("strExpectedText8");
+		
+		// Get Tissue Recovery ID, Donor Key from the Common datasheet.
+		String strRecoveryId = Script.dicCommonValue.get("strRecoveryId_DonorProcessing");
+		String strDonorKey= Script.dicCommonValue.get("strDonorKey_DonorProcessing");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 3 - Click on Process link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Process' link given on left navigation area.";
+		strExpResult = "'Process' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkProcess", "pgeAssembly_Lines", "lnkDonor_Processing");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Process' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Donor Processing link and verify 'Donor List' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Donor Processing link and verify 'Donor List' page is displayed.";
+		strExpResult = "'Donor List' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkDonor_Processing", "Donor List");		
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Donor List' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - Search for an eligible Donor ID. 
+		//########################################################################################################
+		strStepDesc = "Search for an eligible Donor ID.";
+		strExpResult = "Search for an eligible Donor ID should be successful.";
+		blnFlag=verifySearch("pgeDonor_List","txtRecoveryId_DonorList","objRecoveryID", strRecoveryId);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search for an eligible Donor ID is successful.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.
+		//########################################################################################################
+		strStepDesc = "Click the donor ID corresponding to Recovery ID, and verify the 'Donor Tissues' page.";
+		strExpResult = "The donor ID corresponding to Recovery ID "+strRecoveryId+" should be clicked and 'Donor Tissues' page should be verified successfully.";
+		blnFlag = clickandVerifyDonorIDLink(strRecoveryId, "Donor Tissues");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The donor ID corresponding to Recovery ID "+strRecoveryId+" is clicked and 'Donor Tissues' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	 Click on 'Tissue Assmt' button on "Donor Tissues" page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Tissue Assmt' button on 'Donor Tissues' page.";
+		strExpResult = "'Tissue Assmt' button is clicked and 'Raw Tissue Assessment' page should be displayed successfully.";		
+		blnFlag=clickAndVerify("pgeDonorProcessing", "btnTissueAssmt", "pgeRawTissueAssessment", "objRawTissueAssessmentHeader");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Tissue Assmt' button is clicked and 'Raw Tissue Assessment' page is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 8 - 	Click on 'Add Amnion' button without entering any height and width and verify message displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Amnion' button without entering any height and width and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedResult+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeRawTissueAssessment","btnAddAmnion","pgeCommon","objUIMessageErrorSummary",strExpectedResult);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedResult+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+			
+		//########################################################################################################
+		//Step 9 - 	Click on 'Add Chorion' button without entering any height and width and verify message displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add Chorion' button without entering any height and width and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedResult+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeRawTissueAssessment","btnAddChorion","pgeCommon","objUIMessageErrorSummary",strExpectedResult);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedResult+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###########################################################################################################################################
+		//Step 10 -  Enter more digits than maximum limit (10 digits) in 'Height' field and verify message displayed on clicking 'Add Amnion' button.
+		//###########################################################################################################################################
+		strStepDesc = "Enter more digits than maximum limit (10 digits) in 'Height' field and verify message displayed on clicking 'Add Amnion' button.";
+		strExpResult = "Error Message '"+strExpectedResult1+"' should be displayed.";		
+		blnFlag=verifyMaxCharacErrorMessage("pgeRawTissueAssessment","txtTissueHeight",strInputMaxHeight,strMaxLength,"pgeRawTissueAssessment","btnAddAmnion","pgeCommon","objUIMessageErrorSummary",strExpectedResult1);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedResult1+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//###########################################################################################################################################
+		//Step 11 -  Enter more digits than maximum limit (10 digits) in 'Width' field and verify message displayed on clicking 'Add Amnion' button.
+		//###########################################################################################################################################
+		strStepDesc = "Enter more digits than maximum limit (10 digits) in 'Width' field and verify message displayed on clicking 'Add Amnion' button.";
+		strExpResult = "Error Message '"+strExpectedResult2+"' should be displayed.";		
+		blnFlag=verifyMaxCharacErrorMessage("pgeRawTissueAssessment","txtTissueHeight","","txtTissueWidth", strInputMaxWidth,strMaxLength,"pgeRawTissueAssessment","btnAddAmnion","pgeCommon","objUIMessageErrorSummary",strExpectedResult2);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedResult2+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+			
+		//############################################################################################
+		//Step 12 - Enter alphanumeric characters in 'Height' field and verify message displayed.
+		//############################################################################################
+		strStepDesc = "Enter alphanumeric characters in 'Height' field and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedResult3+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeRawTissueAssessment","txtTissueWidth","","txtTissueHeight",strAlphanumericText,"pgeRawTissueAssessment","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedResult3);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedResult3+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+	
+		//############################################################################################
+		//Step 13 - Enter alphanumeric characters in 'Width' field and verify message displayed.
+		//############################################################################################
+		strStepDesc = "Enter alphanumeric characters in 'Width' field and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedResult4+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeRawTissueAssessment","txtTissueHeight","","txtTissueWidth",strAlphanumericText,"pgeRawTissueAssessment","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedResult4);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedResult4+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//############################################################################################
+		//Step 14 - Enter invalid/junk characters in 'Height' field and verify message displayed.
+		//############################################################################################
+		strStepDesc = "Enter invalid/junk characters in 'Height' field and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedResult5+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeRawTissueAssessment","txtTissueWidth","","txtTissueHeight",strInvalidText,"pgeRawTissueAssessment","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedResult5);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedResult5+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}				
+		
+		//############################################################################################
+		//Step 15 - Enter invalid/junk characters in 'Width' field and verify message displayed.
+		//############################################################################################
+		strStepDesc = "Enter invalid/junk characters in 'Width' field and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedResult6+"' should be displayed.";		
+		
+		blnFlag=verifyErrorMessage("pgeRawTissueAssessment","txtTissueHeight","","txtTissueWidth",strInvalidText,"pgeRawTissueAssessment","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedResult6);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedResult6+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+
+		//############################################################################################
+		//Step 16 - Enter invalid/junk values in 'Date' field and verify message displayed.
+		//############################################################################################
+		strStepDesc = "Enter invalid/junk values in 'Date' field and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedResult7+"' should be displayed.";		
+		blnFlag=verifyErrorMessage("pgeRawTissueAssessment","txtTissueWidth","","txtAssessmentDate",strInvalidDate,"pgeRawTissueAssessment","btnSave","pgeCommon","objUIMessageErrorSummary",strExpectedResult7);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedResult7+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//############################################################################################
+		//Step 17 - Clear 'Date' field.
+		//############################################################################################
+		strStepDesc = "Clear 'Date' field.";
+		strExpResult = "'Date' field should be cleared-out.";		
+		blnFlag=Page("pgeRawTissueAssessment").Element("txtAssessmentDate").Type("");
+
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Date' field is cleared-out successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 18 - Enter all valid values and click on 'Save' button.
+		//########################################################################################################
+		strStepDesc = "Enter all valid values and click on 'Save' button.";
+		strExpResult = "'Commit' button should be displayed on 'Raw Tissue Assessment' page.";
+		blnFlag= addAmnionChorionAndSaveTissueDetails("Amnion", strAmnionHeight, strAmnionWidth);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult,"'Commit' button is displayed on 'Raw Tissue Assessment' page successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 19 - Click on 'Commit' button without signing the canvas and verify message displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button without signing the canvas and verify message displayed.";
+		strExpResult = "Error Message '"+strExpectedResult8+"' should be displayed.";	
+		blnFlag= verifyErrorMessage("pgeCommon","btnCommit","pgeCommon","objUIMessageErrorSummary",strExpectedResult8);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Error Message '"+strExpectedResult8+"' is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 20 - Enter signatures in the canvas pad.
+		//########################################################################################################
+		strStepDesc = "Enter signatures in the canvas pad.";
+		strExpResult = "Signatures should be added on the canvas pad.";	
+		blnFlag=canvasSignature(driver) ;
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Signatures are added on the canvas pad successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		//########################################################################################################
+		//Step 21 -   Click on 'Commit' button and verify that 'Save' button is no longer displayed.
+		//########################################################################################################
+		strStepDesc = "Click on 'Commit' button and verify that 'Save' button is no longer displayed.";
+		strExpResult = "'Commit' button should be clicked and 'Save' button should no longer be displayed.";		
+		blnFlag= clickAndVerifyNotExist("pgeCommon", "btnCommit", "pgeRawTissueAssessment", "btnSave") ;
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Commit' button is clicked and 'Save' button is no longer displayed.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+									
+		// ########################################################################################################
+		// Step 22 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

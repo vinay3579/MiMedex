@@ -1,0 +1,212 @@
+	// ########################################################################################################
+		// # Test Case ID: SBWEB-536
+		// # Test Case Name: VerifyCertificateOfConformanceNegativeFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Certificate of Conformamce
+		// #  landing page and verifies negative functionality then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Certificate of Conformance" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 05-14-2015
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strMoistureVal = Script.dicTestData.get("strMoistureVal");
+		String strErrorMsg = Script.dicTestData.get("strErrorMsg");
+		
+		
+		//Test Data to be fetched for the current 'Certificate of Conformamce' script from DB.
+		String strDonorKey = Script.dicTestData.get("DonorKey");
+		String strTissueCode = Script.dicTestData.get("TissueCode");
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkEligibility_Review");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on Certificate of Conformance link and verify 'Certificate of Conformance' landing page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on Certificate of Conformance link and verify 'Certificate of Conformance' landing page is displayed.";
+		strExpResult = "'Certificate of Conformance' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkCertificate_of_Conformance", "Certificate of Conformance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Certificate of Conformance' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 5 - Click on the 'Add Certificate' button and verify 'New Certificate of Conformance' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the 'Add Certificate' button and verify 'New Certificate of Conformance' page is displayed.";
+		strExpResult = "'Add Certificate' button should be clicked and 'New Certificate of Conformance' page should be displayed.";
+		blnFlag=clickAndVerify("pgeSterilization","btnAddCertificate", "New Certificate of Conformance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Certificate' button clicked and 'New Certificate of Conformance' page is displayed successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - 	Verify that if search functionality working properly on New Certificate of Conformance page.
+		//########################################################################################################
+		strStepDesc = "Verify search functionality working properly on 'New Certificate of Conformance' page.";
+		strExpResult = "Searched result should be displayed in grid.";
+		blnFlag=verifySearch("pgeNewCertificateOfConformance","txtDonorKey","lnkDonorKey",strDonorKey);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Search functionality working properly in grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Click on the 'Select for Certificate' link on 'New Certificate of Conformance' page and verify 
+		// 'Edit Certificate of Conformance' page is displayed.
+		//########################################################################################################
+		strStepDesc = "Click on the 'Select for Certificate' link on 'New Certificate of Conformance' page and verify 'Edit Certificate of Conformance' page is displayed.";
+		strExpResult = "'Select for Certificate' link should be clicked and 'Edit Certificate of Conformance' page should be displayed.";
+		blnFlag=clickAndVerify("pgeNewCertificateOfConformance","lnkSelectForCertificate", "Edit Certificate of Conformance");
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Select for Certificate' link clicked and 'Edit Certificate of Conformance' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+       	
+		
+		//########################################################################################################
+		//Step 8 - 	Click certificate check boxes on 'Edit Certificate of Conformance' page. 
+		//########################################################################################################
+		strStepDesc = "Click certificate check boxes on 'Edit Certificate of Conformance' page.";
+		strExpResult = "All the verification check boxes should be selected and 'Commit' button should be displayed.";
+		blnFlag=selectCertificateCheckboxes();
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All the verification check boxes should be selected and 'Commit' button is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		 //########################################################################################################
+		//Step 9 - 	Enter 'Moisture Testing %' and select a 'Sheet Type' on 'Edit Certificate of Conformance' page. 
+		//########################################################################################################
+		strStepDesc = "Enter 'Moisture Testing %' and select a 'Sheet Type' on 'Edit Certificate of Conformance' page.";
+		strExpResult = "'Moisture Testing %' should be filled and 'Sheet Type' should be selected successfully.";
+		blnFlag=enterDataEditCertificateOfConformance(strTissueCode);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Moisture Testing %' is filled and 'Sheet Type' is selected successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 10 - Click on the 'Commit' button without entering any information in the 'Signature' fields and verify error message.
+		//########################################################################################################
+		strStepDesc = " Click on the 'Commit' button without entering any information in the 'Signature' fields and verify error message.";
+		strExpResult = "'A signature is required to commit.'message should be displayed.";
+		blnFlag=verifyErrorMessage("pgeEditCertificateOfConformance", "btnCommit","pgeCommon","objUIMessageErrorSummary", strErrorMsg);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Error Message:'"+strErrorMsg+"' is displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

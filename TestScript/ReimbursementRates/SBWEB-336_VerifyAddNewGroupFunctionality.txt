@@ -1,0 +1,216 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-336
+		// # Test Case Name: VerifyAddNewGroupFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Reimbursement Rates' landing
+		// # page, add a new group and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Reimbursement Rates" landing page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Ashish Khare
+		// # Created on: 12-19-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");	
+
+		// More test data 
+		String strGroupName = Script.dicTestData.get("strGroupName");
+		String strEmail = Script.dicTestData.get("strEmail");
+		String strGroupRate = Script.dicTestData.get("strGroupRate");
+		String strRejectRule = Script.dicTestData.get("strRejectRule");
+		String strAutoUpdate = Script.dicTestData.get("strAutoUpdate");
+		
+		//Test Data to be fetched for the current 'Reimbursement Rates' script from DB.
+		String strDBGroupName = Script.dicTestData.get("RecoveryGroupName");
+		
+		// Define variables used in script
+		String strNewGroup="";
+						
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Recovery' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery' link given on left navigation area.";
+		strExpResult = "'Recovery' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkRecovery", "pgeAssembly_Lines", "lnkReimbursementRates");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+ 		// ########################################################################################################
+		// Step 4 - Click on 'Reimbursement Rates' link and verify 'Reimbursement Rates' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Reimbursement Rates' link and verify 'Reimbursement Rates' page is displayed.";
+		strExpResult = "'Reimbursement Rates' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkReimbursementRates", "pgeReimbursementRates", "btnNewGroup");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Reimbursement Rates' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+ 		
+		//########################################################################################################
+		//Step 5 - Calculate a Group Name that does not exist in the application for further use.
+		//########################################################################################################
+		strStepDesc = "Calculate a Group Name that does not exist in the application for further use.";
+		strExpResult = "A Group Name that does not exist in the application should be calculated for further use.";
+		blnFlag=calculateNewItem(strGroupName, strDBGroupName); 
+		if (blnFlag == true)
+		{
+			strNewGroup = Script.dicCommonValue.get("strCalculatedItem");
+			reporter.ReportStep(strStepDesc, strExpResult, "New Group Name '"+strNewGroup+"' is calculated for further use.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on 'New Group' button and verify 'New Group' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'New Group' button and verify 'New Group' page is displayed.";
+		strExpResult = "'New Group' page should be displayed.";
+		blnFlag=clickAndVerify("pgeReimbursementRates", "btnNewGroup", "New Group");		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'New Group' button is clicked and 'New Group' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 7 - Enter details in 'New Group' page.
+		// ########################################################################################################
+		strStepDesc = "Enter details in 'New Group' page.";
+		strExpResult = "All required details in the 'New Group' should be filled.";
+		blnFlag=fillNewGroupForm(strNewGroup, strEmail, strGroupRate, strRejectRule, strAutoUpdate);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "All required details in the 'New Group' page is filled successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Click on 'Save' button and verify 'Reimbursement Rates' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button and verify 'Reimbursement Rates' page is displayed.";
+		strExpResult = "'Reimbursement Rates' page should be displayed.";	
+		blnFlag=clickAndVerify("pgeRecoveryGroups", "btnSave", "Reimbursement Rates");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is clicked and 'Reimbursement Rates' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		} 
+		
+		// ########################################################################################################
+		// Step 9 - Click on 'Recovery Groups' link and verify 'Recovery Groups' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Recovery Groups' link and verify 'Recovery Groups' page is displayed.";
+		strExpResult = "'Recovery Groups' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkRecoveryGroups", "pgeRecoveryGroups", "btnNewGroup");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Recovery Groups' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 10 - Search for the added Group in the 'Group' grid.
+		//########################################################################################################
+		strStepDesc = "Search for the added Group in the 'Group' grid.";
+		strExpResult = "The added Group '"+strNewGroup+"' should be displayed in the 'Group' grid.";
+		blnFlag=verifySearch("pgeRecoveryGroups","txtName","lnkName", strNewGroup);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The added Group '"+strNewGroup+"' is displayed successfully in the search result in the 'Group' grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

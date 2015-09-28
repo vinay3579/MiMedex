@@ -1,0 +1,157 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-316
+		// # Test Case Name: VerifyDeleteTestComplianceFunctionality
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the 'Lab Test Compliance' landing
+		// # page, delete an existing Lab Test and successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Lab Test Compliance" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 11-25-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");				
+		
+		// Get Test Name from the Common datasheet.
+		String strTestName = Script.dicCommonValue.get("strLabTestCompliance");
+						
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 3 - Click on Quality Assurance link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Quality Assurance' link given on left navigation area.";
+		strExpResult = "'Quality Assurance' link should be clicked.";
+		blnFlag=clickAndVerifyVisible("pgeAssembly_Lines", "lnkQuality_Assurance", "pgeAssembly_Lines", "lnkLabTestCompliance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Quality Assurance' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Lab Test Compliance' link and verify page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Lab Test Compliance' link and verify 'Lab Test Compliance' page is displayed.";
+		strExpResult = "'Lab Test Compliance' page should be verified successfully.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkLabTestCompliance", "Lab Test Compliance");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Lab Test Compliance' link is clicked and 'Lab Test Compliance' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}			
+		
+		//########################################################################################################
+		//Step 5 - 	Verify that the Lab Test is searched in Lab Test Compliance grid.
+		//########################################################################################################
+		strStepDesc = "Verify that the Lab Test ("+strTestName+") is searched in Lab Test Compliance grid.";
+		strExpResult = "The Lab Test '"+strTestName+"' should be displayed in the 'Lab Test Compliance' grid.";
+		blnFlag=verifySearch("pgeLabTestCompliance","txtTestName","lnkTestName", strTestName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Lab Test '"+strTestName+"' is searched successfully in the Lab Test Compliance grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+		
+		// ########################################################################################################
+		// Step 6 - Click on the delete link against the searched Test and verify 'Lab Test Compliance' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on the delete link against the searched Test and verify 'Lab Test Compliance' page is displayed.";
+		strExpResult = "The delete link against the Test '"+strTestName+"' should be clicked and 'Lab Test Compliance' page should be displayed.";
+		blnFlag=clickAndVerify("pgeLabTestCompliance", "lnkDeleteTest","Lab Test Compliance");		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The delete link against the Test '"+strTestName+"' is clicked and 'Lab Test Compliance' page is  displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 7 - 	Verify that the deleted Lab Test is not displayed in Lab Test Compliance grid.
+		//########################################################################################################
+		strStepDesc = "Verify that the deleted Lab Test '"+strTestName+"' is not displayed in Lab Test Compliance grid.";
+		strExpResult = "The Lab Test '"+strTestName+"' should not be displayed in the 'Lab Test Compliance' grid.";
+		blnFlag=verifySearchRecordNotFound("pgeLabTestCompliance","txtTestName","lnkTestName",strTestName);     
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Lab Test '"+strTestName+"' is not present in the Lab Test Compliance grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		}	
+
+		// ########################################################################################################
+		// Step 8 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+	

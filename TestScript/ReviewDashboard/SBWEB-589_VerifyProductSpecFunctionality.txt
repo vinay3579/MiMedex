@@ -1,0 +1,311 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-589
+		// # Test Case Name: VerifyProductSpecFunctionality
+		// #------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies that the user can sign up and reach to the Review Dashboard landing 
+		// #  page and add a Product Specification then successfully log out.
+		// #------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 				 User is on "Review Dashboard" landing page.
+		// # Post-conditions: NA
+		// # landing page.
+		// # Limitations: NA
+		// #------------------------------------------------------------------------------------------------------
+		// # Owner: Aarti Suresh
+		// # Created on: 03-13-2015
+		// #------------------------------------------------------------------------------------------------------
+		// # Reviewer: Himanshu Gosain
+		// # Review Date:
+		// #------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");
+		String strInstrument = Script.dicTestData.get("strInstrument");
+		String strSOP = Script.dicTestData.get("strSOP");
+		String strSpecification = Script.dicTestData.get("strSpecification");
+		String strDescription = Script.dicTestData.get("strDescription");
+		String strLimitRange = Script.dicTestData.get("strLimitRange");
+	
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '"+strURL+"' launched successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with
+		// valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on Manufacturing link.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Manufacturing' link given on left navigation area.";
+		strExpResult = "'Manufacturing' link should be clicked.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines", "lnkManufacturing", "pgeAssembly_Lines", "lnkReviewDashboard");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Manufacturing' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Review Dashboard' link and verify navigated page.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Review Dashboard' link and verify navigated page.";
+		strExpResult = "'Review Dashboard' page should be displayed.";
+		blnFlag=clickAndVerify("pgeAssembly_Lines","lnkReviewDashboard", "Review Dashboard");
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Review Dashboard' page is verified successfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}		
+		
+		//########################################################################################################
+		//Step 5 - 	Click on 'Product Specifications' tab.
+		//########################################################################################################
+		strStepDesc = "Click on 'Product Specifications' tab.";
+		strExpResult = "'Product Specifications' tab should be clicked successfully.";
+		blnFlag=clickAndVerify("pgeReviewDashboard","lnkProductSpecifications", "pgeReviewDashboard","txtSOP");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Product Specifications' tab is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}		
+		
+		//########################################################################################################
+		//Step 6 - 	In the 'Instrument Calibrations' section, select a pre-defined 'Instruments'.
+		//########################################################################################################
+		strStepDesc = "In the 'Instrument Calibrations' section, select a pre-defined 'Instruments'.";
+		strExpResult = "A pre-defined Instrument ("+strInstrument+") should be selected in the 'Instrument Calibrations' section.";
+		blnFlag=selectDataItemValueTextBox("pgeReviewDashboard","txtInstruments",strInstrument);      
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "A pre-defined Instrument ("+strInstrument+") is selected in the 'Instrument Calibrations' section successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");			
+		} 
+		
+		//########################################################################################################
+		//Step 7 - 	Verify if 'Calibration Date' field is not empty.
+		//########################################################################################################
+		strStepDesc = "Verify if 'Calibration Date' field is not empty.";
+		strExpResult = "'Calibration Date' field should not be empty.";
+		blnFlag=verifyFieldnotEmpty("pgeReviewDashboard", "objCalibrationDate");;
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Calibration Date' field is not empty.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		//########################################################################################################
+		//Step 8 - 	Enter SOP in SOP field in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter SOP in SOP field in 'Review Dashboard' page.";
+		strExpResult = "SOP ("+strSOP+") in SOP field in 'Review Dashboard' page should be entered.";
+		blnFlag=Page("pgeReviewDashboard").Element("txtSOP").Type(strSOP);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SOP ("+strSOP+") in SOP field in 'Review Dashboard' page is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 9 - 	Enter Specification in 'Specification' field in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter Specification in 'Specification' field in 'Review Dashboard' page.";
+		strExpResult = "Specification ("+strSpecification+") in 'Specification' field in 'Review Dashboard' page should be entered.";
+		blnFlag=Page("pgeReviewDashboard").Element("txtSpecification").Type(strSpecification);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Specification ("+strSpecification+") in 'Specification' field in 'Review Dashboard' page is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 10 - 	Enter Description in 'Description' field in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter Description in 'Description' field in 'Review Dashboard' page.";
+		strExpResult = "Description ("+strDescription+") in 'Description' field in 'Review Dashboard' page should be entered.";
+		blnFlag=Page("pgeReviewDashboard").Element("txtDescription").Type(strDescription);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Description ("+strDescription+") in 'Description' field in 'Review Dashboard' page is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+		
+		//########################################################################################################
+		//Step 11 - 	Enter Limit Range in 'Limit Range' field in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Enter Limit Range in 'Limit Range' field in 'Review Dashboard' page.";
+		strExpResult = "Limit Range ("+strLimitRange+") in 'Limit Range' field in 'Review Dashboard' page should be entered.";
+		blnFlag=Page("pgeReviewDashboard").Element("txtLimitRange").Type(strLimitRange);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Limit Range ("+strLimitRange+") in 'Limit Range' field in 'Review Dashboard' page is entered successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 12 - 	Click on 'Add' button in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Click on 'Add' button in 'Review Dashboard' page.";
+		strExpResult = "'Add' button in 'Review Dashboard' page should be clicked.";
+		blnFlag=Page("pgeReviewDashboard").Element("btnAdd").Click(20);		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add' button in 'Review Dashboard' page is clicked successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 13 - 	Verify the SOP updated in the Product Specifications section table in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the SOP updated in the Product Specifications section table in 'Review Dashboard' page.";
+		strExpResult = "The SOP ("+strSOP+") should be updated in the Product Specifications section table in 'Review Dashboard' page.";
+		blnFlag=verifyExactText("pgeReviewDashboard", "objSOP", strSOP);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The SOP ("+strSOP+") should be updated in the Product Specifications section table in 'Review Dashboard' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}	
+
+		//########################################################################################################
+		//Step 14 - 	Verify the Description updated in the Product Specifications section table in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the Description updated in the Product Specifications section table in 'Review Dashboard' page.";
+		strExpResult = "The Description ("+strDescription+") should be updated in the Product Specifications section table in 'Review Dashboard' page.";
+		blnFlag=verifyExactText("pgeReviewDashboard", "objDescription", strDescription);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Description ("+strDescription+") should be updated in the Product Specifications section table in 'Review Dashboard' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+
+		//########################################################################################################
+		//Step 15 - 	Verify the Specification updated in the Product Specifications section table in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the Specification updated in the Product Specifications section table in 'Review Dashboard' page.";
+		strExpResult = "The Specification ("+strSpecification+") should be updated in the Product Specifications section table in 'Review Dashboard' page.";
+		blnFlag=verifyExactText("pgeReviewDashboard", "objSpecification", strSpecification);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Specification ("+strSpecification+") should be updated in the Product Specifications section table in 'Review Dashboard' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+		
+		//########################################################################################################
+		//Step 16 - 	Verify the Limit Range updated in the Product Specifications section table in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the Limit Range updated in the Product Specifications section table in 'Review Dashboard' page.";
+		strExpResult = "The Limit Range ("+strLimitRange+") should be updated in the Product Specifications section table in 'Review Dashboard' page.";
+		blnFlag=verifyExactText("pgeReviewDashboard", "objLimitRange", strLimitRange);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The Limit Range ("+strLimitRange+") should be updated in the Product Specifications section table in 'Review Dashboard' page successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}
+
+		//########################################################################################################
+		//Step 17 - 	Verify the 'Last Updated'/'Last updated By' yellow section for Product Specifications updated in 'Review Dashboard' page.
+		//########################################################################################################
+		strStepDesc = "Verify the 'Last Updated'/'Last updated By' yellow section for Product Specifications updated in 'Review Dashboard' page.";
+		strExpResult = "The 'Last Updated'/'Last updated By' yellow section for Product Specifications should be updated correctly in 'Review Dashboard' page.";
+		blnFlag=verifyTableReviewDashboard("pgeReviewDashboard","objProdSpecLastUpdated","objProdSpecLastUpdatedBy","yellow");
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "The 'Last Updated'/'Last updated By' section for Product Specifications is updated correctly in 'Review Dashboard' page. The background color is yellow.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");		
+		}			
+		
+		// ########################################################################################################
+		// Step 18 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}

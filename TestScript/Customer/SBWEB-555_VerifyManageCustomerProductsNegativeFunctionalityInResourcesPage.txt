@@ -1,0 +1,468 @@
+
+		// ########################################################################################################
+		// # Test Case ID: SBWEB-555
+		// # Test Case Name: VerifyManageCustomerProductsNegativeFunctionalityInResourcesPage
+		// #-------------------------------------------------------------------------------------------------------
+		// # Description: This scripts verifies 'Manage Customer Products' negative functionality in 'Resources' 
+		// # page and then successfully log out.
+		// #-------------------------------------------------------------------------------------------------------
+		// # Pre-conditions: User is logged in into the MiMedx SBWeb application.
+		// # 		         User is on "Customers" page.
+		// # Post-conditions: NA
+		// # Limitations: NA
+		// #-------------------------------------------------------------------------------------------------------
+		// # Owner: 
+		// # Created on: 03-31-2014
+		// #-------------------------------------------------------------------------------------------------------
+		// # Reviewer: 
+		// # Review Date:
+		// #-------------------------------------------------------------------------------------------------------
+		// # History Notes:
+		// ########################################################################################################
+
+		//Getting data from config file  
+		String strURL=Script.dicConfigValues.get("strApplicationURL");
+		
+		//Getting data from master test data file
+		String strUserName = Script.dicTestData.get("strUserName");
+		String strPassword = Script.dicTestData.get("StrPassword");		
+		String strProduct = Script.dicTestData.get("strProduct");
+		String[] strExpText = Script.dicTestData.get("strExpText").split(";");
+		
+		//Test Data to be fetched for the current 'Costomers' script from DB.
+		String strCustomerId = Script.dicTestData.get("CustomerId");
+		String strCustomerName = Script.dicTestData.get("CustomerName");
+		
+		//Creating dynamic page title to validate user is navigating on correct page.
+		String strPageTitle = strCustomerName + " Details";
+		String strMsgText = "";
+		
+		// ########################################################################################################
+		// Step 1 - Launch browser.
+		// Open application URL.
+		// ########################################################################################################
+		strStepDesc = "Launch browser and open SBWEB application URL.";
+		strExpResult = "Browser and SBWEB application URL should be opened.";
+		blnFlag = LaunchApplicationUrl(strURL);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "SBWEB application url: '" + strURL + "' launched successfully.","Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 2 - Enter all the mandatory fields with valid data and click on login button.
+		// ########################################################################################################
+		strStepDesc = "Enter all the mandatory fields with valid data and click on login button.";
+		strExpResult = "User should be logged in into the application.";
+		blnFlag = loginMiMedx(strUserName, strPassword);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName + "' signed in successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+			return;
+		}
+
+		// ########################################################################################################
+		// Step 3 - Click on 'Resources' link given on left navigation area.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Resources' link given on left navigation area.";
+		strExpResult = "'Resources' link should be clicked.";
+		blnFlag = clickAndVerifyVisible("pgeAssembly_Lines", "lnkResources", "pgeAssembly_Lines", "lnkCustomer");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Resources' link clicked successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 4 - Click on 'Customers' link and verify 'Customers' page is displayed.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Customers' link and verify 'Customers' page is displayed.";
+		strExpResult = "'Customers' page should be displayed.";
+		blnFlag = clickAndVerify("pgeAssembly_Lines", "lnkCustomer", "pgeCustomers", "txtCustomerId");
+				
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Customers' page is verified sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		//########################################################################################################
+		//Step 5 - Search for the customer ID.
+		//########################################################################################################
+		strStepDesc = "Search for the customer ID '" + strCustomerId + "'.";
+		strExpResult = "Searched result should be displayed in Customers result grid.";
+		blnFlag = verifySearch("pgeCustomers","txtCustomerId","objCustomer", strCustomerId);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Customer ID '" + strCustomerId + "' should be successfully displayed in the result grid.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		//########################################################################################################
+		//Step 6 - Click on searched 'Customer Id' link on 'Customers' page.
+		//########################################################################################################
+		strStepDesc = "Click on searched 'Customer Id' link on 'Customers' page.";
+		strExpResult = "User should be navigated to '" + strPageTitle + "' page.";
+		blnFlag = clickAndVerify("pgeCustomers","lnkCustomerId", strPageTitle);
+		
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'" + strPageTitle + "' page displayed successfully.", "Pass");
+		}
+		else
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}	
+		
+		// ########################################################################################################
+		// Step 7 - Click on 'Add Product' button and verify 'Manage Customer Product' pop up is displayed.
+		// ########################################################################################################
+		strMsgText = "Manage Customer Product";
+		strStepDesc = "Click on 'Add Product' button and verify '" + strMsgText + "' pop up is displayed.";
+		strExpResult = "'Add Product' button should be clicked and '" + strMsgText + "' pop up should be displayed.";
+		blnFlag = clickAndVerifyVisible("pgeCustomers", "btnAddProduct", "pgeCommon", "objPopUpTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Product' button is clicked and '" + strMsgText + "' pop up is displayed sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 8 - Verify pop-up with title 'Manage Customer Facility' is displayed.
+		// ########################################################################################################
+		strMsgText = "Manage Customer Product";
+		strStepDesc = "Verify pop-up with title '" + strMsgText + "' is displayed.";
+		strExpResult = "Pop-up with title '" + strMsgText + "' should be displayed.";
+		blnFlag = verifyTextContains("pgeCommon", "objPopUpTitle", strMsgText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Pop-up with title '" + strMsgText + "' is successfully displayed.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 9 - Click on 'Save' button in the pop up without selecting anything.
+		// ########################################################################################################
+		strStepDesc = "Click on 'Save' button in the pop up without selecting anything.";
+		strExpResult = "'Save' button should be clicked in the pop up window.";
+		blnFlag = clickAndVerify("pgeCommon", "btnSaveOnPopup", strPageTitle);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Save' button is successfully clicked in the pop up window.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 10 - Verify message 'A product is required.' is displayed on the 'Customer Details' page.
+		// ########################################################################################################
+		strStepDesc = "Verify message '" + strExpText[0] + "' is displayed on the 'Customer Details' page.";
+		strExpResult = "Message '" + strExpText[0] + "' should be displayed on the 'Customer Details' page.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strExpText[0]);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message '" + strExpText[0] + "' is successfully displayed on the 'Customer Details' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 11 - Click on 'Add Product' button and verify 'Manage Customer Product' pop up is displayed.
+		// ########################################################################################################
+		strMsgText = "Manage Customer Product";
+		strStepDesc = "Click on 'Add Product' button and verify '" + strMsgText + "' pop up is displayed.";
+		strExpResult = "'Add Product' button should be clicked and '" + strMsgText + "' pop up should be displayed.";
+		blnFlag = clickAndVerifyVisible("pgeCustomers", "btnAddProduct", "pgeCommon", "objPopUpTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Product' button is clicked and '" + strMsgText + "' pop up is displayed sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 12 - Select a product, enter min as -1 and max as 1 and click on 'Save' button in the pop-up.
+		// ########################################################################################################
+		strStepDesc = "Select a product, enter min as -1 and max as 1 and click on 'Save' button in the pop-up.";
+		strExpResult = "Product should be selected, min and max levels should be entered and 'Save' button should be clicked in the pop-up.";
+		blnFlag = addProduct(strProduct, "-1", "1", "pgeCommon", "btnSaveOnPopup"); 
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Product is selected, min and max levels are entered and 'Save' button is successfully clicked in the pop-up.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 13 - Verify message 'Minimum level cannot be less than 0.' is displayed on the 'Customer Details' page.
+		// ########################################################################################################
+		strStepDesc = "Verify message '" + strExpText[1] + "' is displayed on the 'Customer Details' page.";
+		strExpResult = "Message '" + strExpText[1] + "' should be displayed on the 'Customer Details' page.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strExpText[1]);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message '" + strExpText[1] + "' is successfully displayed on the 'Customer Details' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 14 - Click on 'Add Product' button and verify 'Manage Customer Product' pop up is displayed.
+		// ########################################################################################################
+		strMsgText = "Manage Customer Product";
+		strStepDesc = "Click on 'Add Product' button and verify '" + strMsgText + "' pop up is displayed.";
+		strExpResult = "'Add Product' button should be clicked and '" + strMsgText + "' pop up should be displayed.";
+		blnFlag = clickAndVerifyVisible("pgeCustomers", "btnAddProduct", "pgeCommon", "objPopUpTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Product' button is clicked and '" + strMsgText + "' pop up is displayed sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 15 - Select a product, enter min as 1 and max as -1 and click on 'Save' button in the pop-up.
+		// ########################################################################################################
+		strStepDesc = "Select a product, enter min as 1 and max as -1 and click on 'Save' button in the pop-up.";
+		strExpResult = "Product should be selected, min and max levels should be entered and 'Save' button should be clicked in the pop-up.";
+		blnFlag = addProduct(strProduct, "1", "-1", "pgeCommon", "btnSaveOnPopup"); 
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Product is selected, min and max levels are entered and 'Save' button is successfully clicked in the pop-up.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 16 - Verify message 'Maximum level cannot be less than 0.' is displayed on the 'Customer Details' page.
+		// ########################################################################################################
+		strStepDesc = "Verify message '" + strExpText[2] + "' is displayed on the 'Customer Details' page.";
+		strExpResult = "Message '" + strExpText[2] + "' should be displayed on the 'Customer Details' page.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strExpText[2]);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message '" + strExpText[2] + "' is successfully displayed on the 'Customer Details' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 17 - Click on 'Add Product' button and verify 'Manage Customer Product' pop up is displayed.
+		// ########################################################################################################
+		strMsgText = "Manage Customer Product";
+		strStepDesc = "Click on 'Add Product' button and verify '" + strMsgText + "' pop up is displayed.";
+		strExpResult = "'Add Product' button should be clicked and '" + strMsgText + "' pop up should be displayed.";
+		blnFlag = clickAndVerifyVisible("pgeCustomers", "btnAddProduct", "pgeCommon", "objPopUpTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Product' button is clicked and '" + strMsgText + "' pop up is displayed sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 18 - Select a product, enter min as 10 and max as 5 and click on 'Save' button in the pop-up.
+		// ########################################################################################################
+		strStepDesc = "Select a product, enter min as 10 and max as 5 and click on 'Save' button in the pop-up.";
+		strExpResult = "Product should be selected, min and max levels should be entered and 'Save' button should be clicked in the pop-up.";
+		blnFlag = addProduct(strProduct, "10", "5", "pgeCommon", "btnSaveOnPopup"); 
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Product is selected, min and max levels are entered and 'Save' button is successfully clicked in the pop-up.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 19 - Verify message 'Maximum level must be set greater than minimum level.' is displayed on the 
+		// 'Customer Details' page.
+		// ########################################################################################################
+		strStepDesc = "Verify message '" + strExpText[3] + "' is displayed on the 'Customer Details' page.";
+		strExpResult = "Message '" + strExpText[3] + "' should be displayed on the 'Customer Details' page.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strExpText[3]);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message '" + strExpText[3] + "' is successfully displayed on the 'Customer Details' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 20 - Click on 'Add Product' button and verify 'Manage Customer Product' pop up is displayed.
+		// ########################################################################################################
+		strMsgText = "Manage Customer Product";
+		strStepDesc = "Click on 'Add Product' button and verify '" + strMsgText + "' pop up is displayed.";
+		strExpResult = "'Add Product' button should be clicked and '" + strMsgText + "' pop up should be displayed.";
+		blnFlag = clickAndVerifyVisible("pgeCustomers", "btnAddProduct", "pgeCommon", "objPopUpTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Product' button is clicked and '" + strMsgText + "' pop up is displayed sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 21 - Select a product, enter invalid value for min level and click on 'Save' button in the pop-up.
+		// ########################################################################################################
+		strStepDesc = "Select a product, enter invalid value for min level and click on 'Save' button in the pop-up.";
+		strExpResult = "Product should be selected, invalid min level should be entered and 'Save' button should be clicked in the pop-up.";
+		blnFlag = addProduct(strProduct, "xyz", "", "pgeCommon", "btnSaveOnPopup"); 
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Product is selected, invalid min level is entered and 'Save' button is successfully clicked in the pop-up.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 22 - Verify message 'customerform:pw_minlevel: 'xyz' must be a number consisting of one or more  
+		// digits.' is displayed on the 'Customer Details' page.
+		// ########################################################################################################
+		strMsgText = strExpText[4].replace("__VALUE__", "xyz");
+		strStepDesc = "Verify message '" + strMsgText + "' is displayed on the 'Customer Details' page.";
+		strExpResult = "Message '" + strMsgText + "' should be displayed on the 'Customer Details' page.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strMsgText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message '" + strMsgText + "' is successfully displayed on the 'Customer Details' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 23 - Click on 'Add Product' button and verify 'Manage Customer Product' pop up is displayed.
+		// ########################################################################################################
+		strMsgText = "Manage Customer Product";
+		strStepDesc = "Click on 'Add Product' button and verify '" + strMsgText + "' pop up is displayed.";
+		strExpResult = "'Add Product' button should be clicked and '" + strMsgText + "' pop up should be displayed.";
+		blnFlag = clickAndVerifyVisible("pgeCustomers", "btnAddProduct", "pgeCommon", "objPopUpTitle");
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "'Add Product' button is clicked and '" + strMsgText + "' pop up is displayed sucessfully.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 24 - Select a product, enter invalid value for max level and click on 'Save' button in the pop-up.
+		// ########################################################################################################
+		strStepDesc = "Select a product, enter invalid value for max level and click on 'Save' button in the pop-up.";
+		strExpResult = "Product should be selected, invalid max level should be entered and 'Save' button should be clicked in the pop-up.";
+		blnFlag = addProduct(strProduct, "", "xyz", "pgeCommon", "btnSaveOnPopup"); 
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Product is selected, invalid max level is entered and 'Save' button is successfully clicked in the pop-up.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+		
+		// ########################################################################################################
+		// Step 25 - Verify message 'customerform:pw_maxlevel: 'xyz' must be a number consisting of one or more  
+		// digits.' is displayed on the 'Customer Details' page.
+		// ########################################################################################################
+		strMsgText = strExpText[5].replace("__VALUE__", "xyz");
+		strStepDesc = "Verify message '" + strMsgText + "' is displayed on the 'Customer Details' page.";
+		strExpResult = "Message '" + strMsgText + "' should be displayed on the 'Customer Details' page.";
+		blnFlag = verifyTextContains("pgeCommon", "objUIMessageErrorSummary", strMsgText);
+		
+		if (blnFlag == true) 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "Message '" + strMsgText + "' is successfully displayed on the 'Customer Details' page.", "Pass");
+		}
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
+
+		// ########################################################################################################
+		// Step 26 - Logout from SBWEB test application.
+		// ########################################################################################################
+		strStepDesc = "Logout from SBWEB test application.";
+		strExpResult = "User should be logged out successfully.";
+		blnFlag = logoutMiMedx(strUserName);
+		if (blnFlag == true)
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, "User: '" + strUserName+ "' signed out successfully.", "Pass");
+		} 
+		else 
+		{
+			reporter.ReportStep(strStepDesc, strExpResult, Err.Description, "Fail");
+		}
